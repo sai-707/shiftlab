@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, useSyncExternalStore, useTransition, type FormEvent } from "react";
-import { requestPasswordReset, signIn, signUp } from "@/app/auth-actions";
+import { requestPasswordReset, signIn, signInWithGoogle, signUp } from "@/app/auth-actions";
 import { checkEmail, checkPassword, type EmailResult } from "@/lib/authChecks";
 import PasswordMeter from "./PasswordMeter";
 
@@ -11,6 +11,7 @@ type Mode = "in" | "up";
 // The hash is never sent to a server, so it is read with useSyncExternalStore: empty during server render, real value after.
 const noop = () => () => {};
 const linkExpired = () => location.hash === "#link-expired";
+const googleFailed = () => location.hash === "#google-failed";
 
 export default function AuthCard({ initialMode }: { initialMode: Mode }) {
   const [mode, setMode] = useState<Mode>(initialMode);
@@ -25,12 +26,13 @@ export default function AuthCard({ initialMode }: { initialMode: Mode }) {
   const [note, setNote] = useState("");
   const [pending, start] = useTransition();
   const expired = useSyncExternalStore(noop, linkExpired, () => false);
+  const gFailed = useSyncExternalStore(noop, googleFailed, () => false);
   const emailRef = useRef<HTMLInputElement>(null);
   const pwRef = useRef<HTMLInputElement>(null);
 
   const up = mode === "up";
   const report = checkPassword(pw, email, name);
-  const shownNote = note || (expired ? "That link expired or was already used. Sign in, or ask for a new reset link." : "");
+  const shownNote = note || (expired ? "That link expired or was already used. Sign in, or ask for a new reset link." : gFailed ? "Google sign-in did not finish. Try again, or use email." : "");
 
   const switchMode = (m: Mode) => {
     setMode(m);
@@ -58,6 +60,15 @@ export default function AuthCard({ initialMode }: { initialMode: Mode }) {
       const r = up ? await signUp({ name, email, password: pw }) : await signIn({ email, password: pw });
       if ("error" in r) setFormErr(r.error);
       else setNote(r.notice);
+    });
+  };
+
+  const google = () => {
+    setFormErr("");
+    setNote("");
+    start(async () => {
+      const r = await signInWithGoogle(); // on success the page navigates away, so only an error comes back
+      if (r?.error) setFormErr(r.error);
     });
   };
 
@@ -90,6 +101,17 @@ export default function AuthCard({ initialMode }: { initialMode: Mode }) {
           Create account
         </button>
       </div>
+
+      <button type="button" className="btn guest google" onClick={google} disabled={pending}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.7v3h3.9c2.3-2.1 3.5-5.2 3.5-8.9z" />
+          <path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1A12 12 0 0 0 12 24z" />
+          <path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.3a12 12 0 0 0 0 10.8l4-3.1z" />
+          <path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.5 1.8l3.4-3.4A12 12 0 0 0 1.3 6.6l4 3.1c.9-2.8 3.6-4.9 6.7-4.9z" />
+        </svg>
+        Continue with Google
+      </button>
+      <div className="or">or use email</div>
 
       <form onSubmit={onSubmit} noValidate>
         <div className={up ? "collapse open" : "collapse"} inert={!up}>

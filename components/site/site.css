@@ -1023,6 +1023,17 @@ html[data-js] .site .rv.in {
 .site .guest {
   width: 100%;
 }
+.site .google:disabled {
+  opacity: .6;
+  cursor: default;
+}
+.site .google svg {
+  width: 18px;
+  height: 18px;
+}
+.site .google:hover svg {
+  translate: none; /* the arrow-nudge on .btn svg is for arrows, not logos */
+}
 .site .small {
   margin: 14px 0 0;
   font-size: 13px;

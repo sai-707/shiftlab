@@ -12,8 +12,17 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(target, origin));
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      // First Google sign-in: the profile name is empty, so fill it from the Google name. Best effort; /welcome still asks if it fails.
+      const googleName = data.user?.user_metadata?.full_name;
+      if (data.user && typeof googleName === "string" && googleName.trim()) {
+        await supabase.from("profiles").update({ display_name: Array.from(googleName.trim()).slice(0, 40).join("") }).eq("id", data.user.id).eq("display_name", "");
+      }
+      return NextResponse.redirect(new URL(target, origin));
+    }
   }
-  return NextResponse.redirect(new URL("/login#link-expired", origin));
+  // Google sends ?error=... when the person cancels; email links just carry a bad or used code.
+  const failed = searchParams.has("error") ? "#google-failed" : "#link-expired";
+  return NextResponse.redirect(new URL(`/login${failed}`, origin));
 }

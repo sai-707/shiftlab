@@ -76,6 +76,20 @@ export async function signIn(input: { email: string; password: string }): Promis
   redirect(row?.role === "admin" ? "/admin" : "/dashboard");
 }
 
+// "Continue with Google": one button for new and returning people. Supabase makes the account on the first sign-in.
+// The return trip lands on /auth/callback, which swaps the code for a session (same page the email links use).
+export async function signInWithGoogle(): Promise<{ error: string }> {
+  const origin = (await headers()).get("origin");
+  if (!origin) return { error: "Something went wrong. Try again in a moment." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${origin}/auth/callback` } });
+  if (error || !data.url) {
+    console.error("[auth] google", error?.code, error?.status); // code and status only
+    return { error: "Google sign-in is not available right now. Use email instead." };
+  }
+  redirect(data.url); // only returns an error; success leaves the page
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
