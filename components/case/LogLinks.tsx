@@ -5,14 +5,15 @@ import { LOG_LINKS } from "@/content/logLinks";
 import { LOG_SOURCE } from "@/lib/sourceRules";
 import { markOpened } from "@/lib/sources";
 
-export default function LogLinks({ alertId, track = false }: { alertId: string; track?: boolean }) {
+/** `bare` drops the card styling, for use inside a tab that already has one. */
+export default function LogLinks({ alertId, track = false, bare = false }: { alertId: string; track?: boolean; bare?: boolean }) {
   const links = LOG_LINKS[alertId];
   if (!links) return null;
 
   return (
-    <section className="rounded-2xl border border-line bg-panel p-5">
-      <h2 className="font-semibold">Look in the logs</h2>
-      <p className="mt-1 text-sm text-muted">
+    <section className={bare ? "" : "rounded-2xl border border-line bg-panel p-5"}>
+      {!bare && <h2 className="font-semibold">Look in the logs</h2>}
+      <p className={`text-sm text-muted ${bare ? "" : "mt-1"}`}>
         Logs are the record of what computers did. Pick a question and ShiftLab runs the search for you.
       </p>
       <ul className="mt-3 space-y-2">

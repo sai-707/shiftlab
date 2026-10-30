@@ -29,6 +29,8 @@ export type Alert = {
   difficulty: Difficulty;
   raisedAt: string;
   summary: string;
+  /** One plain sentence saying what the student has to decide. Shown in a highlighted line on the alert page (Beginner alerts). */
+  task?: string;
   briefing: Briefing;
   indicators: string[];
   evidence: EvidenceBlock[];

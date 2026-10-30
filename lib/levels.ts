@@ -18,5 +18,7 @@ export function levelStates(cases: Record<string, CaseRecord>): LevelState[] {
 }
 
 export function isUnlocked(difficulty: Difficulty, cases: Record<string, CaseRecord>): boolean {
+  // Testing switch for the owner: put NEXT_PUBLIC_UNLOCK_ALL=1 in .env.local to open every level. Never set it on the live site.
+  if (process.env.NEXT_PUBLIC_UNLOCK_ALL === "1") return true;
   return levelStates(cases).find((s) => s.level === difficulty)?.unlocked ?? false;
 }

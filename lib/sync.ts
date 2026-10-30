@@ -7,6 +7,7 @@ import { logProgress } from "./logProgress";
 import { afterProgress, aiCheckProgress, commsProgress, mailProgress, shiftProgress, sprintProgress } from "./practiceProgress";
 import { resetProgress, setProgressFromSync, type Progress } from "./progress";
 import { sourcesStore } from "./sources";
+import { stepsProgress } from "./stepsProgress";
 import type { CaseRecord } from "./types";
 
 // Sync layer: merges local (localStorage) and remote (Supabase) progress for signed-in students.
@@ -102,7 +103,7 @@ export async function hydrate(userId: string) {
   // Owner mismatch: another account was using this browser. Wipe local data.
   if (meta.owner && meta.owner !== userId) {
     resetProgress();
-    for (const store of Object.values(STORES)) store.reset();
+    for (const store of [...Object.values(STORES), stepsProgress]) store.reset();
     writeMeta({ owner: userId, dirty: {} });
   } else if (!meta.owner) {
     writeMeta({ ...meta, owner: userId });
@@ -220,7 +221,7 @@ export async function syncAssign(alertId: string): Promise<boolean> {
 /** Reset both local and remote progress. */
 export async function syncReset(): Promise<void> {
   resetProgress();
-  for (const store of Object.values(STORES)) store.reset();
+  for (const store of [...Object.values(STORES), stepsProgress]) store.reset();
   const meta = readMeta();
   if (meta.owner) {
     writeMeta({ ...meta, dirty: {} });
@@ -231,7 +232,7 @@ export async function syncReset(): Promise<void> {
 /** Wipe local data on sign-out so the next student does not see someone else's progress. */
 export function wipeOnSignOut() {
   resetProgress();
-  for (const store of Object.values(STORES)) store.reset();
+  for (const store of [...Object.values(STORES), stepsProgress]) store.reset();
   try { localStorage.removeItem(SYNC_META_KEY); } catch { /* blocked */ }
 }
 
