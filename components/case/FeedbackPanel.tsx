@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import AfterAction from "./AfterAction";
 import RealWorld from "./RealWorld";
 import ReviewPanel from "./ReviewPanel";
+import { hintsUsed } from "@/lib/hintsUsed";
 import type { CaseRecord } from "@/lib/types";
 
 function band(score: number): string {
@@ -12,6 +15,7 @@ function band(score: number): string {
 
 export default function FeedbackPanel({ record }: { record: CaseRecord }) {
   const { feedback, submission } = record;
+  const hints = hintsUsed.useStore().used[record.alertId] ?? 0;
   const name = (v: "tp" | "fp") => (v === "tp" ? "True positive" : "False positive");
 
   return (
@@ -25,7 +29,10 @@ export default function FeedbackPanel({ record }: { record: CaseRecord }) {
             <span className="text-lg text-muted">/100</span>
           </p>
         </div>
-        <p className="text-sm font-medium text-accent">{band(feedback.score)}</p>
+        <div className="text-right">
+          <p className="text-sm font-medium text-accent">{band(feedback.score)}</p>
+          <p className="mt-1 text-xs text-muted">Hints used: {hints} of 3. Hints do not change your score.</p>
+        </div>
       </div>
 
       <p className="text-sm text-muted">

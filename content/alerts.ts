@@ -15,6 +15,8 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Beginner",
     raisedAt: "Oct 23, 09:20",
+    description:
+      "The mail gateway flagged an email sent to d.okafor that looks like it came from company payroll, but the sender's web address is a near-copy of ours and the message asks for bank details through a link. Emails like this are a common way to steal logins and payment details. Check the Email details and Email headers to see who really sent it, then the Web proxy log to find out whether the employee opened the link or sent anything back.",
     summary:
       "An email that looks like it came from company Payroll has reached an employee. The mail system noticed that the sender's web address is not quite ours.",
     task: "Decide if this email is a real attack, and whether the employee is at risk. Start with the email details, then the web record.",
@@ -101,6 +103,8 @@ export const ALERTS: Alert[] = [
     severity: "low",
     difficulty: "Beginner",
     raisedAt: "Oct 23, 10:05",
+    description:
+      "The mail gateway flagged a newsletter-style email sent to m.silva because its link passes through another website before it reaches the final page. Marketing companies do this to count clicks, and attackers do it to hide where a link really goes. Check the Context from the mail gateway and the Email headers to see whether this sender is known and trusted, then the Web proxy search to see where the link ends up and whether anyone clicked it.",
     summary:
       "A newsletter-style email has a link that goes through another website before the final page. The mail system wants a person to check whether it is harmless marketing or a trick.",
     task: "Decide if this email is harmless or a real attack. Find out who sent it, where the link really goes, and whether anyone clicked.",
@@ -173,8 +177,10 @@ export const ALERTS: Alert[] = [
     severity: "critical",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 02:45",
+    description:
+      "A SIEM rule (a tool that joins up logs from many systems) fired on web-bastion-02, a bastion host (a locked-down server that staff use to reach other servers). One outside address, 203.0.113.58, failed to log in more than 25 times in three minutes and then logged in successfully as admin. Decide whether an attacker got in, and if so what the account did and what it could reach.",
     summary:
-      "A detection rule saw a burst of failed logins against a bastion host from one external address, followed by a success. Work out what happened after the login.",
+      "A burst of failed logins against a bastion host from one outside address, followed by a successful login.",
     briefing: {
       source: "SIEM correlation rule",
       rule: "25+ failed logins followed by a success",
@@ -248,6 +254,8 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "Beginner",
     raisedAt: "Oct 23, 03:01",
+    description:
+      "The firewall saw 10.20.9.5, a computer inside our network, try more than 100 different ports on many other computers in under a minute. A port is a numbered door where a service listens, and trying many of them quickly is called a port scan. Attackers scan to find weak points, but our own security team scans too. Check the Asset record to find out whose computer this is, then the Change calendar and the Firewall log to see whether a scan was booked for this time.",
     summary:
       "The firewall saw one computer inside our network try more than 100 different ports in under a minute. A port is a numbered door where a service listens. This looks like a port scan, which attackers use to find weak spots. Our own security team scans too.",
     task: "Decide if this is an attack or planned work. Find out whose computer it is and whether a scan was booked.",
@@ -319,8 +327,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 09:12",
+    description:
+      "The firewall blocked a connection from FIN-WS-114, a finance workstation used by r.nair, to 198.51.100.200 on port 443. That address is on a threat feed, a list of addresses that security researchers have flagged as harmful. Decide whether the block settles this alert or whether the workstation needs a closer look.",
     summary:
-      "The firewall blocked an outbound connection to an address on a threat feed. The block worked, but look at the pattern before deciding it is harmless.",
+      "The firewall blocked an outbound connection from a finance workstation to an address on a threat feed.",
     briefing: {
       source: "Firewall with threat feed",
       rule: "Outbound connection to threat-feed destination",
@@ -398,8 +408,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 10:33",
+    description:
+      "Endpoint detection and response (EDR) saw WINWORD.EXE start powershell.exe on HR-WS-052, the laptop of l.fernandes, with a command that is encoded so it cannot be read at a glance. EDR recorded the event but did not block it. Decide whether the document was harmful and whether the laptop is now affected.",
     summary:
-      "Endpoint protection saw Microsoft Word start PowerShell on a recruiter's laptop. Office programs rarely do that. Work out whether the document was harmful.",
+      "EDR saw Microsoft Word start PowerShell with an encoded command on an HR laptop.",
     briefing: {
       source: "EDR (endpoint detection and response)",
       rule: "Office application spawned a scripting engine",
@@ -408,7 +420,7 @@ export const ALERTS: Alert[] = [
       assets: [
         { name: "HR-WS-052", kind: "Host", role: "Recruitment workstation (10.20.7.52)" },
         { name: "l.fernandes", kind: "User", role: "Recruiter. Opens CVs from outside senders every day." },
-        { name: "192.0.2.88", kind: "Address", role: "Address the PowerShell contacted" },
+        { name: "192.0.2.88", kind: "Address", role: "Outside address linked to this alert" },
       ],
       askFirst: [
         "How did the document reach the user, and from whom?",
@@ -476,6 +488,8 @@ export const ALERTS: Alert[] = [
     severity: "low",
     difficulty: "Beginner",
     raisedAt: "Oct 23, 11:48",
+    description:
+      "Antivirus on the lab laptop SEC-LAB-03 matched a file called eicar.com.txt to a known malware pattern and moved it to quarantine, a locked folder where files cannot run. Some detection names are real threats and others are harmless test files used to check that antivirus works. Read the detection name in the Detection details, then check the Ticket and calendar for a booked test and the Endpoint activity to see whether the file ran or contacted anything.",
     summary:
       "Antivirus on a lab laptop caught a file called eicar.com.txt and moved it to quarantine, a locked box where files cannot run. Some detection names are real threats. Others are harmless test files.",
     task: "Decide if this is a real threat or a harmless test. Read the detection name and check whether anything ran.",
@@ -545,6 +559,8 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "Beginner",
     raisedAt: "Oct 23, 13:07",
+    description:
+      "The web application firewall (WAF) saw 14 requests to the customer portal's search page that contain database commands where normal text should be. This is called SQL injection: an attacker types database code into a website hoping it will hand over data. Check the WAF log to see what the requests contained and whether the firewall blocked them, then the Application server access log to see whether any reached the server and what it answered.",
     summary:
       "The web firewall (WAF) blocked several requests to the customer portal that contain database commands. This is called SQL injection: an attacker types database code into a website hoping it will hand over data.",
     task: "Decide if this is a real attack and whether the portal needs any action. Check whether the firewall blocked it and what the server answered.",
@@ -618,6 +634,8 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "Beginner",
     raisedAt: "Oct 23, 14:16",
+    description:
+      "The identity provider saw s.menon's account sign in from two countries 12 minutes apart, which is too fast to travel. Either someone else has the password, or a VPN (a tool that hides your real location) makes it look that way. Compare both entries in the Sign-in log, including the device and whether the second-step MFA check passed. Then check the VPN gateway log for an address you recognise and read the Activity after the second sign-in.",
     summary:
       "One employee's account signed in from two countries only 12 minutes apart. That is too fast to travel. Either someone else has the password, or a VPN (a tool that hides your real location) is making it look that way.",
     task: "Decide if someone else is using this account. Compare the two sign-ins and look at what happened afterwards.",
@@ -675,8 +693,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 22:56",
+    description:
+      "The identity provider sent nine MFA prompts (requests to approve a sign-in on a phone) to a.kapoor in seven minutes at around 22:40, and one was approved. Decide who was behind the sign-in and what the account did after it.",
     summary:
-      "An employee's account saw a flood of multi-factor prompts late at night, and one was approved. Work out whether the account is now in someone else's hands.",
+      "Nine MFA prompts in seven minutes for one account late at night, then one approval.",
     briefing: {
       source: "Identity provider (single sign-on)",
       rule: "Repeated MFA prompts followed by a successful sign-in",
@@ -741,8 +761,10 @@ export const ALERTS: Alert[] = [
     severity: "critical",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 16:34",
+    description:
+      "A permission change on a storage bucket (an online folder for files) now lets anyone on the internet read it, and the bucket holds customer export files. Decide who made the change, whether it was meant to happen, and whether any data has already been taken.",
     summary:
-      "The cloud audit log shows a storage bucket was opened to the whole internet. Find out who did it, what is inside, and whether anyone has already taken data.",
+      "A storage bucket holding customer exports was made publicly readable.",
     briefing: {
       source: "Cloud audit log",
       rule: "Storage bucket made publicly readable",
@@ -750,7 +772,7 @@ export const ALERTS: Alert[] = [
         "Fires when a permission change lets anyone on the internet read a storage bucket. Public buckets are one of the most common causes of data leaks.",
       assets: [
         { name: "hp-customer-exports", kind: "Service", role: "Object storage bucket for monthly customer reports" },
-        { name: "svc-reporting-tmp", kind: "Account", role: "Temporary service account made two days ago" },
+        { name: "svc-reporting-tmp", kind: "Account", role: "Service account named in the change" },
         { name: "198.51.100.155", kind: "Address", role: "Address that made the change" },
       ],
       askFirst: [
@@ -810,8 +832,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 18:44",
+    description:
+      "Data loss prevention (DLP, a tool that watches for company files leaving) flagged SALES-WS-031, the computer of j.mercer, for sending 1.8 GB to filedrop-personal.test between 18:05 and 18:41. The user's usual finish time is 17:30. Decide whether this is ordinary work or company data being taken out, and what should happen next.",
     summary:
-      "Data loss prevention flagged a large upload of company files to a personal storage site. Decide whether this is normal work or data being taken out.",
+      "A 1.8 GB upload to a personal file-sharing site after working hours.",
     briefing: {
       source: "Data loss prevention (DLP)",
       rule: "Large upload of labelled files to a personal cloud service",
@@ -881,6 +905,8 @@ export const ALERTS: Alert[] = [
     severity: "low",
     difficulty: "Beginner",
     raisedAt: "Oct 23, 03:31",
+    description:
+      "A rule flagged an administrator logging in from home at 03:19 and restarting a database service on the live server db-prod-01. Admin work at night is unusual, but it is also what an on-call engineer does when something breaks. Check the Incident and paging records for a ticket or page that explains it, the VPN gateway log for how they connected and with what sign-in proof, and the Windows security log for exactly what they did.",
     summary:
       "An administrator logged in from home at 03:19 and restarted a database service on a production server, the live system the business depends on. A rule flagged it because it is outside working hours.",
     task: "Decide if this was a person doing their job, or someone who should not be there. Look for a ticket, a page or an incident that explains it.",
@@ -939,8 +965,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 11:12",
+    description:
+      "The identity provider saw d.okafor's mailbox sign in from an address that does not appear in the account's history. The account normally signs in from the office network. Decide whether the user made this sign-in, and if not, what the session did.",
     summary:
-      "The identity system saw an accounts payable mailbox sign in from an address it has never used. Find out how the sign-in happened and what the session did.",
+      "An accounts payable mailbox signed in from an address it has never used before.",
     briefing: {
       source: "Identity provider (single sign-on)",
       rule: "Sign-in from an address never seen for this user",
@@ -1009,8 +1037,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Intermediate",
     raisedAt: "Oct 24, 19:09",
+    description:
+      "Monitoring saw svc_bi_report, a service account (a login used by a program, not a person), sign in to the data warehouse from 203.0.113.166 between 18:51 and 19:06 and copy out a whole table. The account is normally used for one scheduled report job. Decide whether someone else is using the account and what data was taken.",
     summary:
-      "A reporting account for the analytics warehouse behaved differently from its usual nightly job. Work out whether someone else is using it and what they took.",
+      "A data warehouse service account signed in from a new network and exported a whole table.",
     briefing: {
       source: "Cloud data platform monitoring",
       rule: "Service account sign-in from a new network, followed by a bulk export",
@@ -1094,8 +1124,10 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "Intermediate",
     raisedAt: "Oct 24, 01:19",
+    description:
+      "An endpoint rule saw PsExec, a tool that runs programs on other computers, start commands on 12 file servers (FS-01 to FS-12) between 01:12 and 01:17. The commands came from JUMP-ADM-01 using the account svc-patch. Decide whether this is approved administration or an attack spreading, and what state the servers are in.",
     summary:
-      "An endpoint rule flagged a remote-execution tool that ransomware crews also use. Decide whether this is an attack or someone doing their job.",
+      "PsExec ran commands on 12 file servers within five minutes from an admin jump host.",
     briefing: {
       source: "Endpoint detection and response (EDR)",
       rule: "Remote execution tool (PsExec) used against many servers",
@@ -1176,8 +1208,10 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "Intermediate",
     raisedAt: "Oct 24, 10:44",
+    description:
+      "p.sharma reported an email titled 'Shared with you: Q4 supplier contracts' at 10:44, after opening its link, which leads to harborpine-sso.test. Decide what the user did on that page, whether the account is at risk, and who else needs to be told.",
     summary:
-      "An employee clicked a link in a 'shared document' email and then reported it. Work out whether anything was entered or stolen before you decide how far this goes.",
+      "An employee clicked a link in a 'shared document' email and then reported it.",
     briefing: {
       source: "Mail gateway and the Report phish button",
       rule: "User-reported email with a link to a sign-in page",
@@ -1186,7 +1220,7 @@ export const ALERTS: Alert[] = [
       assets: [
         { name: "p.sharma", kind: "User", role: "Procurement coordinator who clicked and reported" },
         { name: "harborpine-sso.test", kind: "Address", role: "Domain behind the link" },
-        { name: "Procurement and Finance mailboxes", kind: "Service", role: "Received the same email" },
+        { name: "Procurement and Finance mailboxes", kind: "Service", role: "Mailboxes that may be involved" },
       ],
       askFirst: [
         "Did the user only look at the page, or did they type something into it?",
@@ -1272,6 +1306,8 @@ export const ALERTS: Alert[] = [
     severity: "low",
     difficulty: "Beginner",
     raisedAt: "Oct 24, 08:45",
+    description:
+      "The identity provider locked r.dsouza's account after 14 wrong passwords in seven minutes. A person guessing the password would cause that, and so would a phone or laptop that keeps retrying an old saved password. Check the Sign-in failures to see where the attempts came from, the Account and help desk context for a recent password change or ticket, and the Timeline to see what happened after the account was unlocked.",
     summary:
       "One employee's account locked itself after 14 wrong passwords in seven minutes. Someone guessing the password would cause that. So would a device that keeps trying an old saved password.",
     task: "Decide if someone is guessing this password, or if there is a normal reason. Find out where the attempts came from.",
@@ -1345,6 +1381,8 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "Beginner",
     raisedAt: "Oct 24, 11:27",
+    description:
+      "Antivirus on MKT-WS-019 found a trojan (a harmful program disguised as useful software) in ZoomWorkspace_Setup.exe, which m.pillai downloaded, and removed it. Removal is good news, but the important questions are where the file came from, whether it ran before it was removed, and whether anyone else got it. Check the Web proxy log for the download source, the Endpoint context for what the file did, and the Timeline for the order of events.",
     summary:
       "A marketing employee downloaded a program that antivirus says is a trojan, a harmful program disguised as something useful. Antivirus removed it. The question is whether it ran first.",
     task: "Decide how serious this is. Check where the file came from, whether it ever ran, and whether anyone else got it.",
@@ -1415,6 +1453,8 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Beginner",
     raisedAt: "Oct 24, 15:38",
+    description:
+      "File integrity monitoring found a new script file, 9f3a.php, in the customer portal's avatars folder on web-app-03. That folder should only hold pictures, and a script there can act as a web shell, a hidden back door that lets an attacker run commands on the server. Check the Web server access log to see how the file got there and whether it was used, the Process events to see what commands ran, and the Context for any planned work.",
     summary:
       "The customer portal has a folder that should only hold pictures. A script file (PHP) has appeared in it and someone is running commands through it. This could be a hidden back door called a web shell.",
     task: "Decide how serious this is. Find out who uploaded the file, whether it was used, and what the attacker could see.",
@@ -1494,8 +1534,10 @@ export const ALERTS: Alert[] = [
     severity: "critical",
     difficulty: "Hard",
     raisedAt: "Oct 24, 13:52",
+    description:
+      "The identity provider's admin console shows session s-8841, belonging to super admin t.venkat, in use from two addresses (10.20.4.22 and 203.0.113.178) at 13:52, and a new admin account has been created. A session is the saved proof that a user has already signed in. Decide what happened to the session, what was done with it, and what must be contained first.",
     summary:
-      "An administrator's single sign-on session is suddenly being used from a different address and a new admin account has appeared. Work out how the session was taken and how far it has gone.",
+      "One administrator session is being used from two addresses, and a new admin account has appeared.",
     briefing: {
       source: "Identity provider (single sign-on) admin console",
       rule: "One admin session used from two different addresses",
@@ -1587,8 +1629,10 @@ export const ALERTS: Alert[] = [
     severity: "critical",
     difficulty: "Hard",
     raisedAt: "Oct 24, 02:46",
+    description:
+      "File integrity monitoring found guest2.aspx, a new page, on xfer-01, the file transfer server that faces the internet, created at 02:14:05. Database auditing shows a 6 GB read from xfer-db-01 in the same period. Decide how the page got there, whether it was used, what data left, and what to do now.",
     summary:
-      "File integrity monitoring found a page nobody deployed on the file transfer server. Check the web, database and network records to see whether it was used and what it took.",
+      "A page nobody deployed appeared on the public file transfer server, and a 6 GB database read followed.",
     briefing: {
       source: "File integrity monitoring and database audit",
       rule: "New executable web page on an internet-facing server",
@@ -1689,8 +1733,10 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "Hard",
     raisedAt: "Oct 24, 14:06",
+    description:
+      "The web application firewall (WAF) logged 14 requests from 198.51.100.208 between 14:02 and 14:05 that contain ${jndi:...}, the text used to attack the Log4Shell flaw in Java software. They were sent to portal-web, api-gw-02, intranet-01 and hr-app-01. Decide which servers, if any, were affected and what action is needed.",
     summary:
-      "Many requests carry the well-known Log4Shell attack string. Decide whether any server was really exposed before you decide how far this goes.",
+      "The WAF logged 14 requests containing a Log4Shell attack string, sent to four servers.",
     briefing: {
       source: "Web application firewall (WAF)",
       rule: "JNDI lookup string in a request header or URL",
@@ -1698,7 +1744,7 @@ export const ALERTS: Alert[] = [
         "Fires on the text ${jndi:...} in web requests. It is the attack string for a famous Java flaw. Scanners send it to everything, so the real question is whether any target is still vulnerable and called back.",
       assets: [
         { name: "198.51.100.208", kind: "Address", role: "Source of the requests" },
-        { name: "api-gw-02", kind: "Host", role: "Java API gateway that received the allowed requests" },
+        { name: "api-gw-02", kind: "Host", role: "Java API gateway" },
         { name: "203.0.113.45", kind: "Address", role: "Address named inside the attack string" },
       ],
       askFirst: [
@@ -1781,8 +1827,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Hard",
     raisedAt: "Oct 24, 08:18",
+    description:
+      "The identity provider's audit log shows that r.nair on the help desk reset a.menon's password and MFA at 07:50, and an authenticator app was registered on her account at 07:56. The account then signed in and opened the payments portal. Decide who made the request, what the account did, and how to secure it.",
     summary:
-      "A Finance manager's password and MFA were reset by phone, and a new device immediately signed in and opened the payments portal. Check how the reset was verified and what the account did next.",
+      "A new MFA device was added to a Finance manager's account minutes after a help desk reset.",
     briefing: {
       source: "Identity provider audit log",
       rule: "New MFA method added within one hour of a help desk reset",
@@ -1885,8 +1933,10 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "Hard",
     raisedAt: "Oct 24, 09:16",
+    description:
+      "The identity provider's risk detection saw s.nair sign in from Pune, India at 09:11 and from Frankfurt, Germany at 09:15, which is too fast for one person to travel. Decide whether the account is compromised and whether anyone else is affected.",
     summary:
-      "An employee appears to have travelled between two countries in four minutes. Decide whether this is a stolen account or something more ordinary by checking the device, the change calendar and other users.",
+      "One user signed in from Pune and from Frankfurt four minutes apart.",
     briefing: {
       source: "Identity provider risk detection",
       rule: "Impossible travel: sign-ins from two distant locations in a short time",
@@ -1985,8 +2035,10 @@ export const ALERTS: Alert[] = [
     severity: "critical",
     difficulty: "Hard",
     raisedAt: "Oct 24, 08:06",
+    description:
+      "EDR saw CallBridge.exe, a softphone program signed by VoxLine Ltd with a valid signature, update itself on SALES-WS-027 and then start rundll32.exe (a Windows system tool) at 08:06 and contact a domain nobody here has contacted before. Decide whether this is harmful and how many computers are involved.",
     summary:
-      "A trusted, signed program updated itself and then behaved in a way it never has. Decide whether this is a supplier problem, and how many computers are involved.",
+      "A signed softphone program ran a Windows system tool after an update and contacted a domain not seen before.",
     briefing: {
       source: "Endpoint detection and response (EDR)",
       rule: "Signed application started a system tool and made an unusual connection",
@@ -2081,8 +2133,10 @@ export const ALERTS: Alert[] = [
     severity: "critical",
     difficulty: "Hard",
     raisedAt: "Oct 24, 03:33",
+    description:
+      "EDR and the file server audit show that shadow copies (Windows' built-in file restore points) and recovery settings were deleted on FS-02, the finance file server, at 03:30:44, and files on the server are being renamed. The alert was raised at 03:33. Decide what is happening, how it started, how far it has spread, and what to do first.",
     summary:
-      "Recovery features were switched off on the finance file server and files are being renamed right now. Find out how the attacker got there and how far it has spread before it is too late.",
+      "Shadow copies were deleted and files are being renamed on the finance file server.",
     briefing: {
       source: "Endpoint detection and response (EDR) and file server audit",
       rule: "Backup recovery disabled followed by mass file renames",
@@ -2090,8 +2144,8 @@ export const ALERTS: Alert[] = [
         "Fires when shadow copies are deleted and many files are renamed in a short time. Ransomware deletes the easy ways to restore files first and then encrypts.",
       assets: [
         { name: "FS-02", kind: "Host", role: "Finance file server" },
-        { name: "adm.rkulkarni", kind: "Account", role: "Domain administrator account used in the logon chain" },
-        { name: "10.20.7.88", kind: "Address", role: "Workstation the remote commands came from" },
+        { name: "adm.rkulkarni", kind: "Account", role: "Domain administrator account named in the logs" },
+        { name: "10.20.7.88", kind: "Address", role: "Internal address seen in this alert" },
       ],
       askFirst: [
         "Is this planned work or a ransomware attack in progress?",
@@ -2175,8 +2229,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Hard",
     raisedAt: "Oct 24, 11:09",
+    description:
+      "The cloud audit log and a billing alert show the access key ending 7Q3M, owned by the deployment pipeline account svc-deploy-ci, used from 203.0.113.99 in eu-north-1 to start eight GPU servers. Nobody here normally uses that region. An access key is a long-lived password that programs use to control the cloud account. Decide who is using the key, what has been created and what it is costing.",
     summary:
-      "A cloud access key that belongs to the deployment pipeline is being used by someone else. Find out how they got it and what they have already created.",
+      "A deployment key was used from a new address in a region we never use, and eight GPU servers started.",
     briefing: {
       source: "Cloud audit log and billing anomaly alert",
       rule: "Access key used from a new address and in a new region",
@@ -2185,7 +2241,7 @@ export const ALERTS: Alert[] = [
       assets: [
         { name: "svc-deploy-ci", kind: "Account", role: "Service account used by the deployment pipeline" },
         { name: "203.0.113.99", kind: "Address", role: "New address using the key" },
-        { name: "harborpine-deploy-scripts", kind: "Service", role: "Code repository the key was stored in" },
+        { name: "harborpine-deploy-scripts", kind: "Service", role: "Code repository used by the deployment pipeline" },
       ],
       askFirst: [
         "Is this the pipeline, or someone else, using the key?",
@@ -2266,8 +2322,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "Hard",
     raisedAt: "Oct 24, 10:55",
+    description:
+      "Cloud app governance shows that p.rao gave DocuViewer Pro, an app from an unverified publisher, permission to read mail and keep access without signing in again. The mail audit shows the app has read about 2,100 emails. Decide how the app got access, what it can reach, who else is affected and how to remove it.",
     summary:
-      "A user clicked a link to the real Microsoft sign-in page and approved an app. No password was stolen, but the app is now reading mail. Work out what it can do and who else approved it.",
+      "An unverified app was given mailbox access and has read about 2,100 emails.",
     briefing: {
       source: "Cloud app governance and mail audit",
       rule: "New app granted mail access with offline access",
@@ -2366,8 +2424,10 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "Hard",
     raisedAt: "Oct 24, 14:02",
+    description:
+      "DNS monitoring saw LEG-WS-012 make 9,214 DNS lookups (requests that turn a name into an address) in the last 60 minutes, all for long, random-looking names under lookup.shieldsense-cloud.test. Decide what is making them and whether any data is leaving the laptop.",
     summary:
-      "One laptop made thousands of DNS lookups with long, random-looking names. That is how attackers sometimes smuggle data out, but not always. Find the process behind it and decide.",
+      "One laptop made 9,214 DNS lookups with very long, random-looking names in an hour.",
     briefing: {
       source: "DNS monitoring",
       rule: "High volume of DNS queries with long, random-looking names",
@@ -2376,7 +2436,6 @@ export const ALERTS: Alert[] = [
       assets: [
         { name: "LEG-WS-012", kind: "Host", role: "Legal department laptop (user n.joshi)" },
         { name: "shieldsense-cloud.test", kind: "Address", role: "Domain all of the queries went to" },
-        { name: "ShieldSense agent", kind: "Service", role: "Endpoint security software on the laptop" },
       ],
       askFirst: [
         "Which program on the laptop is making the lookups?",
@@ -2458,8 +2517,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 15:12",
+    description:
+      "Chatbot monitoring and the backend API audit show that session 88213 on the public website made the support chatbot's lookup tool run for 41 different customer accounts in about five minutes (raised 15:12). A visitor should only be able to ask about their own shipments. Decide what the visitor did, what the bot could reach, how much data was returned and what to change.",
     summary:
-      "A visitor typed instructions into the customer support chatbot, and the bot then looked up and printed shipment records for accounts that were not theirs. Find out what the bot could reach and how far the exposure goes.",
+      "One chatbot session caused 41 customer accounts to be looked up in about five minutes.",
     briefing: {
       source: "Chatbot monitoring and backend API audit",
       rule: "Chatbot tool called for many different customer accounts in one session",
@@ -2554,8 +2615,10 @@ export const ALERTS: Alert[] = [
     severity: "critical",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 14:34",
+    description:
+      "r.deshmukh in Finance reported at 14:31 a phone call from someone who sounded like the CFO, asking for an urgent, confidential payment of $186,400 (PR-30417) to Eastbridge Marine Supplies, a new supplier. The payment is waiting in the queue for a second approver. Decide whether the request is genuine, what to do about the payment, and what else should be checked.",
     summary:
-      "A finance clerk says the CFO phoned and asked for an urgent, confidential payment. The voice sounded exactly right, and the payment is waiting for a second approver. Decide whether it is real and what to do before it is released.",
+      "A finance clerk reported a voice call asking for an urgent payment to a new supplier.",
     briefing: {
       source: "Staff report, phone system and payments queue",
       rule: "Staff report: urgent payment request by voice call",
@@ -2563,7 +2626,7 @@ export const ALERTS: Alert[] = [
         "Fires when a staff member reports a payment request they doubt. Voice and video can be copied convincingly, so who really made the request matters more than how real it sounded.",
       assets: [
         { name: "r.deshmukh", kind: "User", role: "Finance clerk who took the call and created the payment" },
-        { name: "v.malhotra", kind: "User", role: "Chief Financial Officer, the person being imitated" },
+        { name: "v.malhotra", kind: "User", role: "Chief Financial Officer, named by the caller" },
         { name: "PR-30417", kind: "Service", role: "Payment request waiting for a second approval" },
       ],
       askFirst: [
@@ -2644,17 +2707,19 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 11:42",
+    description:
+      "Staff reported an email sent to 40 people in Finance and Operations at 11:42. It uses the recipient's name, refers to a real project, and passed SPF, DKIM and DMARC (checks that a message really comes from the domain it claims). The web proxy shows three people clicked its link. Decide whether the email is malicious, who is affected and what needs to be done.",
     summary:
-      "An email with perfect English, the recipient's name and a real project reached 40 people. It passed SPF, DKIM and DMARC. Three people clicked. Work out what the checks cannot tell you and what happened after the clicks.",
+      "An invoice email sent to 40 staff passed the usual email checks, and three people clicked its link.",
     briefing: {
       source: "Mail gateway report and web proxy",
       rule: "Reported email with clicks to an unknown sign-in page",
       looksFor:
         "Fires when staff report an email and the proxy sees clicks on the link. Fluent writing and passing email checks no longer prove an email is safe, because anyone can register a domain and set it up correctly. Look at the domain, the link and what happened after the click.",
       assets: [
-        { name: "d.kamath", kind: "User", role: "Finance analyst whose password was typed into the fake page" },
-        { name: "docs-brightwell-ledger.test", kind: "Address", role: "Domain of the fake sign-in page" },
-        { name: "203.0.113.118", kind: "Address", role: "Address of a later sign-in to d.kamath's account" },
+        { name: "d.kamath", kind: "User", role: "Finance analyst who received the email" },
+        { name: "docs-brightwell-ledger.test", kind: "Address", role: "Domain the link points to" },
+        { name: "203.0.113.118", kind: "Address", role: "Address seen in the sign-in log for d.kamath's account" },
       ],
       askFirst: [
         "What is wrong with the email, if the writing and email checks are fine?",
@@ -2740,8 +2805,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 12:20",
+    description:
+      "Data loss prevention saw s.rajan upload customer-churn-q3.csv, a Confidential file of 1,900 rows, to harborpine.lumen-workspace.test, a website in the generative AI category. The rule fires for every site in that category. Decide whether this is a data leak or approved work, and what, if anything, should be done.",
     summary:
-      "A data loss rule fired because a Confidential customer file went to a website in the AI category. The rule treats every AI website alike. Work out whether this one is a leak or approved work.",
+      "A Confidential customer file was uploaded to a website in the AI category.",
     briefing: {
       source: "Data loss prevention (web uploads)",
       rule: "Confidential file uploaded to an AI service",
@@ -2825,8 +2892,10 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 16:05",
+    description:
+      "The cloud AI usage monitor shows the key ending 4F9A, owned by the Data Science team, used 190 million tokens (the units an AI service charges by) in six hours, when a normal day is 1.2 million. The requests come from seven addresses in three countries and the bill is rising. Decide whether the key is being misused, what it exposes and what to do right now.",
     summary:
-      "A key for the company's cloud AI service is making tens of thousands of requests to the biggest models, and the bill is climbing. Work out whether it is a busy app or a stolen key, and what else was exposed with it.",
+      "A cloud AI key is making about 30 times its normal usage from seven addresses in three countries.",
     briefing: {
       source: "Cloud AI usage and billing monitor",
       rule: "AI service usage more than 10 times the daily normal",
@@ -2917,8 +2986,10 @@ export const ALERTS: Alert[] = [
     severity: "critical",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 10:05",
+    description:
+      "Data loss prevention found that PineAssist, the company AI assistant, sent an email on m.sharma's behalf at 09:41 with three Confidential contracts attached, to reports@docsync-archive.test, a domain it has not contacted before. Just before that she had asked it to summarise a supplier PDF. Decide why it sent the email, what was exposed and who else could be affected.",
     summary:
-      "A user asked the company's AI assistant to summarise a PDF from a supplier. The assistant did, and also sent three Confidential contracts to a domain nobody knows. Find what made it do that and who else is affected.",
+      "The company AI assistant emailed three Confidential contracts to an unknown outside domain.",
     briefing: {
       source: "Data loss prevention and AI assistant audit",
       rule: "Email with Confidential attachments sent to a new outside domain by the AI assistant",
@@ -3018,8 +3089,10 @@ export const ALERTS: Alert[] = [
     severity: "medium",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 13:26",
+    description:
+      "EDR and the mail gateway show six staff opened a Word attachment that started a script engine and then PowerShell, beginning with FIN-WS-044 at 13:08. EDR blocked all six. Each file has a different hash (a digital fingerprint of a file) and lookups find no record of any of them. Decide how serious this is and what still needs to be done.",
     summary:
-      "Six staff opened a Word attachment that tried to start a script and PowerShell. The security tool stopped every one. Every file has a different hash and no lookup knows any of them. Decide how much that matters.",
+      "Six staff opened a Word attachment that tried to start PowerShell, and EDR blocked all six.",
     briefing: {
       source: "Endpoint detection (EDR) and mail gateway",
       rule: "Document started a script engine, which started PowerShell",
@@ -3113,17 +3186,19 @@ export const ALERTS: Alert[] = [
     severity: "high",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 17:10",
+    description:
+      "The web proxy, which can inspect encrypted traffic, saw 3,420 page-sized uploads in three hours from 14 computers to a domain no company software uses. They come from a free AI browser add-on called AI Page Summarizer. Decide what the add-on can see, who is affected and how to contain it.",
     summary:
-      "A free AI browser add-on that staff installed is uploading the text of every page they open, including payment batches in the finance system. It changed hands and updated itself three days ago. Work out what it can see and who is affected.",
+      "A browser add-on sent the text of pages, including finance pages, to an unknown domain from 14 computers.",
     briefing: {
       source: "Web proxy (with TLS inspection) and browser management",
       rule: "Many page-sized uploads to a new domain from a browser add-on",
       looksFor:
         "Fires when browsers send over 100 page-sized uploads to a domain no company software uses. Add-ons that can read every page pass on whatever the user sees, and they update themselves without the company noticing.",
       assets: [
-        { name: "AI Page Summarizer", kind: "Service", role: "Browser add-on, not on the approved list" },
+        { name: "AI Page Summarizer", kind: "Service", role: "Browser add-on named in the alert" },
         { name: "api.sumly-ai.test", kind: "Address", role: "Domain that receives the page text" },
-        { name: "l.gupta", kind: "User", role: "Finance analyst, one of the six Finance users with the add-on" },
+        { name: "l.gupta", kind: "User", role: "Finance analyst" },
       ],
       askFirst: [
         "What exactly is the add-on sending, and to where?",

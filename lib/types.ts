@@ -29,6 +29,8 @@ export type Alert = {
   difficulty: Difficulty;
   raisedAt: string;
   summary: string;
+  /** A few plain sentences: what fired, why it matters, and which evidence to open. Shown first on the case page. */
+  description?: string;
   /** One plain sentence saying what the student has to decide. Shown in a highlighted line on the alert page (Beginner alerts). */
   task?: string;
   briefing: Briefing;

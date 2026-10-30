@@ -12,9 +12,9 @@ import { toast } from "@/lib/toast";
 import LookupBox from "@/components/lookup/LookupBox";
 import SeverityBadge from "@/components/ui/SeverityBadge";
 import FeedbackPanel from "./FeedbackPanel";
+import HintSection from "./HintSection";
 import LogLinks from "./LogLinks";
 import RelatedAlerts from "./RelatedAlerts";
-import StepPanels, { StepTracker } from "./StepPanels";
 import { LOG_LINKS } from "@/content/logLinks";
 import { topicSlug } from "@/content/playbooks";
 import { TOPIC_COLOR } from "@/lib/topics";
@@ -107,13 +107,15 @@ const ASSET_STYLE: Record<BriefingData["assets"][number]["kind"], string> = {
 };
 
 /** Plain-English context for the alert card: who raised it, what the rule looks for, who is involved, what to ask first. */
-function BriefingBits({ b, topic }: { b: BriefingData; topic: Alert["topic"] }) {
+function BriefingBits({ b, topic, showLooksFor, openQuestions }: { b: BriefingData; topic: Alert["topic"]; showLooksFor: boolean; openQuestions: boolean }) {
   return (
     <div className="space-y-4 border-t border-line/60 pt-4 text-sm">
-      <p>
-        <span className="text-muted">What this rule looks for: </span>
-        {b.looksFor}
-      </p>
+      {showLooksFor && (
+        <p>
+          <span className="text-muted">What this rule looks for: </span>
+          {b.looksFor}
+        </p>
+      )}
       <ul className="space-y-2">
         {b.assets.map((a) => (
           <li key={a.name} className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -123,7 +125,7 @@ function BriefingBits({ b, topic }: { b: BriefingData; topic: Alert["topic"] }) 
           </li>
         ))}
       </ul>
-      <details open className="rounded-lg border border-line bg-canvas/60 px-4 py-3">
+      <details open={openQuestions} className="rounded-lg border border-line bg-canvas/60 px-4 py-3">
         <summary className="cursor-pointer font-medium marker:text-accent">Questions to ask first</summary>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted">
           {b.askFirst.map((q) => (
@@ -393,6 +395,7 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
   const alertBlock = gated
     ? alert.evidence.find((b) => b.title === "Alert details")
     : (alert.evidence.find((b) => b.title === "Alert details") ?? alert.evidence.find((b) => b.kind === "fields"));
+  const hasRuleRow = alertBlock?.kind === "fields" && alertBlock.rows.some((r) => r.label.toLowerCase() === "rule");
 
   return (
     <div className="space-y-6">
@@ -412,7 +415,7 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
           </span>
         </div>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{alert.title}</h1>
-        <p className="mt-2 max-w-3xl text-sm text-muted">{alert.summary}</p>
+        {(alert.difficulty === "Beginner" || !alert.description) && <p className="mt-2 max-w-3xl text-sm text-muted">{alert.summary}</p>}
         {alert.task && (
           <p className="mt-3 max-w-3xl rounded-lg border border-accent/40 bg-accent/10 px-4 py-2.5 text-sm">
             <span className="font-semibold text-accent">Your task: </span>
@@ -475,7 +478,6 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
         </div>
       )}
 
-      {(record || isActive) && <StepTracker alert={alert} opened={opened} active={isActive} closed={Boolean(record)} />}
 
       {record && <FeedbackPanel record={record} />}
 
@@ -483,30 +485,43 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
         <>
           <Section n={1} title="The alert">
             <div className="space-y-4">
-              <dl className="grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
-                <div className="grid grid-cols-[7rem_1fr] gap-2">
+              <dl className="divide-y divide-line/60 text-sm">
+                {alert.description && (
+                  <div className="grid gap-1 pb-2.5 sm:grid-cols-[10rem_1fr]">
+                    <dt className="text-muted">Description</dt>
+                    <dd className="leading-relaxed">{alert.description}</dd>
+                  </div>
+                )}
+                <div className={`grid gap-1 sm:grid-cols-[10rem_1fr] ${alert.description ? "py-2.5" : "pb-2.5"}`}>
                   <dt className="text-muted">Raised by</dt>
-                  <dd className="font-medium">{alert.briefing.source}</dd>
+                  <dd>{alert.briefing.source}</dd>
                 </div>
-                <div className="grid grid-cols-[7rem_1fr] gap-2">
-                  <dt className="text-muted">Rule</dt>
-                  <dd className="font-mono text-[13px]">{alert.briefing.rule}</dd>
-                </div>
+                {!hasRuleRow && (
+                  <div className="grid gap-1 py-2.5 sm:grid-cols-[10rem_1fr]">
+                    <dt className="text-muted">Rule</dt>
+                    <dd className="font-mono text-[13px]">{alert.briefing.rule}</dd>
+                  </div>
+                )}
               </dl>
               {alertBlock && (
-                <div className="border-t border-line/60 pt-4">
+                <div className="-mt-3 border-t border-line/60 pt-2.5">
                   <EvidenceBody block={alertBlock} />
                 </div>
               )}
-              <BriefingBits b={alert.briefing} topic={alert.topic} />
+              <BriefingBits b={alert.briefing} topic={alert.topic} showLooksFor={!alert.description} openQuestions={alert.difficulty === "Beginner"} />
             </div>
           </Section>
 
-          <Section n={2} title="Look at the evidence">
-            <EvidenceTabs alert={alert} opened={opened} isActive={isActive} hideEvidence={hideEvidence} alertBlock={alertBlock} />
-          </Section>
+          {isActive ? (
+            <HintSection alertId={alert.id} n={2} title="Look at the evidence">
+              <EvidenceTabs alert={alert} opened={opened} isActive={isActive} hideEvidence={hideEvidence} alertBlock={alertBlock} />
+            </HintSection>
+          ) : (
+            <Section n={2} title="Look at the evidence">
+              <EvidenceTabs alert={alert} opened={opened} isActive={isActive} hideEvidence={hideEvidence} alertBlock={alertBlock} />
+            </Section>
+          )}
 
-          {isActive && <StepPanels alertId={alert.id} />}
 
           {isActive && (
             <Section n={3} title="Your report">
