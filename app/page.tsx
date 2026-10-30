@@ -156,7 +156,9 @@ export default function Home() {
       <footer className="foot">
         <div className="wrap">
           <p>Fictional company. Nothing here is real. Visits are counted anonymously, with no name or email.</p>
-          <p>ShiftLab</p>
+          <p>
+            <Link href="/privacy">Privacy</Link> · ShiftLab
+          </p>
         </div>
       </footer>
     </SiteShell>

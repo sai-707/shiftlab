@@ -19,7 +19,7 @@
 | Secrets model | Answer keys and grading code run on the server only. Convention, not a framework guard (see §11) |
 | Build status | `npm run build` was run on the author's machine on 2026-10-27 and finished with the route table (static and partial-prerender legend); the top of the output was not inspected for warnings. Dev server also returned 200 for all 38 alert routes. **`npm run lint` has NOT been run** |
 | Tests in repo | **None.** Validation was done with throw-away scripts outside the repo (see §15) |
-| Deployed | **Yes (2026-10-30), free:** Cloudflare Workers via the OpenNext adapter, at `https://shiftlab.saidaswadkar14.workers.dev`. Code is in a private GitHub repo (`sai-707/shiftlab`, branch `main`); every push rebuilds and redeploys (§16). No custom domain yet |
+| Deployed | **Yes (2026-10-30), free:** Cloudflare Workers via the OpenNext adapter, at `https://shiftlab.blueteam-labs.workers.dev`. Code is in a private GitHub repo (`sai-707/shiftlab`, branch `main`); every push rebuilds and redeploys (§16). No custom domain yet |
 
 **The one rule that explains the whole architecture:** *the browser may see questions, never answers.* Everything below (server actions, `content/*-keys.ts`, `lib/grade.ts`, `lib/review.ts`) exists to enforce it.
 
@@ -777,7 +777,7 @@ Coverage that was validated for all 38 alerts:
 1. Real-world links for the 11 alerts lacking them.
 2. Landing page and login/signup are **built**, and real accounts with roles work (§5c, §5d). The admin area and analytics are built (§5e). Saving progress to the account with RLS and the one-active-case index is **built** (§5f). Still to build: server-side gating of "sources opened" and server-only score writes.
 3. Admin area (`app/admin`, role checked on server) with analytics: **built** (§5e).
-4. Deploy is **done** (Cloudflare Workers, §16). Still to do: a custom domain (buy one; the workers.dev address contains part of the owner's email), README with screenshots.
+4. Deploy is **done** (Cloudflare Workers, §16). Still to do: a custom domain (optional; the workers.dev address is now `shiftlab.blueteam-labs.workers.dev`, changed from one containing the owner's name on 2026-10-30), README with screenshots.
 5. **Stage-2 AI review:** provider-agnostic, free-tier LLM, per-user daily limit, server-side key, treat student text as data, never affects the score.
 6. Optional live threat-intel mode; graphify knowledge graph.
 7. Ideas already proposed: daily challenge + streak; weekly real-incident mini-case; write-the-query challenge; "automation candidate" after-action question; ATT&CK heatmap; public profile page.
@@ -799,3 +799,10 @@ Coverage that was validated for all 38 alerts:
 ## 20. Appendix: file sizes (bytes, approx.)
 
 `content/alerts.ts` 155,051 · `review-keys.ts` 136,991 · `answer-keys.ts` 43,881 · `logs.ts` 27,366 · `realworld.ts` 25,360 · `playbooks.ts` 17,095 · `CaseWorkspace.tsx` 16,864 · `DashboardView.tsx` 15,424 · `intel.ts` 11,702 · `ShiftView.tsx` 10,652 · `related.ts` 10,116 · `ToolsView.tsx` 10,038 · `MailboxView.tsx` 9,813 · `QueueView.tsx` 9,427 · `LogsView.tsx` 8,880 · `aicheck.ts` 7,621 · `afteraction-keys.ts` 7,029 · `AiCheckView.tsx` 6,639.
+
+## 20. Quick fixes after the live audit (2026-10-30)
+
+- Added: `app/not-found.tsx` (styled 404), `app/error.tsx` (crash screen), `app/privacy/page.tsx` (plain-language privacy page, linked from the landing footer; update it whenever something new is stored), `app/robots.ts`, `app/sitemap.ts`, `public/og.png` (1200x630 share image, original), link-preview metadata in `app/layout.tsx`, security headers in `next.config.ts` (`nosniff`, frame deny, referrer policy, permissions policy, HSTS).
+- `lib/site.ts` holds `SITE_URL` (the workers.dev address). Change it when a custom domain is added.
+- Not done on purpose: Content-Security-Policy (needs report-only testing), rate limits, custom SMTP.
+- Cloudflare's managed robots.txt may be served in front of ours; check `/robots.txt` after deploy.

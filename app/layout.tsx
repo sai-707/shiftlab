@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { Suspense } from "react";
+import { SITE_URL } from "@/lib/site";
 import Tracker from "@/components/analytics/Tracker";
 import "./globals.css";
 
@@ -15,9 +16,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "ShiftLab", template: "%s · ShiftLab" },
   description:
     "Practise the SOC Level 1 analyst job on fictional alerts: investigate, triage, report, and get coached.",
+  openGraph: { title: "ShiftLab", description: "Practise the SOC Level 1 analyst job on fictional alerts.", type: "website", images: [{ url: "/og.png", width: 1200, height: 630, alt: "ShiftLab" }] },
+  twitter: { card: "summary_large_image", images: ["/og.png"] },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
