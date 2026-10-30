@@ -7,7 +7,7 @@ A free web simulator for people training to be SOC (Security Operations Centre) 
 ## Stack
 
 - Now: Next.js (App Router) + TypeScript + Tailwind CSS v4, npm. Supabase Auth for accounts (`profiles` table with a role).
-- Saved progress (`cases` + `saved_state`, migration 0005, synced by `lib/sync.ts`) and analytics (`events` + `/admin`) exist. Hosting plan: Cloudflare + Supabase.
+- Saved progress (`cases` + `saved_state`, migration 0005, synced by `lib/sync.ts`) and analytics (`events` + `/admin`) exist. Hosted on Cloudflare Workers (OpenNext adapter) with Supabase; a push to `main` on the private GitHub repo redeploys (details in BRAIN.md §16).
 
 ## Rules
 

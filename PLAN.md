@@ -17,7 +17,7 @@ Step 1 done: sign up, sign in, sign out, password reset, `profiles` table with a
 Admin role, events table and the owner dashboard are built. Not built: a separate `/admin/login` entrance, rate-limited event writes, automatic purge of old events.
 
 ## Phase 5: deploy
-Vercel, then custom domain.
+Done 2026-10-30: Cloudflare Workers (free) + Supabase, deployed from the private GitHub repo on every push to `main`, at the workers.dev address. Not done: a custom domain, custom SMTP for emails.
 
 ## Phase 6: portfolio polish
 README with screenshots, demo GIF, architecture diagram.

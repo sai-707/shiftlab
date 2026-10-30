@@ -19,7 +19,7 @@
 | Secrets model | Answer keys and grading code run on the server only. Convention, not a framework guard (see §11) |
 | Build status | `npm run build` was run on the author's machine on 2026-10-27 and finished with the route table (static and partial-prerender legend); the top of the output was not inspected for warnings. Dev server also returned 200 for all 38 alert routes. **`npm run lint` has NOT been run** |
 | Tests in repo | **None.** Validation was done with throw-away scripts outside the repo (see §15) |
-| Deployed | **No.** Local dev only. Vercel is the plan |
+| Deployed | **Yes (2026-10-30), free:** Cloudflare Workers via the OpenNext adapter, at `https://shiftlab.saidaswadkar14.workers.dev`. Code is in a private GitHub repo (`sai-707/shiftlab`, branch `main`); every push rebuilds and redeploys (§16). No custom domain yet |
 
 **The one rule that explains the whole architecture:** *the browser may see questions, never answers.* Everything below (server actions, `content/*-keys.ts`, `lib/grade.ts`, `lib/review.ts`) exists to enforce it.
 
@@ -721,7 +721,12 @@ Coverage that was validated for all 38 alerts:
 ## 16. Deployment and operations
 
 - **Today:** `npm run dev` on the author's machine (`allowedDevOrigins` set for phone testing over LAN).
-- **Plan:** Vercel + custom domain. Needs the two `NEXT_PUBLIC_SUPABASE_*` env vars in Vercel, and the deployed URL added to Supabase's Redirect URLs. Turn on "Confirm email" with real SMTP first.
+- **Live setup (2026-10-30):** Cloudflare Workers (free plan) + Supabase. Code: private GitHub repo `sai-707/shiftlab`, branch `main`. A push to `main` triggers Cloudflare Workers Builds, which runs the build command `npx opennextjs-cloudflare build` and the deploy command `npx opennextjs-cloudflare deploy`. The Worker is named `shiftlab`, and the name must match `name` in `wrangler.jsonc`.
+- **Files for this:** `wrangler.jsonc` (Worker name, `nodejs_compat`, assets), `open-next.config.ts` (uses the free static-assets incremental cache; without it the home page hung with "Worker's code had hung"), `public/_headers` (long cache for `/_next/static`), `package.json` scripts `preview`, `deploy`, `upload`. `.gitignore` has `.open-next`, `.wrangler`, `.dev.vars`. `npm run preview` runs the Workers build locally at `127.0.0.1:8787`.
+- **Variables:** `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are set twice in the Cloudflare dashboard: as build variables (inlined into the browser code) and as runtime secrets (read by server code). Build variables are not visible at runtime. Never add a secret or service_role key.
+- **Supabase:** Authentication > URL Configuration has Site URL = the workers.dev address and Redirect URLs include it plus `http://localhost:3000/**`.
+- **Verified live:** sign up, sign in, dashboard and all signed-in pages return 200; `proxy.ts` works on Workers; a closed case saved to `cases` loaded on a fresh origin. **Free-plan limits (checked 2026-10-30):** 100,000 requests a day, 10 ms CPU per request. Not verified: password-reset emails, custom domain (shiftlab.io was added to Cloudflare by mistake, is not owned, and was meant to be removed). Turn on "Confirm email" with real SMTP before sharing widely.
+- **Future changes:** `git add .`, `git commit -m "..."`, `git push`. Cloudflare redeploys in a few minutes.
 - **Build-time network need:** `next/font/google` downloads Inter/JetBrains Mono at build. Offline CI needs `next/font/local`.
 - **Observability:** the owner dashboard (`/admin`, §5e) counts visits, sign-ups and closed cases. Server actions still don't log, except error codes from `track` and the admin functions. Never log student report text.
 - **Backups/data:** accounts, profiles and events live in Supabase (the free plan has no point-in-time backup; the 500 MB limit is why old events should be purged, §5e). Progress lives in `cases` and `saved_state` with the one-active-case index in the database (§5f). Still to do: server-side gating of "sources opened", and server-only score writes before any leaderboard.
@@ -770,7 +775,7 @@ Coverage that was validated for all 38 alerts:
 1. Real-world links for the 11 alerts lacking them.
 2. Landing page and login/signup are **built**, and real accounts with roles work (§5c, §5d). The admin area and analytics are built (§5e). Saving progress to the account with RLS and the one-active-case index is **built** (§5f). Still to build: server-side gating of "sources opened" and server-only score writes.
 3. Admin area (`app/admin`, role checked on server) with analytics: **built** (§5e).
-4. Vercel deploy and custom domain; README with screenshots.
+4. Deploy is **done** (Cloudflare Workers, §16). Still to do: a custom domain (buy one; the workers.dev address contains part of the owner's email), README with screenshots.
 5. **Stage-2 AI review:** provider-agnostic, free-tier LLM, per-user daily limit, server-side key, treat student text as data, never affects the score.
 6. Optional live threat-intel mode; graphify knowledge graph.
 7. Ideas already proposed: daily challenge + streak; weekly real-incident mini-case; write-the-query challenge; "automation candidate" after-action question; ATT&CK heatmap; public profile page.
