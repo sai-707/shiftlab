@@ -827,7 +827,7 @@ export const ALERTS: Alert[] = [
   // ───────────────────────── Insider ─────────────────────────
   {
     id: "SL-1012",
-    title: "1.8 GB uploaded to a personal file-sharing site by a leaving employee",
+    title: "1.8 GB uploaded to a personal file-sharing site after hours",
     topic: "Insider",
     severity: "high",
     difficulty: "Intermediate",
@@ -960,7 +960,7 @@ export const ALERTS: Alert[] = [
   },
   {
     id: "SL-1014",
-    title: "Mailbox signed in from a new address using old-style mail access",
+    title: "Mailbox signed in from an address it has never used",
     topic: "Cloud",
     severity: "high",
     difficulty: "Intermediate",
@@ -1203,7 +1203,7 @@ export const ALERTS: Alert[] = [
   },
   {
     id: "SL-1017",
-    title: "Link to a fake Microsoft sign-in page was opened, then reported",
+    title: "Link to a Microsoft-style sign-in page was opened, then reported",
     topic: "Phishing",
     severity: "medium",
     difficulty: "Intermediate",
@@ -1529,7 +1529,7 @@ export const ALERTS: Alert[] = [
   },
   {
     id: "SL-1021",
-    title: "Admin console session used from a second address, with no sign-in prompt",
+    title: "Admin session in use from two different addresses",
     topic: "Cloud",
     severity: "critical",
     difficulty: "Hard",
@@ -2512,7 +2512,7 @@ export const ALERTS: Alert[] = [
   },
   {
     id: "SL-1031",
-    title: "Support chatbot told to ignore its rules, then printed records of 41 other customers",
+    title: "Support chatbot session looked up 41 different customer accounts",
     topic: "AI",
     severity: "high",
     difficulty: "AI Era",
@@ -2610,7 +2610,7 @@ export const ALERTS: Alert[] = [
   },
   {
     id: "SL-1032",
-    title: "Finance clerk got a call from the 'CFO' asking for an urgent $186,400 payment to a new supplier",
+    title: "Finance clerk reports a call from the CFO asking for an urgent $186,400 payment to a new supplier",
     topic: "AI",
     severity: "critical",
     difficulty: "AI Era",
@@ -2702,7 +2702,7 @@ export const ALERTS: Alert[] = [
   },
   {
     id: "SL-1033",
-    title: "Flawless invoice email to 40 staff passed every check, three clicked and one signed in to a fake page",
+    title: "Invoice email to 40 staff passed every check, and three people clicked its link",
     topic: "Phishing",
     severity: "high",
     difficulty: "AI Era",

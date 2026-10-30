@@ -34,7 +34,7 @@ export default function HintSection({ alertId, n, title, children }: { alertId: 
             onClick={toggle}
             aria-expanded={open}
             aria-controls={panelId}
-            className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-3.5 text-sm font-semibold ${
+            className={`inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-3.5 text-sm font-semibold ${
               open ? "border-medium bg-medium/10 text-medium" : "border-line bg-raised hover:border-medium"
             }`}
           >

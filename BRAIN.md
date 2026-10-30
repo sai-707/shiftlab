@@ -18,7 +18,7 @@
 | Content | 38 alerts in 4 levels, all fictional (`.test` domains, RFC 5737 documentation IPs) |
 | Secrets model | Answer keys and grading code run on the server only. Convention, not a framework guard (see §11) |
 | Build status | `npm run build` was run on the author's machine on 2026-10-27 and finished with the route table (static and partial-prerender legend); the top of the output was not inspected for warnings. Dev server also returned 200 for all 38 alert routes. **`npm run lint` has NOT been run** |
-| Tests in repo | **None.** Validation was done with throw-away scripts outside the repo (see §15) |
+| Tests in repo | **Yes, content and safety checks:** `npm test` (11 checks in `tests/`, plain Node, no packages) plus a GitHub Action. UI, grading and sync checks were still done with throw-away scripts outside the repo (see §15) |
 | Deployed | **Yes (2026-10-30), free:** Cloudflare Workers via the OpenNext adapter, at `https://shiftlab.blueteam-labs.workers.dev`. Code is in a private GitHub repo (`sai-707/shiftlab`, branch `main`); every push rebuilds and redeploys (§16). No custom domain yet |
 
 **The one rule that explains the whole architecture:** *the browser may see questions, never answers.* Everything below (server actions, `content/*-keys.ts`, `lib/grade.ts`, `lib/review.ts`) exists to enforce it.
@@ -43,9 +43,9 @@
 ## 2. Tech stack, configuration and gotchas
 
 ### 2.1 Dependencies (`package.json`)
-- Runtime: `next@16.4.3`, `react@19.3.0`, `react-dom@19.3.0`. **Nothing else.** No UI kit, no state library, no test runner, no DB client.
+- Runtime: `next@16.4.3`, `react@19.3.0`, `react-dom@19.3.0`, plus the Supabase client packages. No UI kit, no state library, no test framework (tests use Node's built-in runner).
 - Dev: `tailwindcss@^4`, `@tailwindcss/turbopack@^4`, `typescript@^5`, `@types/node@^20`, `eslint@^9`, `eslint-config-next@16.4.3`.
-- Scripts: `dev`, `build`, `start`, `lint`. No `test`, no `typecheck`.
+- Scripts: `dev`, `build`, `start`, `lint`, `test` (Node 22.6+, runs `tests/*.test.mjs` with `--experimental-strip-types`), `preview`, `deploy`, `upload`. No `typecheck`.
 
 ### 2.2 Config files
 | File | What matters |
@@ -55,7 +55,7 @@
 | `eslint.config.mjs` | `eslint-config-next` flat config |
 | `.gitignore` | ignores `.env*`, `.next`, `next-env.d.ts` |
 | `.claude/settings.json` | PreToolUse hooks for **graphify** (a knowledge-graph tool). They call `C:/Users/Admin/AppData/Local/Programs/Python/Python312/Scripts/graphify.EXE` (Windows-specific path). `graphify-out/` does not exist yet |
-| `README.md` | Still the default create-next-app text. **Not ShiftLab docs** |
+| `README.md` | Real project README (what it is, live link, screenshots in `docs/`, how to run, tests). Update it when features change |
 
 ### 2.3 Next.js 16 gotchas (READ `node_modules/next/dist/docs/` before changing framework code — `AGENTS.md`)
 - **`cacheComponents: true`** means dynamic data must be read inside `<Suspense>` or the route cannot prerender. This is why:
@@ -699,7 +699,7 @@ Add the column to the SQL in `admin_overview` (migration `0004_...`, never edit 
 
 ## 15. Testing and verification
 
-**There are no automated tests in the repo.** What exists was done manually, with scripts that live in the author's sandbox (not committed): run with `node --experimental-strip-types`.
+**In the repo:** `npm test` runs `tests/alerts.test.mjs` (alert content rules, Beginner pointers, no spoilers in Hard/AI Era titles and asset roles), `hints.test.mjs`, `keys.test.mjs` (every alert has an answer key and review key) and `boundary.test.mjs` (no client file can import an answer key or `lib/grade.ts` / `lib/review.ts`). They run on every push (`.github/workflows/test.yml`). **Not in the repo:** the grading, sync, guest-limit and UI checks below were done manually, with scripts that live in the author's sandbox (not committed): run with `node --experimental-strip-types`.
 Coverage that was validated for all 38 alerts:
 - model report → 100 (SL-1037 initially 95; fixed)
 - generic text → ≤ 40
@@ -824,3 +824,4 @@ Coverage that was validated for all 38 alerts:
 - Follow-up 4 (same day, owner asked for the reference "description then labelled fields" format on every alert): new optional field `Alert.description` (3 to 4 plain sentences: what fired and why it matters, then which evidence tabs to open and what to find out; never the verdict). It is written for all 38 alerts and shown as the first row in section 1 ("Description"), above "Raised by" and the alert fields. When a description exists the separate "What this rule looks for" line is hidden (the description replaces it; `looksFor` stays in the data). The short `summary` still feeds the page headline and the queue cards. When adding an alert: write `description` in the same style and name the evidence tabs by their titles. Only the structure of the reference format was reused; all wording is ShiftLab's own.
 - Follow-up 5 (same day, owner: Intermediate and Hard details should be easy to read but still need judgement): alert details are written **by level**. Beginner = guided (names the evidence tabs to open, explains each term, has the "Your task" line, summary shown, "Questions to ask first" open). Intermediate, Hard and AI Era = neutral: the `description` states only what the tool saw (who, what, when, counts), explains jargon once in brackets, names no tabs, gives no hints, and ends on the decision to make ("Decide whether... and what to do first"); the header summary line is hidden when a description exists (the short `summary` stays in the data for queue cards, rewritten as a neutral one-liner); "Questions to ask first" starts collapsed. Asset chip roles on those levels were rewritten to be neutral (no findings such as "fake page" or "not on the approved list"); the ShieldSense agent chip was removed from SL-1030 because it gave away the answer. Rule for new alerts: asset roles say what a thing is, never what the investigation will find. Known leftover: some Hard and AI Era titles still state a finding (for example SL-1033 "...signed in to a fake page"); not changed yet.
 - Follow-up 6 (same day): **free hint toggle** on every active alert. `content/hints.ts` holds three hints per alert (`HINTS[id] = [think, look, find]`: a question to ask, which tab to open, the fact to look for; never the verdict). `components/case/HintSection.tsx` is the "2 Look at the evidence" card with a lightbulb "Hint" button in its header (aria-expanded, min 44px); opening shows hint 1, "Show next hint" reveals the next, "No more hints" at 3. Not shown on closed cases. The count per alert is kept in `lib/hintsUsed.ts` (`shiftlab.hints.v1`, browser-only like `stepsProgress`, reset by `lib/sync.ts` on sign-out/owner change/reset) and `FeedbackPanel` shows "Hints used: n of 3. Hints do not change your score." Hints are free on purpose (owner decision). shortcut: the hint text ships in the page code; fine because hints are free. When adding an alert: add its three hints and name tabs exactly as the tab labels (title minus a trailing "(...)"); scratchpad test `sv/t-hints.js` checks that every alert has hints, every tab named exists, and no hint states a verdict.
+- Follow-up 7 (same day): seven titles that stated the finding were made neutral (SL-1012, 1014, 1017, 1021, 1031, 1032, 1033; the test `alerts.test.mjs` now blocks words like fake, malicious, stolen, hijack, attacker in Hard/AI Era titles and asset roles). Phone-width check (390 px) of the one-page layout and hint panel: no horizontal overflow; the hint button no longer wraps. Added `tests/` + `npm test` + `.github/workflows/test.yml`, a real `README.md` and `docs/` screenshots (made with the browser test harness, so they show the case page without the app sidebar).
