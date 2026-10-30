@@ -1,0 +1,306 @@
+@import "tailwindcss";
+
+/* ShiftLab theme: night-shift control room. Colours are tokens so pages use
+   bg-panel, text-muted, border-line, text-critical and so on, never raw hex. */
+@theme static {
+  --color-canvas: #0e1116;
+  --color-void: #06080b; /* the public pages (landing, login) sit on this, darker than the app canvas */
+  --color-panel: rgb(21 26 34 / 0.8); /* slightly see-through so the threat map shows through cards */
+  --color-raised: #1c232d;
+  --color-line: #2a3340;
+  --color-ink: #e6eaf0;
+  --color-muted: #8b96a5;
+  --color-accent: #22d3ee;
+
+  /* severity */
+  --color-critical: #f43f5e;
+  --color-high: #fb923c;
+  --color-medium: #facc15;
+  --color-low: #60a5fa;
+
+  /* feedback */
+  --color-correct: #34d399;
+  --color-missed: #f87171;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(60rem 28rem at 85% -8%, rgb(34 211 238 / 0.08), transparent 60%),
+    radial-gradient(40rem 30rem at -8% 108%, rgb(167 139 250 / 0.06), transparent 60%),
+    var(--color-canvas);
+  background-attachment: fixed;
+  color: var(--color-ink);
+}
+
+::selection {
+  background: rgb(34 211 238 / 0.3);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+html {
+  scrollbar-color: var(--color-line) transparent;
+}
+
+/* gentle entrance for dashboard cards; switched off for people who prefer less motion */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.4s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+}
+
+/* ---- interactions: shared effects used across the app ---- */
+@property --a {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-angle {
+  to {
+    --a: 360deg;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+@keyframes grow {
+  from {
+    width: 0;
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(30px) scale(0.96);
+  }
+}
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+@keyframes pal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* buttons squeeze when pressed. Use instead of transition-* on the same element */
+.press {
+  transition-property: color, background-color, border-color, box-shadow, opacity, scale;
+  transition-duration: 0.18s;
+}
+.press:not(:disabled):active {
+  scale: 0.96;
+}
+
+/* main call-to-action: a light sweeps across on hover */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.5) 50%, transparent 70%);
+  translate: -120% 0;
+  pointer-events: none;
+}
+.btn-shine:hover::after {
+  translate: 120% 0;
+  transition: translate 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* secondary button: a point of light travels round the border */
+.btn-glow {
+  position: relative;
+  isolation: isolate;
+  border-color: transparent;
+}
+.btn-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--a), transparent 0 55%, var(--color-accent) 80%, transparent);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin-angle 3.2s linear infinite;
+  pointer-events: none;
+}
+
+.spinner {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -0.1em;
+}
+
+/* cards: a soft light and a glowing edge follow the pointer (set by components/layout/Interactions) */
+.spot {
+  position: relative;
+  --mx: 50%;
+  --my: 50%;
+  transition:
+    translate 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s;
+}
+.spot:hover {
+  translate: 0 -2px;
+}
+.spot::before,
+.spot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.spot::before {
+  background: radial-gradient(240px circle at var(--mx) var(--my), rgb(34 211 238 / 0.12), transparent 65%);
+}
+.spot::after {
+  padding: 1px;
+  background: radial-gradient(170px circle at var(--mx) var(--my), rgb(34 211 238 / 0.85), transparent 65%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.spot:hover::before,
+.spot:hover::after {
+  opacity: 1;
+}
+
+.row-in {
+  animation: row-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.grow {
+  animation: grow 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.pal-in {
+  animation: pal-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fade-in {
+  animation: fade-in 0.2s ease-out both;
+}
+
+/* page content makes room for the sidebar, which can shrink to a rail (see components/layout/Sidebar) */
+.app-main {
+  transition: padding-left 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (min-width: 48rem) {
+  .app-main {
+    padding-left: var(--rail, 15rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-glow::before,
+  .row-in,
+  .grow,
+  .pal-in,
+  .fade-in,
+  .spinner {
+    animation: none;
+  }
+  .spot:hover {
+    translate: none;
+  }
+  .app-main,
+  .press,
+  .btn-shine:hover::after {
+    transition: none;
+  }
+}
+
+/* ---- Intel check: scanning radar and the filling score ring ---- */
+.radar {
+  position: relative;
+  width: 5.5rem;
+  height: 5.5rem;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-raised) 0 30%, transparent 31%);
+}
+.radar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(from 0deg, transparent 0 70%, color-mix(in srgb, var(--color-accent) 55%, transparent));
+  animation: spin 1s linear infinite;
+}
+.radar::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+.ring-arc {
+  transition: stroke-dasharray 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .radar::before {
+    animation: none;
+  }
+  .ring-arc {
+    transition: none;
+  }
+}
