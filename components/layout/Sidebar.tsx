@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { HUB_PATHS } from "@/content/practiceHub";
 import { uiStore } from "@/lib/ui";
+import { FEEDBACK_HREF, FEEDBACK_URL } from "@/lib/site";
 
 const ICONS: Record<string, ReactNode> = {
   dashboard: (
@@ -224,7 +225,19 @@ export default function Sidebar() {
       </nav>
 
       <div className={`hidden items-center gap-2 px-3 py-3 md:flex ${collapsed ? "justify-center" : "justify-between"}`}>
-        {!collapsed && <p className="px-2 text-xs text-muted">Every alert in ShiftLab is fictional.</p>}
+        {!collapsed && (
+          <div className="px-2 text-xs text-muted">
+            <p>Every alert in ShiftLab is fictional.</p>
+            <a
+              href={FEEDBACK_HREF}
+              target={FEEDBACK_URL ? "_blank" : undefined}
+              rel="noopener noreferrer"
+              className="mt-1 inline-block text-accent hover:underline"
+            >
+              Send feedback
+            </a>
+          </div>
+        )}
         <button
           type="button"
           onClick={() => uiStore.set({ collapsed: !collapsed })}

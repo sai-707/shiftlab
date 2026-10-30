@@ -4,6 +4,7 @@ import AlertDemo from "@/components/site/AlertDemo";
 import DottedWordmark from "@/components/site/DottedWordmark";
 import SiteShell from "@/components/site/SiteShell";
 import { START_HREF } from "@/components/site/links";
+import { FEEDBACK_HREF, FEEDBACK_URL } from "@/lib/site";
 
 // Landing page. Public, outside the (app) layout. Do not print an alert count here: the number grows.
 // The tagline is the h1 below. Alternatives that were considered: "Be the analyst on shift.", "Train for the night shift.",
@@ -157,7 +158,11 @@ export default function Home() {
         <div className="wrap">
           <p>Fictional company. Nothing here is real. Visits are counted anonymously, with no name or email.</p>
           <p>
-            <Link href="/privacy">Privacy</Link> · ShiftLab
+            <Link href="/privacy">Privacy</Link> ·{" "}
+            <a href={FEEDBACK_HREF} target={FEEDBACK_URL ? "_blank" : undefined} rel="noopener noreferrer">
+              Send feedback
+            </a>{" "}
+            · ShiftLab
           </p>
         </div>
       </footer>
