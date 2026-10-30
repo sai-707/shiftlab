@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
+import { setGuestMode } from "@/lib/progress";
 import { hydrate } from "@/lib/sync";
 
-/** Kicks off the one-time hydration that merges remote progress into local stores. */
-export function ProgressSyncClient({ userId }: { userId: string }) {
+/** Tells the progress layer whether this is a guest, and for a signed-in student kicks off the one-time merge of remote progress. */
+export function ProgressSyncClient({ userId }: { userId: string | null }) {
   useEffect(() => {
-    hydrate(userId);
+    setGuestMode(userId === null);
+    if (userId) hydrate(userId);
   }, [userId]);
   return null;
 }

@@ -65,11 +65,32 @@ export function useProgress(): Progress {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
+// Guests (no account) can close this many alerts, then are asked to sign up. Progress carries over when they do.
+// shortcut: the count lives in the browser, so a guest who clears site data gets a fresh allowance. Guests have no identity the server can count; fine for a portfolio demo.
+export const GUEST_LIMIT = 3;
+let guestMode = false; // set by ProgressSyncClient once the layout knows whether someone is signed in
+
+export function setGuestMode(v: boolean) {
+  if (guestMode === v) return;
+  guestMode = v;
+  listeners.forEach((l) => l());
+}
+
+export function guestLimitReached(): boolean {
+  return guestMode && Object.keys(getSnapshot().cases).length >= GUEST_LIMIT;
+}
+
+export function useGuestLimit(): boolean {
+  const p = useProgress();
+  const guest = useSyncExternalStore(subscribe, () => guestMode, () => false);
+  return guest && Object.keys(p.cases).length >= GUEST_LIMIT;
+}
+
 /** One active alert at a time, and closed alerts cannot be reopened. Also starts the case on the server for signed-in students. */
 export function assignAlert(alertId: string) {
   const p = getSnapshot();
   const alert = ALERTS.find((a) => a.id === alertId);
-  if (!alert || p.activeAlertId !== null || p.cases[alertId] || !isUnlocked(alert.difficulty, p.cases)) return;
+  if (!alert || p.activeAlertId !== null || p.cases[alertId] || !isUnlocked(alert.difficulty, p.cases) || guestLimitReached()) return;
   save({ ...p, activeAlertId: alertId });
   // Fire-and-forget: the server action is best-effort; local progress is already set.
   import("./sync").then((m) => m.syncAssign(alertId)).catch(() => {});

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 import { ALERTS, TOPICS, bySeverity } from "@/content/alerts";
 import { TOPIC_COLOR } from "@/lib/topics";
-import { assignAlert, useProgress } from "@/lib/progress";
+import { assignAlert, guestLimitReached, useProgress } from "@/lib/progress";
+import GuestLimit from "@/components/ui/GuestLimit";
 import { LEVELS, levelStates } from "@/lib/levels";
 import SeverityBadge from "@/components/ui/SeverityBadge";
 import Segmented from "@/components/ui/Segmented";
@@ -59,6 +60,10 @@ export default function QueueView() {
   );
 
   function assign(id: string) {
+    if (guestLimitReached()) {
+      toast("Create a free account to keep going");
+      return;
+    }
     assignAlert(id);
     toast(`${id} assigned to you`);
     router.push(`/alerts/${id}`);
@@ -66,6 +71,7 @@ export default function QueueView() {
 
   return (
     <div className="space-y-6">
+      <GuestLimit />
       <section className="rounded-2xl border border-line bg-panel">
         <h2 className="border-b border-line px-5 py-3 text-sm font-semibold">Assigned to you</h2>
         {active ? (

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition, type FormEvent } from "react";
 import { submitCase } from "@/app/actions";
-import { assignAlert, closeCase, useProgress } from "@/lib/progress";
+import { GUEST_LIMIT, assignAlert, closeCase, useGuestLimit, useProgress } from "@/lib/progress";
 import { isUnlocked } from "@/lib/levels";
 import { reportProblems } from "@/lib/reportRules";
 import { INTEL_SOURCE, MIN_SOURCES, isGated, openedCount, sourceBlocks } from "@/lib/sourceRules";
@@ -323,6 +323,7 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
 
 export default function CaseWorkspace({ alert }: { alert: Alert }) {
   const progress = useProgress();
+  const guestLimit = useGuestLimit();
   const record = progress.cases[alert.id];
   const isActive = progress.activeAlertId === alert.id;
   const otherActive = progress.activeAlertId !== null && !isActive;
@@ -377,6 +378,16 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
                 className="rounded-lg border border-line px-4 py-2 text-sm font-medium hover:border-accent hover:text-accent"
               >
                 Go to your alert
+              </Link>
+            </>
+          ) : guestLimit ? (
+            <>
+              <p className="text-sm">You have closed {GUEST_LIMIT} alerts as a guest. Create a free account to keep going. Your progress comes with you.</p>
+              <Link
+                href="/signup"
+                className="btn-shine press rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-canvas hover:shadow-[0_0_20px_-4px_rgb(34_211_238/0.7)]"
+              >
+                Create account
               </Link>
             </>
           ) : (
