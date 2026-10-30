@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { HUB_PATHS } from "@/content/practiceHub";
 import { uiStore } from "@/lib/ui";
-import { FEEDBACK_HREF, FEEDBACK_URL } from "@/lib/site";
+import FeedbackLink from "@/components/feedback/FeedbackLink";
 
 const ICONS: Record<string, ReactNode> = {
   dashboard: (
@@ -228,14 +228,7 @@ export default function Sidebar() {
         {!collapsed && (
           <div className="px-2 text-xs text-muted">
             <p>Every alert in ShiftLab is fictional.</p>
-            <a
-              href={FEEDBACK_HREF}
-              target={FEEDBACK_URL ? "_blank" : undefined}
-              rel="noopener noreferrer"
-              className="mt-1 inline-block text-accent hover:underline"
-            >
-              Send feedback
-            </a>
+            <FeedbackLink className="mt-1 inline-block text-accent hover:underline" />
           </div>
         )}
         <button

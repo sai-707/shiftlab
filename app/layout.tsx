@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { Suspense } from "react";
 import { SITE_URL } from "@/lib/site";
 import Tracker from "@/components/analytics/Tracker";
+import FeedbackWindow from "@/components/feedback/FeedbackWindow";
 import "./globals.css";
 
 const inter = Inter({
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={null}>
           <Tracker />
         </Suspense>
+        <FeedbackWindow />
       </body>
     </html>
   );

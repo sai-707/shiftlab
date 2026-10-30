@@ -20,9 +20,10 @@ Everything in it is fictional. The company is "Harbor & Pine Logistics", and eve
 - **Judge, don't guess:** on higher levels the report stays locked until you have opened enough sources, as a real analyst would.
 - **Free hints:** a lightbulb button gives three steps (think, look, find). Hints never give the verdict and never change your score.
 - **Write the report:** verdict, what happened, what is confirmed, what is still unknown, next action, and whether to escalate.
+- **Send feedback:** a short window (ratings and a few questions) on every page; the owner reads it in an admin page.
 - **Get coached:** a score with a breakdown, what you missed, a model report, and how the real world compares.
 - **Practise the tools:** intel check (look up an address, domain or file hash), log search, a mailbox to triage, shift handover, playbooks and a glossary.
-- **Keep your progress:** guests keep it in the browser. Signed-in users have it saved to their account.
+- **Keep your progress:** guests keep it in the browser. Signed-in users (email or Google) have it saved to their account.
 
 ![The evidence card with the free hint panel open](docs/hint.png)
 
@@ -65,7 +66,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your publishable (anon) key
 
 Use only the publishable key. Never put a secret or service-role key in this project.
 
-In the Supabase SQL editor, run the files in `supabase/migrations/` in order (`0001` to `0005`). Then:
+In the Supabase SQL editor, run the files in `supabase/migrations/` in order (`0001` to `0006`). Then:
 
 ```bash
 npm run dev      # http://localhost:3000

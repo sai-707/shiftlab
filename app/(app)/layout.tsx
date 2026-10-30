@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { ThreatMap } from "@/components/backgrounds/Background";
+import FeedbackLink from "@/components/feedback/FeedbackLink";
 import Interactions from "@/components/layout/Interactions";
 import ProgressSync from "@/components/layout/ProgressSync";
 import Sidebar from "@/components/layout/Sidebar";
@@ -44,7 +45,12 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </Suspense>
       </div>
       <main className="app-main">
-        <div className="mx-auto max-w-6xl px-4 py-8 md:px-8 md:pt-14">{children}</div>
+        <div className="mx-auto max-w-6xl px-4 py-8 md:px-8 md:pt-14">
+          {children}
+          <p className="mt-12 border-t border-line pt-4 text-center text-xs text-muted">
+            Found something confusing or unrealistic? <FeedbackLink className="text-accent hover:underline">Send feedback</FeedbackLink>
+          </p>
+        </div>
       </main>
     </div>
   );

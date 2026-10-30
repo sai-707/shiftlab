@@ -8,7 +8,7 @@ import UserMenu, { type MenuLink } from "@/components/ui/UserMenu";
 
 // The frame around every admin page, after the Dashboard 1 template (efferd.com/view/dashboard-1), but filling the whole window: a left
 // sidebar (brand, one nav group), a 56px header with the account menu at its right end, and one full-width rule under the header.
-// Admins get only these two pages, so the nav has two items. Below 1024px the sidebar becomes a row of tabs under the header.
+// Admins get only these three pages, so the nav has three items. Below 1024px the sidebar becomes a row of tabs under the header.
 // Who is signed in, Public site and Sign out live in the account menu (components/ui/UserMenu).
 
 type Who = { name: string; email: string; avatar: string };
@@ -16,9 +16,10 @@ type Who = { name: string; email: string; avatar: string };
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: "dashboard" },
   { href: "/admin/analytics", label: "Analytics", icon: "analytics" },
+  { href: "/admin/feedback", label: "Feedback", icon: "feedback" },
 ] as const;
 
-// The two pages are already in the sidebar (tabs on a phone), so the menu only adds the way out to the public site.
+// The pages are already in the sidebar (tabs on a phone), so the menu only adds the way out to the public site.
 const MENU: MenuLink[] = [{ label: "Public site", href: "/", icon: "home" }];
 
 function Brand() {

@@ -35,6 +35,12 @@ const PATHS = {
       <path d="M4 21a8 8 0 0 1 16 0" />
     </>
   ),
+  feedback: (
+    <>
+      <path d="M4 4h16v12H8l-4 4z" />
+      <path d="M8 9h8M8 12h5" />
+    </>
+  ),
   reports: (
     <>
       <path d="M7 3h7l5 5v13H7z" />

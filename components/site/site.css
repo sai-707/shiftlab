@@ -729,6 +729,18 @@ html[data-js] .site .rv.in {
 .site .foot p {
   margin: 0;
 }
+.site .foot-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.site .foot-link:hover {
+  color: var(--color-ink);
+  text-decoration: underline;
+}
 .site .auth {
   min-height: 100svh;
   display: grid;
