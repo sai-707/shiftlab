@@ -71,6 +71,12 @@ export default function GuestsView({ data, log, range, now }: { data: Guests; lo
     { label: "Signed in later", value: num(cur.signed_in_later), delta: NONE, hint: "Same browser, now signed in to an account" },
   ];
 
+  const sv = data.solvers;
+  const solvedBuckets: [string, number][] = [
+    ["1 alert", sv.one],
+    ["2 alerts", sv.two],
+    ["3 or more (reached the guest limit)", sv.three_plus],
+  ];
   const confirmed = Math.max(0, cur.new_accounts - cur.unconfirmed);
   const funnel: [string, number][] = [
     ["Guest visitors", cur.visitors],
@@ -151,6 +157,64 @@ export default function GuestsView({ data, log, range, now }: { data: Guests; lo
           )}
         </section>
 
+        <section className={`${cell} sm:col-span-2 lg:col-span-3`} aria-labelledby="gsolved-h">
+          <h2 id="gsolved-h" className={title}>Alerts solved by guests</h2>
+          <p className={sub}>
+            {num(sv.guests)} {sv.guests === 1 ? "guest" : "guests"} closed at least one alert in the last {range} days; {num(Math.max(0, cur.visitors - sv.guests))} visited without
+            closing one. A guest can close 3 alerts before being asked to make an account.
+          </p>
+          {sv.guests === 0 ? (
+            <Empty>
+              No guest has closed an alert with a browser id yet.
+              {sv.unattributed > 0 && ` ${num(sv.unattributed)} closed ${sv.unattributed === 1 ? "case was" : "cases were"} saved before the id was recorded, so they cannot be counted per guest.`}
+            </Empty>
+          ) : (
+            <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+              <ul className="space-y-3">
+                {solvedBuckets.map(([label, count]) => (
+                  <li key={label}>
+                    <div className="mb-1.5 flex items-baseline justify-between gap-3 text-sm">
+                      <span>{label}</span>
+                      <span className="tabular-nums text-muted">
+                        <span className="text-ink">{num(count)}</span> · {Math.round((100 * count) / sv.guests)}%
+                      </span>
+                    </div>
+                    <Bar pct={(100 * count) / sv.guests} />
+                  </li>
+                ))}
+              </ul>
+              <div className="min-w-0 overflow-x-auto">
+                <table className="w-full text-sm">
+                  <caption className="sr-only">Guests who closed the most alerts</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col" className={th}>Guest</th>
+                      <th scope="col" className={`${th} text-right`}>Alerts solved</th>
+                      <th scope="col" className={`${th} text-right`}>Avg score</th>
+                      <th scope="col" className={`${th} hidden sm:table-cell`}>Last closed</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sv.top.map((g) => (
+                      <tr key={g.guest + g.last_at}>
+                        <td className={`${td} font-mono text-xs text-muted`}>{g.guest}</td>
+                        <td className={`${td} text-right tabular-nums`}>{g.solved}</td>
+                        <td className={`${td} text-right tabular-nums ${scoreColor(g.avg_score)}`}>{g.avg_score}</td>
+                        <td className={`${td} hidden text-muted sm:table-cell`}>{ago(g.last_at, now)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          {sv.unattributed > 0 && sv.guests > 0 && (
+            <p className="mt-3 text-xs text-muted">
+              {num(sv.unattributed)} more closed {sv.unattributed === 1 ? "case was" : "cases were"} saved before the browser id was recorded, so they are in "Cases closed" above but not in this list.
+            </p>
+          )}
+        </section>
+
         <section className={`${cell} sm:col-span-2 lg:col-span-3`} aria-labelledby="gchart-h">
           <h2 id="gchart-h" className={title}>Visits and sign-ups, day by day</h2>
           <p className={sub}>
@@ -209,7 +273,7 @@ export default function GuestsView({ data, log, range, now }: { data: Guests; lo
       <p className="text-xs text-muted">
         {data.tracking_since ? `Counting guests since ${shortDay(data.tracking_since)}. ` : ""}
         A guest is a browser with no signed-in account, counted by a random id kept in that browser. Clearing site data, another browser or
-        a private window counts as a new guest. Closed cases are saved without that id, so they show a dash. Browsers an admin has signed in from are left out.
+        a private window counts as a new guest. Cases closed before the id was recorded show a dash. Browsers an admin has signed in from are left out.
       </p>
     </>
   );

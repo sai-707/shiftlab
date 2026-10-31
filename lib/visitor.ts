@@ -12,3 +12,12 @@ export function visitorId(): string | undefined {
     return undefined;
   }
 }
+
+/** The id to send with a closed case. Nothing when the browser says "Do Not Track", the same rule the page-view beacon follows. */
+export function trackingVisitorId(): string | undefined {
+  try {
+    return navigator.doNotTrack === "1" ? undefined : visitorId();
+  } catch {
+    return undefined;
+  }
+}

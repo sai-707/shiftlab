@@ -6,6 +6,7 @@ import { INTEL } from "@/content/intel";
 import { WHOIS } from "@/content/whois";
 import { LOG_ANSWERS } from "@/content/log-answers";
 import { matchesAny } from "@/lib/answer";
+import { VISITOR } from "@/lib/feedbackRules";
 import { describeUnknown } from "@/lib/indicator";
 import { buildReport } from "@/lib/intelReport";
 import { gradeSubmission } from "@/lib/grade";
@@ -22,7 +23,8 @@ function text(value: unknown): string {
 }
 
 /** Scores a case on the server so the answer keys never reach the browser. */
-export async function submitCase(input: Submission): Promise<SubmitResult> {
+// `visitor` is the random browser id, so the admin Guests page can count how many alerts each guest solved. It is checked here, not trusted.
+export async function submitCase(input: Submission, visitor?: string): Promise<SubmitResult> {
   const alertId = text(input?.alertId);
   if (!ALERTS.some((a) => a.id === alertId)) return { ok: false, error: "Unknown alert." };
   if (input.verdict !== "tp" && input.verdict !== "fp") {
@@ -61,6 +63,7 @@ export async function submitCase(input: Submission): Promise<SubmitResult> {
   // Counted here, not in the browser, because only the server knows the real score. Only numbers and yes/no flags, never the report text.
   await track("case_closed", {
     path: `/alerts/${alertId}`,
+    visitor: typeof visitor === "string" && VISITOR.test(visitor) ? visitor : undefined,
     props: {
       alert: alertId,
       score: feedback.score,

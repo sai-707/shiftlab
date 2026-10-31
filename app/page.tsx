@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import AlertDemo from "@/components/site/AlertDemo";
 import DottedWordmark from "@/components/site/DottedWordmark";
 import SiteShell from "@/components/site/SiteShell";
-import { START_HREF } from "@/components/site/links";
+import { START_HREF, GUEST_HREF } from "@/components/site/links";
 import FeedbackLink from "@/components/feedback/FeedbackLink";
 
 // Landing page. Public, outside the (app) layout. Do not print an alert count here: the number grows.
@@ -72,11 +72,15 @@ export default function Home() {
           <DottedWordmark scale={0.72} />
           <h1 className="tag">Your first shift starts here.</h1>
           <div className="cta">
-            <Link className="btn primary" href={START_HREF}>
-              Get started
+            <Link className="btn primary" href={GUEST_HREF}>
+              Try it as a guest
               <Arrow />
             </Link>
+            <Link className="btn" href={START_HREF}>
+              Create a free account
+            </Link>
           </div>
+          <p className="cta-note">No account needed. Your first alert takes about ten minutes.</p>
         </section>
 
         <section className="s">
@@ -148,9 +152,12 @@ export default function Home() {
           <div className="wrap rv">
             <h2>Clock in.</h2>
             <div className="cta">
-              <Link className="btn primary" href={START_HREF}>
-                Get started
+              <Link className="btn primary" href={GUEST_HREF}>
+                Try it as a guest
                 <Arrow />
+              </Link>
+              <Link className="btn" href={START_HREF}>
+                Create a free account
               </Link>
             </div>
           </div>

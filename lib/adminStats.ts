@@ -33,6 +33,8 @@ export type Guests = {
   };
   prev: { visitors: number; views: number; opened: number; cases: number; signup_page: number; new_accounts: number };
   series: { day: string; visitors: number; cases: number; signups: number }[];
+  /** Alerts solved per guest browser. `unattributed` counts closed cases saved before the browser id was recorded. */
+  solvers: { guests: number; one: number; two: number; three_plus: number; unattributed: number; top: { guest: string; solved: number; avg_score: number; last_at: string }[] };
   sections: { section: string; views: number; visitors: number }[];
 };
 

@@ -36,7 +36,8 @@ export type FeedbackRow = {
 };
 
 const PATH = /^\/[A-Za-z0-9_\-/]{0,100}$/;
-const VISITOR = /^[A-Za-z0-9-]{8,40}$/;
+/** The shape of the random browser id. Checked on the server every time a browser sends one. */
+export const VISITOR = /^[A-Za-z0-9-]{8,40}$/;
 const ALERT_PATH = /^\/alerts\/(SL-\d{3,6})$/;
 
 /** Trims, drops control characters (keeps line breaks), collapses long blank runs and cuts at the limit. */

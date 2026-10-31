@@ -3,8 +3,9 @@
 -- Safe to run twice. Adds two admin-only functions and changes no table.
 --
 -- A "guest" is an event row with no user_id. A guest "person" is the random browser id in `visitor`, so clearing the browser's storage,
--- another browser or a private window counts as a new guest. A closed case is saved by the server without a browser id,
--- so case rows are counted but cannot be tied to one guest. Browsers that were ever used by an admin are left out.
+-- another browser or a private window counts as a new guest. A closed case carries the browser id only when it was closed after
+-- the app update that started sending it (earlier cases are counted but cannot be tied to one guest).
+-- Browsers that were ever used by an admin are left out.
 
 -- 1. The numbers: same shape as admin_overview(), but for guests only.
 create or replace function public.admin_guests(days int default 30, tz text default 'Asia/Kolkata')
@@ -45,7 +46,7 @@ begin
     where coalesce(p.role, 'student') <> 'admin'
   ),
   ev as (
-    select (e.at at time zone tz)::date as day, e.kind, e.visitor, e.path, e.props
+    select (e.at at time zone tz)::date as day, e.at, e.kind, e.visitor, e.path, e.props
     from public.events e
     where e.user_id is null
       and (e.at at time zone tz)::date >= dp
@@ -67,6 +68,15 @@ begin
       (select count(*) from (select visitor from ev where kind = 'view' and day >= d0 group by visitor having count(distinct day) >= 2) x) as r_cur,
       (select count(distinct visitor) from ev where kind = 'view' and day >= d0 and visitor in (select visitor from li)) as l_cur
     from ev
+  ),
+  cs as ( -- alerts solved per guest browser in this window (a closed case carries the browser id from the update that added it)
+    select visitor,
+           count(distinct props ->> 'alert') as solved,
+           round(avg((props ->> 'score')::numeric), 1) as avg_score,
+           max(at) as last_at
+    from ev
+    where kind = 'case_closed' and day >= d0 and visitor is not null
+    group by visitor
   ),
   sr as (
     select g.day::date as day,
@@ -97,6 +107,17 @@ begin
     'prev', jsonb_build_object('visitors', kp.v_prev, 'views', kp.pv_prev, 'opened', kp.o_prev, 'cases', kp.c_prev,
                               'signup_page', kp.sp_prev,
                               'new_accounts', (select count(*) from su where day >= dp and day < d0)),
+    'solvers', jsonb_build_object(
+      'guests', (select count(*) from cs),
+      'one', (select count(*) from cs where solved = 1),
+      'two', (select count(*) from cs where solved = 2),
+      'three_plus', (select count(*) from cs where solved >= 3),
+      'unattributed', (select count(*) from ev where kind = 'case_closed' and day >= d0 and visitor is null),
+      'top', coalesce((
+        select jsonb_agg(to_jsonb(t))
+        from (select left(visitor, 6) as guest, solved, avg_score, last_at from cs order by solved desc, last_at desc limit 15) t
+      ), '[]'::jsonb)
+    ),
     'series', (select jsonb_agg(to_jsonb(sr) order by sr.day) from sr),
     'sections', coalesce((select jsonb_agg(to_jsonb(se)) from se), '[]'::jsonb)
   ) into res

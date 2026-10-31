@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { sendFeedback } from "@/app/feedback-actions";
+import { noteSent, noteSkipped } from "@/lib/feedbackAsk";
 import { alertFromPath, FEEDBACK_EVENT, TEXT_MAX } from "@/lib/feedbackRules";
 import { visitorId } from "@/lib/visitor";
 
@@ -38,12 +39,20 @@ export default function FeedbackWindow() {
   const [sent, setSent] = useState(false);
   const [problem, setProblem] = useState({ msg: "", key: "" }); // an error is shown only while the answers are still the ones that caused it
   const [pending, start] = useTransition();
+  const [auto, setAuto] = useState(false); // opened by itself after a closed case, so it offers a Skip button
+  const autoRef = useRef(false);
+  const sentRef = useRef(false);
 
   useEffect(() => {
-    const open = () => {
+    const open = (e: Event) => {
+      const byItself = e instanceof CustomEvent && e.detail?.auto === true;
+      if (dialog.current?.open || (byItself && document.querySelector("dialog[open]"))) return; // never stack on top of another window
       setSent(false);
       setProblem({ msg: "", key: "" });
-      if (!dialog.current?.open) dialog.current?.showModal();
+      autoRef.current = byItself;
+      sentRef.current = false;
+      setAuto(byItself);
+      dialog.current?.showModal();
     };
     window.addEventListener(FEEDBACK_EVENT, open);
     return () => window.removeEventListener(FEEDBACK_EVENT, open);
@@ -67,6 +76,8 @@ export default function FeedbackWindow() {
       const r = await sendFeedback({ rating: rating || null, evidence: evidence || null, confusing, opinion, role: role || null, contactOk, path, visitor: visitorId(), trap });
       if ("error" in r) setProblem({ msg: r.error, key: answers });
       else {
+        sentRef.current = true;
+        noteSent();
         setSent(true);
         reset();
       }
@@ -80,6 +91,12 @@ export default function FeedbackWindow() {
       ref={dialog}
       aria-labelledby="feedback-title"
       onClick={(e) => e.target === dialog.current && close()} // a click on the dimmed backdrop
+      onClose={() => {
+        // Closed without sending, after it opened by itself: that counts as a skip.
+        if (autoRef.current && !sentRef.current) noteSkipped();
+        autoRef.current = false;
+        setAuto(false);
+      }}
       className="m-auto max-h-[calc(100svh-2rem)] w-[min(34rem,calc(100%-2rem))] overflow-y-auto overscroll-contain rounded-2xl border border-line bg-canvas p-0 text-ink shadow-2xl backdrop:bg-black/65 max-md:mb-0 max-md:mt-auto max-md:max-h-[92svh] max-md:w-full max-md:rounded-b-none"
     >
       <div className="flex items-start justify-between gap-3 border-b border-line px-5 py-3.5">
@@ -87,10 +104,16 @@ export default function FeedbackWindow() {
           <h2 id="feedback-title" className="text-base font-semibold">
             Send feedback
           </h2>
-          <p className="mt-0.5 text-xs text-muted">About 1 minute. Honest is best.</p>
+          <p className="mt-0.5 text-xs text-muted">{auto ? "You just closed an alert. About 1 minute, and you can skip." : "About 1 minute. Honest is best."}</p>
         </div>
-        <button type="button" onClick={close} aria-label="Close" className="-mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-2xl leading-none text-muted hover:text-ink">
-          ×
+        {/* when the window opened by itself the corner button says "Skip", so the way out is visible without scrolling the form */}
+        <button
+          type="button"
+          onClick={close}
+          aria-label={auto ? "Skip" : "Close"}
+          className={`-mr-2 flex h-11 items-center justify-center rounded-lg text-muted hover:text-ink ${auto ? "px-3 text-sm font-semibold" : "w-11 text-2xl leading-none"}`}
+        >
+          {auto ? "Skip" : "×"}
         </button>
       </div>
 
@@ -197,11 +220,18 @@ export default function FeedbackWindow() {
             </p>
           )}
 
-          <div className="flex items-center justify-between gap-3 border-t border-line pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
             <p className="max-w-[16rem] text-xs leading-relaxed text-muted">We save your answers. Your account is linked only if you tick the box above.</p>
-            <button type="submit" disabled={pending} className="min-h-11 shrink-0 rounded-xl border border-accent bg-accent px-6 text-[15px] font-bold text-void disabled:opacity-60">
-              {pending ? "Sending…" : "Send feedback"}
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              {auto && (
+                <button type="button" onClick={close} className="min-h-11 rounded-xl border border-line bg-raised px-4 text-[15px] font-semibold hover:border-muted">
+                  Skip
+                </button>
+              )}
+              <button type="submit" disabled={pending} className="min-h-11 shrink-0 rounded-xl border border-accent bg-accent px-6 text-[15px] font-bold text-void disabled:opacity-60">
+                {pending ? "Sending…" : "Send feedback"}
+              </button>
+            </div>
           </div>
         </form>
       )}

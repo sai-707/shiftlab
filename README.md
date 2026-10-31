@@ -21,7 +21,9 @@ Everything in it is fictional. The company is "Harbor & Pine Logistics", and eve
 - **Free hints:** a lightbulb button gives three steps (think, look, find). Hints never give the verdict and never change your score.
 - **Write the report:** verdict, what happened, what is confirmed, what is still unknown, next action, and whether to escalate.
 - **About (`/guide`):** a public, plain-English page for someone who has never heard of a SOC: what ShiftLab is, the problem it tackles, who it is for and why it was made. The words live in `content/guide.ts`; `public/ShiftLab-guide.pdf` is a two-page copy of them. Remake the PDF after changing the text.
-- **Guests (admin):** an admin page that shows how many people try the site without an account, how many of them become accounts (including sign-ups that never confirmed their email), and a log of what guests did. Needs `supabase/migrations/0007_admin_guests.sql`.
+- **Guests (admin):** an admin page that shows how many people try the site without an account, how many of them become accounts (including sign-ups that never confirmed their email), how many alerts each guest solved, and a log of what guests did. Needs `supabase/migrations/0007_admin_guests.sql` (safe to run again after an update).
+- **Feedback after an alert:** the feedback window opens by itself a moment after a case is closed, with a Skip button. It stops asking after the person sends feedback once or skips twice.
+- **Try it as a guest:** the landing page has a guest button (to the alert queue) next to "Create a free account".
 - **Send feedback:** a short window (ratings and a few questions) on every page; the owner reads it in an admin page.
 - **Get coached:** a score with a breakdown, what you missed, a model report, and how the real world compares.
 - **Practise the tools:** intel check (look up an address, domain or file hash), log search, a mailbox to triage, shift handover, playbooks and a glossary.

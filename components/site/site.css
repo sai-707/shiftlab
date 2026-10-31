@@ -1076,6 +1076,7 @@ html[data-js] .site .rv.in {
   .site *::after { animation: none !important; transition-duration: .01ms !important; }
   .site h1.tag,
   .site .cta,
+  .site .cta-note,
   .site .log div { opacity: 1; translate: none; }
   html[data-js] .site .rv { opacity: 1; translate: none; }
   .site .track { width: auto; flex-wrap: wrap; row-gap: 12px; }
@@ -1155,4 +1156,9 @@ html[data-js] .site .rv.in {
   .site .g-glance > div:last-child { border-bottom: 0; }
   .site .g-ex li { grid-template-columns: 1fr; gap: 4px; }
 }
-@media (max-width: 380px) { .site .nav .signin.how { display: none; } } /* on a very narrow phone the footer link is enough */
+.site .cta-note { margin: 14px 0 0; text-align: center; font-size: .86rem; color: var(--color-muted); animation: site-fadeup .9s var(--ease) .6s both; } /* the line under the hero buttons */
+.site .nav .right,
+.site .nav .signin,
+.site .nav .btn.sm { white-space: nowrap; } /* never let "Sign in" or "Get started" break onto two lines */
+@media (max-width: 430px) { .site .nav .wrap { gap: 8px; } .site .nav .right { gap: 2px; } .site .nav .signin { padding: 8px 8px; } }
+@media (max-width: 370px) { .site .nav .signin.how { display: none; } } /* on a very narrow phone the footer link is enough */

@@ -9,6 +9,9 @@ import { reportProblems } from "@/lib/reportRules";
 import { INTEL_SOURCE, LOG_SOURCE, MIN_SOURCES, isGated, openedCount, sourceBlocks } from "@/lib/sourceRules";
 import { markOpened, useOpened } from "@/lib/sources";
 import { toast } from "@/lib/toast";
+import { FEEDBACK_EVENT } from "@/lib/feedbackRules";
+import { readAsk, shouldAsk } from "@/lib/feedbackAsk";
+import { trackingVisitorId } from "@/lib/visitor";
 import LookupBox from "@/components/lookup/LookupBox";
 import SeverityBadge from "@/components/ui/SeverityBadge";
 import FeedbackPanel from "./FeedbackPanel";
@@ -191,13 +194,15 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
     setError("");
     const submission: Submission = { alertId: alert.id, verdict, escalate, sections, ...(need ? { opened } : {}) };
     startTransition(async () => {
-      const result = await submitCase(submission);
+      const result = await submitCase(submission, trackingVisitorId());
       if (!result.ok) {
         setError(result.error);
         return;
       }
       closeCase({ alertId: alert.id, submission, feedback: result.feedback, closedAt: Date.now() });
       toast(`${alert.id} closed: ${result.feedback.score}/100`);
+      // Let the score be seen first, then offer the feedback window. It has a Skip button and stops asking after a few skips (lib/feedbackAsk.ts).
+      if (shouldAsk(readAsk())) window.setTimeout(() => window.dispatchEvent(new CustomEvent(FEEDBACK_EVENT, { detail: { auto: true } })), 1800);
     });
   }
 
