@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: "ShiftLab", template: "%s · ShiftLab" },
   description:
-    "Practise the SOC Level 1 analyst job on fictional alerts: investigate, triage, report, and get coached.",
-  openGraph: { title: "ShiftLab", description: "Practise the SOC Level 1 analyst job on fictional alerts.", type: "website", images: [{ url: "/og.png", width: 1200, height: 630, alt: "ShiftLab" }] },
+    "Practise the SOC Level 1 analyst job on real-world attack scenarios: investigate, triage, report, and get coached.",
+  openGraph: { title: "ShiftLab", description: "Practise the SOC Level 1 analyst job on real-world attack scenarios.", type: "website", images: [{ url: "/og.png", width: 1200, height: 630, alt: "ShiftLab" }] },
   twitter: { card: "summary_large_image", images: ["/og.png"] },
 };
 
