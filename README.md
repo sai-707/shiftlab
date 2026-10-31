@@ -1,9 +1,14 @@
 <div align="center">
 
-# ShiftLab
+<img src="docs/banner.png" alt="ShiftLab: a free practice shift for aspiring SOC Level 1 analysts. Alert, evidence, verdict, escalate, report, score." width="100%">
 
-**A free, browser-based practice shift for aspiring SOC Level 1 analysts.**<br>
-Take alerts from a queue, read the evidence, decide if it is a real attack, write your report, get scored.
+**Take alerts from a queue, read the evidence, decide if it is a real attack, write your report, get scored.**
+
+![runs in your browser](https://img.shields.io/badge/runs-in%20your%20browser-22d3ee)
+![no account needed](https://img.shields.io/badge/account-optional-22d3ee)
+![fictional data](https://img.shields.io/badge/all%20data-fictional-6366f1)
+![graded on the server](https://img.shields.io/badge/scoring-graded%20on%20the%20server-16a34a)
+![hints free](https://img.shields.io/badge/hints-free%2C%20never%20cost%20points-f59e0b)
 
 [![Tests](https://github.com/sai-707/shiftlab/actions/workflows/test.yml/badge.svg)](https://github.com/sai-707/shiftlab/actions/workflows/test.yml)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-22d3ee.svg)](LICENSE)
