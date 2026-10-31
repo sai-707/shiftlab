@@ -53,6 +53,29 @@ Everything in it is fictional. The company is "Harbor & Pine Logistics", and eve
 
 ![The evidence card with the free hint panel open](docs/hint.png)
 
+## Reports and dashboard
+
+Closing a case feeds three pages that show how you are doing.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screens/dashboard.png" alt="The dashboard: progress ring, four stat cards, open alerts by topic and the next alerts in the queue"></td>
+    <td width="50%"><img src="docs/screens/case-feedback.png" alt="Case feedback: score out of 100 split into six parts with coaching"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Dashboard: progress, accuracy, average score, skill coverage</sub></td>
+    <td align="center"><sub>Case feedback: six scored parts and what actually happened</sub></td>
+  </tr>
+</table>
+
+- **Dashboard:** your shift at a glance, with a Continue case button, open alerts, cases closed, verdict accuracy, average score, open alerts by topic and skill coverage.
+- **Case feedback:** a score out of 100 split into verdict, escalation, what happened, what is confirmed, what is still unknown and next action, each with coaching.
+- **Case reports:** every report you have written, kept together to look back on.
+
+## Feature tour
+
+Every screen with a short description is in [`docs/FEATURES.md`](docs/FEATURES.md): the queue, case feedback, dashboard, case reports, shift handover, intel check, log search, phishing mailbox, triage sprint, Shift mode, Spot the AI's mistake, communication practice, analyst tools and the glossary.
+
 ## How it is built
 
 | Part | Choice |
