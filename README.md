@@ -27,7 +27,7 @@ Everything in it is fictional. The company is "Harbor & Pine Logistics", and eve
 
 ## How a shift works
 
-1. **Take an alert** from the queue. Alerts are sorted by severity and grouped in four levels: Beginner, Intermediate, Hard and AI Era (prompt injection, deepfake voice fraud, stolen AI keys and similar). Each level opens when the one before it is closed.
+1. **Take an alert** from the queue. Alerts are sorted by severity and grouped in four levels: Beginner, Intermediate, Hard and AI Era (prompt injection, deepfake voice fraud, stolen AI keys and similar). Every level is open from the start, so you can begin wherever you like.
 2. **Investigate.** Each alert opens as labelled rows (datasource, timestamp, who and what), then evidence in tabs: logs, context, mail headers, timelines. On higher levels the report stays locked until you have opened enough sources, as a real analyst would.
 3. **Decide and write.** True positive or false positive, whether to escalate, and a short report: what happened, what is confirmed, what is still unknown, and the next action.
 4. **Get coached.** A score with a breakdown, what you missed, a model report, and how the real world compares. Free hints (think, look, find) never give the verdict and never change your score.
@@ -38,7 +38,7 @@ Everything in it is fictional. The company is "Harbor & Pine Logistics", and eve
     <td width="50%"><img src="docs/alert-page.png" alt="An alert page: description, labelled alert details, then evidence tabs and the report"></td>
   </tr>
   <tr>
-    <td align="center"><sub>The queue: levels unlock as you close alerts</sub></td>
+    <td align="center"><sub>The queue: four levels, all open</sub></td>
     <td align="center"><sub>One alert: labelled details, then evidence and your report</sub></td>
   </tr>
 </table>

@@ -110,7 +110,7 @@ export default function QueueView() {
                 : l.unlocked
                   ? l.done === l.total
                     ? "Level complete."
-                    : l.level === "AI Era" ? `Close all ${l.total} to finish ShiftLab.` : `Close all ${l.total} to unlock the next level.`
+                    : `Close all ${l.total} to finish this level.`
                   : `Close every ${l.previous} alert to unlock.`}
             </p>
           </div>

@@ -12,7 +12,7 @@ Every screen below is the real app, shown with a few cases already closed so the
 
 ![Alert queue](screens/queue.png)
 
-Alerts sorted by severity, with search, severity and topic filters and an Open / Closed switch. The alert you have assigned to yourself is pinned at the top. There are four levels (Beginner, Intermediate, Hard, AI Era) and each one unlocks when you close every alert in the one before.
+Alerts sorted by severity, with search, severity and topic filters and an Open / Closed switch. The alert you have assigned to yourself is pinned at the top. There are four levels (Beginner, Intermediate, Hard, AI Era) and all of them are open from the start.
 
 ### Case feedback
 
