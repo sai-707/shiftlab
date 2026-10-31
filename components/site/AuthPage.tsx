@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/ui/BrandMark";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import DottedWordmark from "./DottedWordmark";
@@ -9,9 +10,7 @@ export default function AuthPage({ children }: { children: ReactNode }) {
     <SiteShell>
       <main className="auth">
         <Link className="brand" href="/">
-          <span className="mark" aria-hidden="true">
-            <i />
-          </span>
+          <BrandMark className="h-[26px] w-[26px]" />
           ShiftLab
         </Link>
         <div className="stack">

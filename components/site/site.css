@@ -122,23 +122,6 @@
   letter-spacing: -.01em;
   text-decoration: none;
 }
-.site .mark {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  border: 1px solid rgb(255 255 255 / .12);
-  background: rgb(255 255 255 / .04);
-  display: grid;
-  place-items: center;
-}
-.site .mark i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  box-shadow: 0 0 0 4px rgb(34 211 238 / .15);
-  animation: site-beat 2.4s ease-in-out infinite;
-}
 @keyframes site-beat { 50% { box-shadow: 0 0 0 7px rgb(34 211 238 / 0); } }
 .site .nav .right {
   display: flex;

@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/ui/BrandMark";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import AlertDemo from "@/components/site/AlertDemo";
@@ -48,9 +49,7 @@ export default function Home() {
       <header className="nav">
         <div className="wrap">
           <Link className="brand" href="/">
-            <span className="mark" aria-hidden="true">
-              <i />
-            </span>
+            <BrandMark className="h-[26px] w-[26px]" />
             ShiftLab
           </Link>
           <div className="right">

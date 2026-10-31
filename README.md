@@ -4,6 +4,7 @@
 
 **Take alerts from a queue, read the evidence, decide if it is a real attack, write your report, get scored.**
 
+![30+ cases to solve](https://img.shields.io/badge/cases-30%2B%20to%20solve-ef4444)
 ![runs in your browser](https://img.shields.io/badge/runs-in%20your%20browser-22d3ee)
 ![no account needed](https://img.shields.io/badge/account-optional-22d3ee)
 ![fictional data](https://img.shields.io/badge/all%20data-fictional-6366f1)

@@ -1,5 +1,6 @@
 "use client";
 
+import { BrandMark } from "@/components/ui/BrandMark";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -26,10 +27,7 @@ const MENU: MenuLink[] = [{ label: "Public site", href: "/", icon: "home" }];
 function Brand() {
   return (
     <>
-      <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0 text-accent drop-shadow-[0_0_6px_rgb(34_211_238/0.6)]" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
-        <path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" />
-      </svg>
+      <BrandMark className="h-7 w-7" />
       <span className="text-lg font-semibold tracking-tight">ShiftLab</span>
     </>
   );

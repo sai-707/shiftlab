@@ -1,5 +1,6 @@
 "use client";
 
+import { BrandMark } from "@/components/ui/BrandMark";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -138,10 +139,7 @@ export default function Sidebar() {
       }`}
     >
       <Link href="/dashboard" className={`flex items-center gap-2.5 px-5 py-4 md:py-6 ${collapsed ? "md:px-6" : ""}`}>
-        <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0 text-accent drop-shadow-[0_0_6px_rgb(34_211_238/0.6)]" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" />
-        </svg>
+        <BrandMark className="h-7 w-7" />
         <span className={`text-lg font-semibold tracking-tight ${collapsed ? "md:hidden" : ""}`}>ShiftLab</span>
       </Link>
 

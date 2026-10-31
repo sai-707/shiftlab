@@ -304,3 +304,16 @@ html {
     transition: none;
   }
 }
+
+/* The cursor in the logo blinks like a terminal. Off for people who ask for less motion. */
+@keyframes brand-blink {
+  50% { opacity: 0; }
+}
+.brand-cursor {
+  animation: brand-blink 1.1s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-cursor {
+    animation: none;
+  }
+}
