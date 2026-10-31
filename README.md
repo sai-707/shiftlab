@@ -51,7 +51,7 @@ supabase/     SQL migrations, run in order
 tests/        content and safety checks
 ```
 
-More detail for contributors is in [`BRAIN.md`](BRAIN.md) (architecture, every file, known gaps).
+More detail is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): how the server/browser split works, the data model, and how to add an alert.
 
 ## Run it on your computer
 
@@ -70,13 +70,15 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your publishable (anon) key
 
 Use only the publishable key. Never put a secret or service-role key in this project.
 
-In the Supabase SQL editor, run the files in `supabase/migrations/` in order (`0001` to `0006`). Then:
+In the Supabase SQL editor, run the files in `supabase/migrations/` in order (`0001` to `0008`). Then:
 
 ```bash
 npm run dev      # http://localhost:3000
 npm test         # content and safety checks
 npm run build    # production build
 ```
+
+To see the admin pages on your own copy, sign up once, then make that account an admin (the one SQL line is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)).
 
 Deploy to Cloudflare Workers with `npm run deploy`.
 
@@ -92,6 +94,22 @@ Deploy to Cloudflare Workers with `npm run deploy`.
 
 They also run on every push through GitHub Actions.
 
+## The answers are in this repo
+
+ShiftLab is open source, so anyone can read the answer keys in `content/*-keys.ts`. The *live site* never sends an answer to your browser before you commit to yours, and scores are for learning, not for a test or a leaderboard. If you want the real exercise, don't peek.
+
 ## Status
 
 A student project that is still growing. The alerts, answers and scoring were written by the author.
+
+## Contributing and security
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) first (short). To report a security problem privately, see [SECURITY.md](SECURITY.md).
+
+## Credits
+
+The admin pages' layout was inspired by the "Dashboard 1" template at efferd.com and the account menu by "dropdown-menu-01" at 21st.dev. No code was copied from either: ShiftLab's versions are written from scratch with its own colours, fonts and logo.
+
+## Licence
+
+Code and content: [MIT](LICENSE), copyright 2026 Sai Daswadkar. The name "ShiftLab" and its logo are not covered by the licence, so please give a published fork its own name.

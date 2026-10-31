@@ -13,7 +13,7 @@ alter table public.profiles enable row level security;
 
 -- A signed-in user can read their own row, and nothing else.
 -- There is deliberately no insert, update or delete policy: nobody can change a role from the website.
--- Rows are created by the trigger below. The owner makes an admin with one SQL statement (see BRAIN.md).
+-- Rows are created by the trigger below. The owner makes an admin with one SQL statement (see the README).
 drop policy if exists "read own profile" on public.profiles;
 create policy "read own profile"
   on public.profiles for select

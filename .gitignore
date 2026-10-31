@@ -44,3 +44,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local assistant settings (hooks point at one machine's paths)
+/.claude/
+
+# internal working notes and assistant files, kept on the author's machine only (public docs live in README.md and docs/)
+/BRAIN.md
+/PLAN.md
+/CLAUDE.md
+/AGENTS.md
+/graphify-out/

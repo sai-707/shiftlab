@@ -400,7 +400,6 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
   const alertBlock = gated
     ? alert.evidence.find((b) => b.title === "Alert details")
     : (alert.evidence.find((b) => b.title === "Alert details") ?? alert.evidence.find((b) => b.kind === "fields"));
-  const hasRuleRow = alertBlock?.kind === "fields" && alertBlock.rows.some((r) => r.label.toLowerCase() === "rule");
 
   return (
     <div className="space-y-6">
@@ -495,16 +494,6 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
                   <div className="grid gap-1 pb-2.5 sm:grid-cols-[10rem_1fr]">
                     <dt className="text-muted">Description</dt>
                     <dd className="leading-relaxed">{alert.description}</dd>
-                  </div>
-                )}
-                <div className={`grid gap-1 sm:grid-cols-[10rem_1fr] ${alert.description ? "py-2.5" : "pb-2.5"}`}>
-                  <dt className="text-muted">Raised by</dt>
-                  <dd>{alert.briefing.source}</dd>
-                </div>
-                {!hasRuleRow && (
-                  <div className="grid gap-1 py-2.5 sm:grid-cols-[10rem_1fr]">
-                    <dt className="text-muted">Rule</dt>
-                    <dd className="font-mono text-[13px]">{alert.briefing.rule}</dd>
                   </div>
                 )}
               </dl>

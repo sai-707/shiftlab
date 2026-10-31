@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNext } from "@/lib/safeNext";
 import { createClient } from "@/lib/supabase/server";
 
 // Where the links in Supabase's emails land (confirm email, reset password). It swaps the one-time code for a session.
@@ -7,8 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "";
-  const target = /^\/(?![/\\])/.test(next) ? next : "/dashboard"; // same-site paths only, never another domain
+  const target = safeNext(searchParams.get("next"), origin); // same-site only, never another domain
 
   if (code) {
     const supabase = await createClient();

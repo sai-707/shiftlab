@@ -43,17 +43,16 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Email details",
         rows: [
-          { label: "From", value: "Harbor & Pine Payroll <payroll-update@harborpine-hr.test>" },
-          { label: "To", value: "d.okafor@harborpine.test" },
+          { label: "Datasource", value: "Email gateway" },
+          { label: "Timestamp", value: "10/23/2026 09:11:24" },
           { label: "Subject", value: "Action required: confirm your direct deposit details today" },
+          { label: "Sender", value: "Harbor & Pine Payroll <payroll-update@harborpine-hr.test>" },
+          { label: "Recipient", value: "d.okafor@harborpine.test" },
           { label: "Attachment", value: "None" },
+          { label: "Content", value: "Payroll is moving to a new system. Confirm your bank details within 24 hours or your next payment will be delayed." },
+          { label: "Direction", value: "inbound" },
           { label: "SPF / DKIM", value: "SPF: fail   DKIM: none" },
           { label: "Link in body", value: "https://harborpine-hr.test/login/verify?u=d.okafor" },
-          {
-            label: "Body excerpt",
-            value:
-              "Payroll is moving to a new system. Confirm your bank details within 24 hours or your next payment will be delayed.",
-          },
         ],
       },
       {
@@ -130,15 +129,16 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Email details",
         rows: [
-          { label: "From", value: "Freightline Weekly <news@freightline-news.test>" },
-          { label: "To", value: "m.silva@harborpine.test" },
+          { label: "Datasource", value: "Email gateway" },
+          { label: "Timestamp", value: "10/23/2026 10:04:48" },
           { label: "Subject", value: "October carrier rate update" },
+          { label: "Sender", value: "Freightline Weekly <news@freightline-news.test>" },
+          { label: "Recipient", value: "m.silva@harborpine.test" },
           { label: "Attachment", value: "None" },
+          { label: "Content", value: "Freightline Weekly: the October carrier rate update is out. See this month's rates for the main trade lanes." },
+          { label: "Direction", value: "inbound" },
           { label: "SPF / DKIM", value: "SPF: pass   DKIM: pass (freightline-news.test)" },
-          {
-            label: "Link in body",
-            value: "https://click.freightline-news.test/r/8841 (redirects to https://freightline-news.test/rates/october)",
-          },
+          { label: "Link in body", value: "https://click.freightline-news.test/r/8841 (redirects to https://freightline-news.test/rates/october)" },
         ],
       },
       {
@@ -204,10 +204,12 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "25+ failed logins in 3 minutes followed by a success" },
-          { label: "Target host", value: "web-bastion-02 (10.20.1.12)" },
-          { label: "Source IP", value: "203.0.113.58" },
+          { label: "Datasource", value: "Linux auth log" },
+          { label: "Timestamp", value: "10/23/2026 02:41:07" },
           { label: "Account", value: "admin" },
+          { label: "Source IP", value: "203.0.113.58" },
+          { label: "Host", value: "web-bastion-02 (10.20.1.12)" },
+          { label: "Direction", value: "inbound" },
         ],
       },
       {
@@ -281,9 +283,11 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "More than 100 destination ports probed in 60 seconds" },
+          { label: "Datasource", value: "Firewall log" },
+          { label: "Timestamp", value: "10/23/2026 03:00:04" },
           { label: "Source", value: "10.20.9.5" },
           { label: "Destination", value: "10.20.0.0/16 (many hosts)" },
+          { label: "Direction", value: "internal" },
         ],
       },
       {
@@ -354,10 +358,12 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Outbound connection to threat-feed destination" },
+          { label: "Datasource", value: "Firewall (threat feed)" },
+          { label: "Timestamp", value: "10/23/2026 07:02:11" },
           { label: "Source host", value: "FIN-WS-114 (10.20.6.114), user r.nair" },
           { label: "Destination", value: "198.51.100.200:443" },
           { label: "Action", value: "Blocked by firewall" },
+          { label: "Direction", value: "outbound" },
         ],
       },
       {
@@ -435,11 +441,13 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Office application spawned PowerShell" },
-          { label: "Host / user", value: "HR-WS-052 (10.20.7.52) / l.fernandes" },
+          { label: "Datasource", value: "Endpoint detection (EDR)" },
+          { label: "Timestamp", value: "10/23/2026 10:31:02" },
+          { label: "Host", value: "HR-WS-052 (10.20.7.52)" },
+          { label: "User", value: "l.fernandes" },
           { label: "Parent process", value: "WINWORD.EXE" },
           { label: "Child process", value: "powershell.exe" },
-          { label: "EDR action", value: "Detected only (not blocked)" },
+          { label: "Action", value: "Detected only (not blocked)" },
         ],
       },
       {
@@ -515,9 +523,12 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Detection details",
         rows: [
+          { label: "Datasource", value: "Endpoint antivirus" },
+          { label: "Timestamp", value: "10/23/2026 11:46:12" },
           { label: "Detection", value: "EICAR-Test-File (not a virus)" },
           { label: "File", value: "C:\\Training\\eicar.com.txt" },
-          { label: "Host / user", value: "SEC-LAB-03 / t.brandt" },
+          { label: "Host", value: "SEC-LAB-03" },
+          { label: "User", value: "t.brandt" },
           { label: "Action", value: "Quarantined automatically" },
           { label: "File size", value: "68 bytes" },
         ],
@@ -587,11 +598,13 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "942100 SQL injection pattern" },
+          { label: "Datasource", value: "Web application firewall" },
+          { label: "Timestamp", value: "10/23/2026 13:05:41" },
           { label: "Source IP", value: "203.0.113.91" },
           { label: "Target", value: "portal.harborpine.test /portal/search" },
           { label: "Requests", value: "14 in 90 seconds" },
-          { label: "WAF action", value: "BLOCK (all 14)" },
+          { label: "Action", value: "BLOCK (all 14)" },
+          { label: "Direction", value: "inbound" },
         ],
       },
       {
@@ -659,6 +672,18 @@ export const ALERTS: Alert[] = [
     indicators: ["192.0.2.150", "198.51.100.34"],
     evidence: [
       {
+        kind: "fields",
+        title: "Alert details",
+        rows: [
+          { label: "Datasource", value: "Identity provider sign-in log" },
+          { label: "Timestamp", value: "10/23/2026 14:14:20" },
+          { label: "Account", value: "s.menon" },
+          { label: "Source IP", value: "192.0.2.150" },
+          { label: "Location", value: "Frankfurt, DE (the sign-in before it, at 14:02, was from Pune, IN)" },
+          { label: "Direction", value: "inbound" },
+        ],
+      },
+      {
         kind: "table",
         title: "Sign-in log for s.menon",
         columns: ["Time", "Source IP", "Location", "Device", "MFA", "Result"],
@@ -716,6 +741,19 @@ export const ALERTS: Alert[] = [
     },
     indicators: ["203.0.113.210"],
     evidence: [
+      {
+        kind: "fields",
+        title: "Alert details",
+        rows: [
+          { label: "Datasource", value: "Identity provider MFA log" },
+          { label: "Timestamp", value: "10/23/2026 22:41:05" },
+          { label: "Account", value: "a.kapoor" },
+          { label: "Source IP", value: "203.0.113.210" },
+          { label: "Location", value: "Amsterdam, NL" },
+          { label: "MFA prompts", value: "9 in 7 minutes, the last one approved at 22:48" },
+          { label: "Direction", value: "inbound" },
+        ],
+      },
       {
         kind: "table",
         title: "MFA prompts for a.kapoor",
@@ -784,6 +822,18 @@ export const ALERTS: Alert[] = [
     },
     indicators: ["198.51.100.155", "203.0.113.77"],
     evidence: [
+      {
+        kind: "fields",
+        title: "Alert details",
+        rows: [
+          { label: "Datasource", value: "Cloud audit log" },
+          { label: "Timestamp", value: "10/23/2026 16:22:31" },
+          { label: "Account", value: "svc-reporting-tmp" },
+          { label: "Source IP", value: "198.51.100.155" },
+          { label: "Resource", value: "hp-customer-exports (storage bucket)" },
+          { label: "Change", value: "Bucket policy set so that everyone, with no sign-in, can read the files" },
+        ],
+      },
       {
         kind: "table",
         title: "Cloud audit events",
@@ -859,11 +909,14 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Large upload to personal cloud service" },
-          { label: "User / host", value: "j.mercer / SALES-WS-031" },
+          { label: "Datasource", value: "Data loss prevention (DLP)" },
+          { label: "Timestamp", value: "10/23/2026 18:05:12" },
+          { label: "User", value: "j.mercer" },
+          { label: "Host", value: "SALES-WS-031" },
           { label: "Destination", value: "filedrop-personal.test" },
           { label: "Volume", value: "1.8 GB in 36 minutes (18:05 to 18:41)" },
           { label: "Time of day", value: "After the user's usual finish time (17:30)" },
+          { label: "Direction", value: "outbound" },
         ],
       },
       {
@@ -930,6 +983,18 @@ export const ALERTS: Alert[] = [
     indicators: [],
     evidence: [
       {
+        kind: "fields",
+        title: "Alert details",
+        rows: [
+          { label: "Datasource", value: "Windows security log" },
+          { label: "Timestamp", value: "10/23/2026 03:19:06" },
+          { label: "User", value: "d.rossi" },
+          { label: "Host", value: "db-prod-01" },
+          { label: "Source IP", value: "10.20.50.14 (VPN pool)" },
+          { label: "Direction", value: "inbound" },
+        ],
+      },
+      {
         kind: "logs",
         title: "Windows security log on db-prod-01",
         lines: [
@@ -988,6 +1053,19 @@ export const ALERTS: Alert[] = [
     },
     indicators: ["203.0.113.140", "oceanlink-freight.test"],
     evidence: [
+      {
+        kind: "fields",
+        title: "Alert details",
+        rows: [
+          { label: "Datasource", value: "Identity provider sign-in log" },
+          { label: "Timestamp", value: "10/23/2026 11:04:20" },
+          { label: "Account", value: "d.okafor" },
+          { label: "Source IP", value: "203.0.113.140" },
+          { label: "Method", value: "IMAP (legacy mail protocol)" },
+          { label: "Result", value: "Success" },
+          { label: "Direction", value: "inbound" },
+        ],
+      },
       {
         kind: "table",
         title: "Sign-in log for d.okafor",
@@ -1064,10 +1142,12 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Service account sign-in from a new network followed by a bulk export" },
+          { label: "Datasource", value: "Cloud data platform log" },
+          { label: "Timestamp", value: "10/24/2026 18:51:44" },
           { label: "Account", value: "svc_bi_report" },
           { label: "Source IP", value: "203.0.113.166" },
           { label: "Activity window", value: "18:51 to 19:06" },
+          { label: "Direction", value: "inbound" },
         ],
       },
       {
@@ -1151,9 +1231,11 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "PsExec used against 10 or more servers within 5 minutes" },
-          { label: "Source host", value: "JUMP-ADM-01 (10.20.9.20)" },
+          { label: "Datasource", value: "Endpoint detection (EDR)" },
+          { label: "Timestamp", value: "10/24/2026 01:12:03" },
+          { label: "Host", value: "JUMP-ADM-01 (10.20.9.20)" },
           { label: "Account", value: "svc-patch" },
+          { label: "Program", value: "PsExec64.exe" },
           { label: "Targets", value: "12 file servers, FS-01 to FS-12" },
           { label: "Activity window", value: "01:12 to 01:17" },
         ],
@@ -1235,9 +1317,15 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "User-reported email with a link to a sign-in page" },
-          { label: "Reported by", value: "p.sharma at 10:44" },
+          { label: "Datasource", value: "Email gateway (user report)" },
+          { label: "Timestamp", value: "10/24/2026 10:44:12" },
           { label: "Subject", value: "Shared with you: Q4 supplier contracts" },
+          { label: "Sender", value: "Document Share <share@harborpine-sso.test>" },
+          { label: "Recipient", value: "p.sharma@harborpine.test" },
+          { label: "Attachment", value: "None" },
+          { label: "Content", value: "p.sharma has shared the file 'Q4 supplier contracts' with you. Sign in to view it." },
+          { label: "Direction", value: "inbound" },
+          { label: "Reported by", value: "p.sharma at 10:44" },
           { label: "Link domain", value: "harborpine-sso.test" },
         ],
       },
@@ -1333,10 +1421,14 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "10+ failed sign-ins for one account in 15 minutes" },
+          { label: "Datasource", value: "Identity provider sign-in log" },
+          { label: "Timestamp", value: "10/24/2026 08:37:02" },
           { label: "Account", value: "r.dsouza" },
+          { label: "Source IP", value: "10.20.30.115" },
+          { label: "Application", value: "iPhone Mail (ActiveSync)" },
           { label: "Failed sign-ins", value: "14, between 08:37 and 08:44" },
           { label: "Result", value: "Account locked out at 08:44" },
+          { label: "Direction", value: "internal" },
         ],
       },
       {
@@ -1409,11 +1501,14 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
+          { label: "Datasource", value: "Endpoint antivirus" },
+          { label: "Timestamp", value: "10/24/2026 11:25:02" },
           { label: "Detection", value: "Trojan.Win32.Stealer.gen (password-stealing trojan)" },
           { label: "File", value: "C:\\Users\\m.pillai\\Downloads\\ZoomWorkspace_Setup.exe" },
           { label: "Hash", value: "c41d8a07f3b95e26d0a47e19b8c53f72" },
-          { label: "Detected", value: "11:25:02 when the download finished" },
-          { label: "Action taken", value: "Quarantined and deleted. Result: success." },
+          { label: "Host", value: "MKT-WS-019" },
+          { label: "User", value: "m.pillai" },
+          { label: "Action", value: "Quarantined and deleted. Result: success." },
         ],
       },
       {
@@ -1481,10 +1576,10 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "New script file in an upload folder" },
+          { label: "Datasource", value: "File integrity monitoring" },
+          { label: "Timestamp", value: "10/24/2026 15:31:11" },
           { label: "Host", value: "web-app-03" },
           { label: "File", value: "/var/www/portal/uploads/avatars/9f3a.php" },
-          { label: "Created", value: "15:31:11" },
         ],
       },
       {
@@ -1561,11 +1656,11 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "One admin session used from two different addresses" },
+          { label: "Datasource", value: "Identity provider admin console" },
+          { label: "Timestamp", value: "10/24/2026 13:46:03" },
           { label: "Account", value: "t.venkat (Super Admin)" },
           { label: "Session", value: "s-8841" },
           { label: "Addresses", value: "10.20.4.22 and 203.0.113.178" },
-          { label: "Raised", value: "13:52" },
         ],
       },
       {
@@ -1656,10 +1751,10 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "New executable web page on an internet-facing server" },
+          { label: "Datasource", value: "File integrity monitoring" },
+          { label: "Timestamp", value: "10/24/2026 02:14:05" },
           { label: "Host", value: "xfer-01" },
           { label: "File", value: "C:\\HarborTransfer\\wwwroot\\guest2.aspx" },
-          { label: "Created", value: "02:14:05" },
         ],
       },
       {
@@ -1760,10 +1855,12 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "JNDI lookup string in a request header or URL" },
+          { label: "Datasource", value: "Web application firewall" },
+          { label: "Timestamp", value: "10/24/2026 14:02:11" },
           { label: "Source", value: "198.51.100.208" },
           { label: "Requests", value: "14, between 14:02 and 14:05" },
           { label: "Targets", value: "portal-web, api-gw-02, intranet-01, hr-app-01" },
+          { label: "Direction", value: "inbound" },
         ],
       },
       {
@@ -1855,7 +1952,8 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "New MFA method added within one hour of a help desk reset" },
+          { label: "Datasource", value: "Identity provider audit log" },
+          { label: "Timestamp", value: "10/24/2026 07:50:12" },
           { label: "Account", value: "a.menon" },
           { label: "Reset by", value: "r.nair (help desk), 07:50" },
           { label: "New MFA method", value: "Authenticator app, registered 07:56" },
@@ -1960,10 +2058,10 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Impossible travel" },
+          { label: "Datasource", value: "Identity provider risk detection" },
+          { label: "Timestamp", value: "10/24/2026 09:11:08" },
           { label: "Account", value: "s.nair" },
           { label: "Locations", value: "Pune, India (09:11) and Frankfurt, Germany (09:15)" },
-          { label: "Distance in time", value: "Four minutes" },
         ],
       },
       {
@@ -2062,10 +2160,11 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Signed application started a system tool and made an unusual connection" },
-          { label: "Host", value: "SALES-WS-027 (user j.kapoor)" },
+          { label: "Datasource", value: "Endpoint detection (EDR)" },
+          { label: "Timestamp", value: "10/24/2026 08:01:14" },
+          { label: "Host", value: "SALES-WS-027" },
+          { label: "User", value: "j.kapoor" },
           { label: "Program", value: "CallBridge.exe, signed by VoxLine Ltd, signature valid" },
-          { label: "Raised", value: "08:06" },
         ],
       },
       {
@@ -2160,10 +2259,9 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Backup recovery disabled, then mass file renames" },
+          { label: "Datasource", value: "Endpoint detection (EDR) and file server audit" },
+          { label: "Timestamp", value: "10/24/2026 03:30:44" },
           { label: "Host", value: "FS-02 (Finance file server)" },
-          { label: "First action", value: "03:30:44" },
-          { label: "Raised", value: "03:33" },
         ],
       },
       {
@@ -2256,10 +2354,12 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Access key used from a new address and in a new region" },
+          { label: "Datasource", value: "Cloud audit log" },
+          { label: "Timestamp", value: "10/24/2026 11:02:10" },
           { label: "Key", value: "Access key ending 7Q3M, owner svc-deploy-ci" },
-          { label: "New address", value: "203.0.113.99" },
-          { label: "New region", value: "eu-north-1" },
+          { label: "Source IP", value: "203.0.113.99" },
+          { label: "Region", value: "eu-north-1" },
+          { label: "Direction", value: "inbound" },
         ],
       },
       {
@@ -2349,10 +2449,10 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "New app granted mail access with offline access" },
+          { label: "Datasource", value: "Cloud app governance log" },
+          { label: "Timestamp", value: "10/24/2026 10:21:07" },
           { label: "User", value: "p.rao" },
           { label: "App", value: "DocuViewer Pro" },
-          { label: "Raised", value: "10:55" },
         ],
       },
       {
@@ -2450,10 +2550,12 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "High volume of DNS queries with long, random-looking names" },
+          { label: "Datasource", value: "DNS log" },
+          { label: "Timestamp", value: "10/24/2026 13:02:11" },
           { label: "Host", value: "LEG-WS-012" },
           { label: "Queries", value: "9,214 in the last 60 minutes" },
           { label: "Domain", value: "lookup.shieldsense-cloud.test" },
+          { label: "Direction", value: "outbound" },
         ],
       },
       {
@@ -2544,10 +2646,10 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Chatbot tool called for many different customer accounts in one session" },
+          { label: "Datasource", value: "Chatbot transcript and backend API log" },
+          { label: "Timestamp", value: "10/24/2026 14:58:02" },
           { label: "Session", value: "88213 on the public website" },
           { label: "Lookups", value: "41 different accounts in about 5 minutes" },
-          { label: "Raised", value: "15:12" },
         ],
       },
       {
@@ -2642,10 +2744,11 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Staff report: urgent payment request by voice call" },
+          { label: "Datasource", value: "Phone system and payments queue" },
+          { label: "Timestamp", value: "10/24/2026 14:02:00" },
           { label: "Reported by", value: "r.deshmukh at 14:31" },
           { label: "Payment", value: "PR-30417, $186,400 to Eastbridge Marine Supplies" },
-          { label: "Raised", value: "14:34" },
+          { label: "Direction", value: "inbound" },
         ],
       },
       {
@@ -2734,10 +2837,15 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Reported email with clicks to an unknown sign-in page" },
-          { label: "Recipients", value: "40 staff in Finance and Operations" },
+          { label: "Datasource", value: "Email gateway (user report)" },
+          { label: "Timestamp", value: "10/24/2026 11:42:09" },
+          { label: "Subject", value: "Invoice HP-5532 overdue - remittance details attached" },
+          { label: "Sender", value: "accounts@brightwell-ledger.test" },
+          { label: "Recipient", value: "40 staff in Finance and Operations" },
+          { label: "Attachment", value: "None. The details are behind a link in the body." },
+          { label: "Content", value: "Hello Dinesh, following the Q3 reefer container lease review with Operations, our records show invoice HP-5532 is still open. Could you confirm payment by Friday? The remittance details are in the secure link below." },
+          { label: "Direction", value: "inbound" },
           { label: "Clicks", value: "3" },
-          { label: "Raised", value: "11:42" },
         ],
       },
       {
@@ -2832,10 +2940,12 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Confidential file uploaded to an AI service" },
+          { label: "Datasource", value: "Data loss prevention (web uploads)" },
+          { label: "Timestamp", value: "10/24/2026 12:14:00" },
           { label: "User", value: "s.rajan" },
           { label: "File", value: "customer-churn-q3.csv, labelled Confidential, 1,900 rows" },
           { label: "Destination", value: "harborpine.lumen-workspace.test" },
+          { label: "Direction", value: "outbound" },
         ],
       },
       {
@@ -2919,10 +3029,11 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "AI service usage more than 10 times the daily normal" },
+          { label: "Datasource", value: "Cloud AI usage and billing monitor" },
+          { label: "Timestamp", value: "10/24/2026 10:12:40" },
           { label: "Key", value: "Ending 4F9A, owned by the Data Science team" },
+          { label: "Source IP", value: "203.0.113.250" },
           { label: "Usage", value: "190 million tokens in 6 hours (a normal day is 1.2 million)" },
-          { label: "Raised", value: "16:05" },
         ],
       },
       {
@@ -3013,10 +3124,13 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Email with Confidential attachments sent to a new outside domain by the AI assistant" },
-          { label: "User", value: "m.sharma (sent by PineAssist on her behalf at 09:41, found in the 10:00 batch scan)" },
-          { label: "To", value: "reports@docsync-archive.test, with 3 Confidential attachments" },
-          { label: "Raised", value: "10:05" },
+          { label: "Datasource", value: "Data loss prevention and AI assistant audit" },
+          { label: "Timestamp", value: "10/24/2026 09:41:02" },
+          { label: "Sender", value: "m.sharma, sent by the AI assistant (PineAssist) on her behalf" },
+          { label: "Recipient", value: "reports@docsync-archive.test" },
+          { label: "Attachment", value: "3 files labelled Confidential" },
+          { label: "Direction", value: "outbound" },
+          { label: "Found by", value: "The 10:00 batch scan" },
         ],
       },
       {
@@ -3116,10 +3230,10 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Document started a script engine, which started PowerShell" },
+          { label: "Datasource", value: "Endpoint detection (EDR) and email gateway" },
+          { label: "Timestamp", value: "10/24/2026 13:08:02" },
           { label: "Computers", value: "6, the first was FIN-WS-044 at 13:08" },
           { label: "Action", value: "Blocked by EDR" },
-          { label: "Raised", value: "13:26" },
         ],
       },
       {
@@ -3213,10 +3327,11 @@ export const ALERTS: Alert[] = [
         kind: "fields",
         title: "Alert details",
         rows: [
-          { label: "Rule", value: "Many page-sized uploads to a new domain from a browser add-on" },
+          { label: "Datasource", value: "Web proxy (TLS inspection)" },
+          { label: "Timestamp", value: "10/24/2026 14:02:41" },
           { label: "Computers", value: "14" },
           { label: "Uploads", value: "3,420 in 3 hours" },
-          { label: "Raised", value: "17:10" },
+          { label: "Direction", value: "outbound" },
         ],
       },
       {
