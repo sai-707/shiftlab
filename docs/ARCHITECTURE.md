@@ -6,6 +6,12 @@ A short map for people who want to read or change the code.
 
 Next.js 16 (App Router) and React 19 with strict TypeScript, Tailwind CSS 4, Supabase (accounts, saved progress, analytics), hosted on Cloudflare Workers through the OpenNext adapter.
 
+## Runtime map
+
+![Runtime map](runtime-map.png)
+
+An HTML version with light and dark themes is in [`runtime-map.html`](runtime-map.html).
+
 ## The one rule
 
 **The browser may see the questions, never the answers.**

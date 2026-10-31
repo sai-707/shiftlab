@@ -1,0 +1,174 @@
+<title>ShiftLab Runtime Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one wide figure on a left-to-right trust path (browser, Worker, Supabase); three request walk-throughs below. */
+:root{--bg:#f3f6f8;--panel:#ffffff;--ink:#14202b;--muted:#566878;--line:#bccad6;--zonea:#e9eef2;--zoneb:#dff1ef;--zonec:#e9edf3;--accent:#0a7a73;--accent-soft:#c9e8e4;
+--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c131a;--panel:#131d27;--ink:#e5ecf2;--muted:#8fa2b3;--line:#2b3b4a;--zonea:#101922;--zoneb:#0e2a2c;--zonec:#111b26;--accent:#47d1c4;--accent-soft:#12403f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c131a;--panel:#131d27;--ink:#e5ecf2;--muted:#8fa2b3;--line:#2b3b4a;--zonea:#101922;--zoneb:#0e2a2c;--zonec:#111b26;--accent:#47d1c4;--accent-soft:#12403f;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:clamp(24px,4vw,32px);font-weight:600;letter-spacing:-.01em;margin:0 0 8px;text-wrap:balance}
+.lede{margin:0 0 24px;max-width:68ch;color:var(--muted)}
+figure{margin:0}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+svg{display:block;min-width:1000px;width:100%;height:auto;color:var(--ink)}
+figcaption{margin-top:10px;font-size:14px;color:var(--muted);max-width:80ch}
+figcaption b{color:var(--ink);font-weight:600}
+.zone{stroke:var(--line);stroke-width:1}.za{fill:var(--zonea)}.zb{fill:var(--zoneb);stroke:var(--accent);stroke-width:1.5}.zc{fill:var(--zonec)}
+.zt{font:600 14px var(--sans);fill:var(--ink)}.zs{font:400 11.5px var(--sans);fill:var(--muted)}
+.box{fill:var(--panel);stroke:var(--line);stroke-width:1}.box.key{stroke:var(--accent);stroke-width:1.5}
+.box.ext{stroke-dasharray:4 3;fill:none}
+.inner{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1}
+.row{fill:var(--zonec);stroke:var(--line);stroke-width:.8}
+.bt{font:600 13px var(--sans);fill:var(--ink)}.bs{font:400 11.5px var(--sans);fill:var(--muted)}.bs.r{font-size:10.5px}
+.mono{font:500 11.5px var(--mono);fill:var(--ink)}
+.ar{fill:none;stroke:var(--ink);stroke-width:1.3}.ar.key{stroke:var(--accent);stroke-width:2}.ar.dash{stroke-dasharray:5 4;stroke:var(--muted)}
+.al{font:400 11.5px var(--sans);fill:var(--ink)}.al.k{fill:var(--accent);font-weight:500}
+#a path,#ad path{fill:var(--ink)}#ak path{fill:var(--accent)}#ad path{fill:var(--muted)}
+h2{font-size:17px;font-weight:600;margin:32px 0 12px}
+.walks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 24px;margin:0;padding:0;list-style:none}
+.walks li{min-width:0;padding-top:10px;border-top:2px solid var(--line)}
+.walks li:first-child{border-top-color:var(--accent)}
+.walks h3{margin:0 0 4px;font-size:14px;font-weight:600}.walks p{margin:0;font-size:14px;color:var(--muted)}
+code{font-family:var(--mono);font-size:12.5px}
+.note{margin-top:28px;font-size:13.5px;color:var(--muted);max-width:80ch}
+</style>
+<div class="wrap">
+<h1>ShiftLab Runtime Map</h1>
+<p class="lede">What runs where when someone uses ShiftLab live: the browser, the Cloudflare Worker that serves and grades, and the Supabase project that stores accounts and results.</p>
+<figure>
+<div class="scroll">
+<svg viewBox="0 0 1280 700" role="img" aria-label="The browser never talks to the database. Every read and write goes through the Cloudflare Worker, where the answer keys and grading live, and the Worker talks to Supabase.">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="ak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="ad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<rect class="zone za" x="20" y="30" width="250" height="580" rx="6"/>
+<text class="zt" x="34" y="52">Visitor&#x27;s browser</text>
+<text class="zs" x="34" y="68">Untrusted: holds the questions, never the answers</text>
+<rect class="zone zb" x="420" y="30" width="440" height="580" rx="6"/>
+<text class="zt" x="434" y="52">Cloudflare Worker</text>
+<text class="zs" x="434" y="68">Trusted: Next.js app, run through OpenNext</text>
+<rect class="zone zc" x="1020" y="30" width="240" height="580" rx="6"/>
+<text class="zt" x="1034" y="52">Supabase</text>
+<text class="zs" x="1034" y="68">Accounts and data, free plan</text>
+<rect class="box" x="36" y="150" width="218" height="160" rx="4"/>
+<text class="bt" x="48" y="170">Screens</text>
+<text class="bs" x="48" y="188">React client components:</text>
+<text class="bs" x="48" y="203">queue, alert page, practice</text>
+<text class="bs" x="48" y="218">tools, dashboard, profile.</text>
+<text class="bs" x="48" y="233"></text>
+<text class="bs" x="48" y="248">Alert evidence is in the page</text>
+<text class="bs" x="48" y="263">so you can work it. Answer</text>
+<text class="bs" x="48" y="278">keys are not.</text>
+<rect class="box" x="36" y="340" width="218" height="70" rx="4"/>
+<text class="bt" x="48" y="360">Browser storage</text>
+<text class="bs" x="48" y="378">localStorage: guest progress,</text>
+<text class="bs" x="48" y="393">scores, sources opened</text>
+<rect class="box" x="36" y="440" width="218" height="60" rx="4"/>
+<text class="bt" x="48" y="460">Page-view beacon</text>
+<text class="bs" x="48" y="478">Tracker sends a path and a</text>
+<text class="bs" x="48" y="493">random visitor id</text>
+<path class="ar" d="M145 310 L145 340" marker-end="url(#a)"/>
+<text class="al" x="155" y="328" text-anchor="start">guests keep progress here</text>
+<rect class="box" x="440" y="86" width="400" height="44" rx="4"/>
+<text class="bt" x="452" y="106">proxy.ts</text>
+<text class="bs" x="452" y="124">Runs on every request and refreshes the sign-in cookie</text>
+<rect class="box" x="440" y="150" width="400" height="44" rx="4"/>
+<text class="bt" x="452" y="170">Prerendered pages</text>
+<text class="bs" x="452" y="188">Landing, queue, alert pages: served from the ASSETS store</text>
+<rect class="box key" x="440" y="214" width="400" height="156" rx="4"/>
+<text class="bt" x="452" y="234">Server actions</text>
+<text class="bs" x="452" y="252">Grade a case, check drills, hints, save progress,</text>
+<text class="bs" x="452" y="267">feedback, sign in and out</text>
+<rect class="inner" x="456" y="284" width="368" height="70" rx="4"/>
+<text class="bt" x="468" y="304">Answer keys and grading</text>
+<text class="bs" x="468" y="322">Server-only modules. Reached only from here;</text>
+<text class="bs" x="468" y="337">a test fails if any browser code could import them.</text>
+<rect class="box" x="440" y="420" width="400" height="60" rx="4"/>
+<text class="bt" x="452" y="440">Route handlers</text>
+<text class="bs" x="452" y="458">/api/e takes page views. /auth/callback swaps the emailed or</text>
+<text class="bs" x="452" y="473">Google sign-in code for a session.</text>
+<rect class="box" x="440" y="500" width="400" height="56" rx="4"/>
+<text class="bt" x="452" y="520">Admin pages</text>
+<text class="bs" x="452" y="538">Server-rendered. A non-admin gets a plain 404.</text>
+<rect class="box ext" x="1036" y="86" width="208" height="40" rx="4"/>
+<text class="bt" x="1048" y="106">Google sign-in</text>
+<rect class="box" x="1036" y="150" width="208" height="70" rx="4"/>
+<text class="bt" x="1048" y="170">Auth</text>
+<text class="bs" x="1048" y="188">Email sign-in, Google sign-in,</text>
+<text class="bs" x="1048" y="203">sessions and cookies</text>
+<rect class="box" x="1036" y="250" width="208" height="210" rx="4"/>
+<text class="bt" x="1048" y="270">Postgres</text>
+<text class="bs" x="1048" y="285">row-level security on every table</text>
+<rect class="row" x="1048" y="296" width="184" height="24" rx="3"/>
+<text class="mono" x="1056" y="312">profiles</text>
+<text class="bs r" x="1224" y="312" text-anchor="end">name, role</text>
+<rect class="row" x="1048" y="326" width="184" height="24" rx="3"/>
+<text class="mono" x="1056" y="342">cases</text>
+<text class="bs r" x="1224" y="342" text-anchor="end">closed cases, scores</text>
+<rect class="row" x="1048" y="356" width="184" height="24" rx="3"/>
+<text class="mono" x="1056" y="372">saved_state</text>
+<text class="bs r" x="1224" y="372" text-anchor="end">practice progress</text>
+<rect class="row" x="1048" y="386" width="184" height="24" rx="3"/>
+<text class="mono" x="1056" y="402">feedback</text>
+<text class="bs r" x="1224" y="402" text-anchor="end">from the widget</text>
+<rect class="row" x="1048" y="416" width="184" height="24" rx="3"/>
+<text class="mono" x="1056" y="432">events</text>
+<text class="bs r" x="1224" y="432" text-anchor="end">insert only, capped</text>
+<rect class="box" x="1036" y="500" width="208" height="56" rx="4"/>
+<text class="bt" x="1048" y="520">Admin functions</text>
+<text class="bs" x="1048" y="538">Totals only; each one checks</text>
+<text class="bs" x="1048" y="553">the admin role itself</text>
+<path class="ar" d="M1140 126 L1140 150" marker-end="url(#a)"/>
+<text class="al" x="1150" y="142" text-anchor="start">OAuth</text>
+<path class="ar" d="M254 172 L440 172" marker-end="url(#a)"/>
+<text class="al" x="347" y="164" text-anchor="middle">page request</text>
+<path class="ar key" d="M254 246 L440 246" marker-end="url(#ak)"/>
+<text class="al k" x="347" y="226" text-anchor="middle">server action:</text>
+<text class="al k" x="347" y="240" text-anchor="middle">alert id + your answers</text>
+<path class="ar key" d="M440 292 L254 292" marker-end="url(#ak)"/>
+<text class="al k" x="347" y="276" text-anchor="middle">score and feedback,</text>
+<text class="al k" x="347" y="290" text-anchor="middle">only after you commit</text>
+<path class="ar dash" d="M254 382 L440 358" marker-end="url(#ad)"/>
+<text class="al" x="332" y="394" text-anchor="middle">signed in:</text>
+<text class="al" x="332" y="408" text-anchor="middle">save progress</text>
+<path class="ar" d="M254 462 L440 456" marker-end="url(#a)"/>
+<text class="al" x="347" y="446" text-anchor="middle">page view</text>
+<path class="ar" d="M840 108 L940 108 L940 172 L1036 172" marker-end="url(#a)"/>
+<text class="al" x="850" y="100" text-anchor="start">refresh session</text>
+<path class="ar key" d="M840 262 L1036 262" marker-end="url(#ak)"/>
+<text class="al k" x="938" y="232" text-anchor="middle">reads and writes as</text>
+<text class="al k" x="938" y="246" text-anchor="middle">the signed-in user</text>
+<path class="ar" d="M840 450 L1018 450 L1018 436 L1036 436" marker-end="url(#a)"/>
+<text class="al" x="868" y="468" text-anchor="start">page views: insert only</text>
+<path class="ar" d="M840 528 L1036 528" marker-end="url(#a)"/>
+<text class="al" x="938" y="520" text-anchor="middle">rpc, role checked twice</text>
+<path class="ar dash" d="M840 350 L1000 350 L1000 420 L1036 420" marker-end="url(#ad)"/>
+<text class="al" x="868" y="368" text-anchor="start">case_closed event</text>
+<text class="al" x="868" y="382" text-anchor="start">(no names, no text)</text>
+<rect class="box ext" x="440" y="636" width="150" height="44" rx="4"/>
+<text class="bt" x="452" y="656">GitHub</text>
+<text class="bs" x="452" y="674">main branch</text>
+<rect class="box ext" x="650" y="636" width="190" height="44" rx="4"/>
+<text class="bt" x="662" y="656">Workers Builds</text>
+<text class="bs" x="662" y="674">builds with OpenNext</text>
+<path class="ar dash" d="M590 658 L650 658" marker-end="url(#ad)"/>
+<path class="ar dash" d="M745 636 L745 624 L700 624 L700 610" marker-end="url(#ad)"/>
+<text class="al" x="852" y="658" text-anchor="start">push to main redeploys</text>
+</svg>
+</div>
+<figcaption><b>The browser never talks to the database.</b> It sends requests to the Worker only. The Worker holds the answer keys, grades, and reads or writes Supabase as the signed-in person. Solid teal arrows are the paths that matter for trust; dashed arrows are optional or happen only for signed-in students.</figcaption>
+</figure>
+
+<h2>Three requests, followed through</h2>
+<ul class="walks">
+<li><h3>A guest closes an alert</h3><p>The browser sends the alert id and the written report to a server action. The server finds the key, grades it, and returns the score. The result is kept in browser storage only, and one anonymous <code>case_closed</code> event is added.</p></li>
+<li><h3>A signed-in student closes one</h3><p>Same path, then the server also saves the case under that student's login. Row-level security means they can only ever read or write their own rows, and a closed case cannot be edited.</p></li>
+<li><h3>The owner opens /admin</h3><p>The admin layout checks the role and answers 404 to everyone else. The numbers come from database functions that check the role again, so a student cannot call them from the site.</p></li>
+</ul>
+<p class="note">Read from the code, not from a running system: the Supabase client is used only in server code (no browser client in the repo), and migrations 0001 to 0008 define the tables and functions shown. The sign-in link flow (email or Google, back through <code>/auth/callback</code>) is described in the box text rather than drawn.</p>
+</div>
