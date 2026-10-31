@@ -20,6 +20,35 @@ export type Overview = {
 /** One row of admin_recent_users(). */
 export type RecentUser = { name: string; email: string; joined: string; role: string; cases: number; last_seen: string | null };
 
+/** What admin_guests() returns (supabase/migrations/0007_admin_guests.sql). A guest is a browser with no signed-in account. */
+export type Guests = {
+  days: number;
+  from: string;
+  to: string;
+  tracking_since: string | null;
+  guests_total: number;
+  cur: {
+    visitors: number; views: number; opened: number; returned: number; signed_in_later: number; cases: number; avg_score: number | null;
+    signup_page: number; new_accounts: number; unconfirmed: number;
+  };
+  prev: { visitors: number; views: number; opened: number; cases: number; signup_page: number; new_accounts: number };
+  series: { day: string; visitors: number; cases: number; signups: number }[];
+  sections: { section: string; views: number; visitors: number }[];
+};
+
+/** One row of admin_guest_log(). `guest` is the first 6 characters of the browser id; closed cases carry none. */
+export type GuestLogRow = {
+  id: number;
+  at: string;
+  kind: "view" | "case_closed";
+  guest: string | null;
+  path: string | null;
+  score: number | null;
+  alert: string | null;
+  verdict_ok: boolean | null;
+  escalate_ok: boolean | null;
+};
+
 export const RANGES = [7, 30, 90] as const;
 export type Range = (typeof RANGES)[number];
 
@@ -60,6 +89,10 @@ export const num = (n: number) => n.toLocaleString("en-IN");
 
 /** "2026-10-28" -> "28 Oct". */
 export const shortDay = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "UTC" });
+
+/** "28 Oct, 2:32 pm" in India time, for the guest log. */
+export const clockTime = (iso: string) =>
+  new Date(iso).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
 
 /** "5 min ago", "3 h ago", "2 d ago", or a date once it is older than two weeks. */
 export function ago(iso: string | null, now: number): string {

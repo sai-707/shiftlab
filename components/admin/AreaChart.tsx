@@ -15,6 +15,7 @@ type Point = { label: string; value: number };
 
 export default function AreaChart({ points, unit, label }: { points: Point[]; unit: string; label: string }) {
   const n = points.length;
+  const gid = `admin-area-${label.replace(/\W/g, "")}`; // one gradient id per chart, so two charts on a page do not share an id
   const top = niceMax(Math.max(0, ...points.map((p) => p.value)));
   const x = (i: number) => (n < 2 ? W / 2 : (i / (n - 1)) * W);
   const y = (v: number) => H - (v / top) * H;
@@ -42,7 +43,7 @@ export default function AreaChart({ points, unit, label }: { points: Point[]; un
           aria-label={`${label} per day. ${total} in total${total ? `, busiest day ${peak.label} with ${peak.value}` : ""}.`}
         >
           <defs>
-            <linearGradient id="admin-area" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" style={{ stopColor: "var(--color-accent)", stopOpacity: 0.32 }} />
               <stop offset="1" style={{ stopColor: "var(--color-accent)", stopOpacity: 0 }} />
             </linearGradient>
@@ -50,7 +51,7 @@ export default function AreaChart({ points, unit, label }: { points: Point[]; un
           {[0, 0.5, 1].map((f) => (
             <line key={f} x1="0" x2={W} y1={H * f} y2={H * f} stroke="var(--color-line)" strokeDasharray={f === 1 ? undefined : "3 4"} vectorEffect="non-scaling-stroke" />
           ))}
-          {n > 0 && <path d={area} fill="url(#admin-area)" />}
+          {n > 0 && <path d={area} fill={`url(#${gid})`} />}
           {n > 0 && <path d={line} fill="none" stroke="var(--color-accent)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />}
           {points.map((p, i) => (
             <g key={p.label + i} className="group">
