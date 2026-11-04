@@ -25,6 +25,10 @@ export type Alert = {
   id: string;
   title: string;
   topic: Topic;
+  /** ATT&CK-style stage the rule maps to, shown in the alert header like a real console. */
+  category?: string;
+  /** ATT&CK technique the rule maps to (for example "T1566.002 Phishing: Spearphishing Link"). Not set when the rule has none. */
+  technique?: string;
   severity: Severity;
   difficulty: Difficulty;
   raisedAt: string;
@@ -40,6 +44,9 @@ export type Alert = {
 
 export type Verdict = "tp" | "fp";
 
+/** Why a false positive was benign (see content/fp-reasons.ts). */
+export type FpReason = "business" | "testing" | "admin" | "system" | "user";
+
 export type ReportSections = {
   happened: string;
   confirmed: string;
@@ -51,6 +58,8 @@ export type Submission = {
   alertId: string;
   verdict: Verdict;
   escalate: boolean;
+  /** Only for false positives: why it was benign. Shown as unscored feedback. */
+  reason?: FpReason;
   sections: ReportSections;
   /** Sources the student opened while investigating (Intermediate and Hard alerts). */
   opened?: string[];
@@ -67,6 +76,8 @@ export type Feedback = {
   score: number;
   correctVerdict: Verdict;
   correctEscalate: boolean;
+  /** Unscored. Present for false positives: what the student picked and the right reason. */
+  reason?: { picked: FpReason | null; correct: FpReason; ok: boolean };
   items: FeedbackItem[];
   explanation: string;
 };
@@ -85,6 +96,8 @@ export type CaseRecord = {
 export type AnswerKey = {
   verdict: Verdict;
   escalate: boolean;
+  /** Required when verdict is "fp". */
+  reason?: FpReason;
   /** label is shown as coaching when missed; matches are lowercase words that count as mentioning it */
   evidence: { label: string; matches: string[] }[];
   explanation: string;
