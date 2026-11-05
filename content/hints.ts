@@ -88,9 +88,9 @@ export const HINTS: Record<string, HintSet> = {
     "Find out what state the file servers are in afterwards. The Target servers after the run tab shows each one.",
   ],
   "SL-1017": [
-    "Did the user only look at the page, or did they type something into it?",
-    "Open the Web proxy log tab and look at what the browser sent to the page.",
-    "Then check whether the account was used from somewhere new (Identity sign-in log for p.sharma tab) and who else received the email (Other recipients tab).",
+    "How far above this user's usual activity is this, and was it spread out or all at once?",
+    "Open the Download volume vs baseline tab and the SharePoint audit log tab and compare them.",
+    "Find out where the files went (Endpoint and USB activity tab and Web proxy and cloud app log tab) and what the HR records show (HR and access context tab).",
   ],
   "SL-1018": [
     "Where did the wrong passwords come from: inside the company or outside?",
@@ -128,9 +128,9 @@ export const HINTS: Record<string, HintSet> = {
     "Find out who registered the new device (Identity audit log tab), whether a.menon is really in the office (Leave calendar tab) and what the account did (Finance portal activity tab).",
   ],
   "SL-1025": [
-    "Is it the same device and browser at both locations?",
-    "Open the Sign-in log tab and the Device record tab and compare them.",
-    "Find out whether other users show the same pattern (Other users with the same alert pattern tab) and whether a recent change is recorded (Change record CHG-2291 tab).",
+    "Spraying tries a few passwords on many accounts. How can you tell this is not one person mistyping?",
+    "Open the Sign-in log summary tab and compare how many accounts were tried with how many attempts each.",
+    "Find out whether the one success was protected by MFA (Account context tab) and what it did next (Successful sign-in and mailbox activity tab).",
   ],
   "SL-1026": [
     "What did the program start after it updated?",
@@ -196,5 +196,70 @@ export const HINTS: Record<string, HintSet> = {
     "What exactly is the add-on sending, and to where?",
     "Open the Proxy log tab.",
     "Find out what changed in the add-on (Extension details tab), who has it (Affected users and pages tab) and whether anything users type is visible (Bank portal and sign-in check tab).",
+  ],
+  "SL-1039": [
+    "A command hidden in Base64 is only a problem if it says something harmful. Where could you read what it says once decoded?",
+    "Open the PowerShell script block log tab.",
+    "Compare what the script did with the ticket (Change and ticket records tab) and where the session started (Authentication log for v.joshi tab).",
+  ],
+  "SL-1040": [
+    "Ransomware deletes shadow copies, but backup tools clean them up too. Which program started the command, and with which options?",
+    "Open the EDR process events on FS-02 tab.",
+    "See whether the command appears on other nights and servers (Same command on other servers tab) and what the server looked like afterwards (FS-02 after the run tab).",
+  ],
+  "SL-1041": [
+    "Many programs create scheduled tasks. What created this one, and what does it run?",
+    "Open the Windows event log on HR-WS-019 tab.",
+    "Check who signed the program (Software and signature record tab) and whether other computers have the same task (Other computers with the same task tab).",
+  ],
+  "SL-1042": [
+    "Read the exact text that matched the rule. Would an ordinary customer ever type it?",
+    "Open the WAF log tab.",
+    "Look at what the visitor did before and after (Web server log for 198.51.100.206 tab) and whether the rule fires for other visitors (Same rule in the last 7 days tab).",
+  ],
+  "SL-1043": [
+    "Some devices cannot do MFA at all. Where is this account supposed to sign in from, and is that where this one came from?",
+    "Open the Sign-in log for svc-mfp-mail tab.",
+    "Find out whether a recorded decision covers this sign-in (Conditional access exception record tab) and what the account did afterwards (Mailbox activity tab).",
+  ],
+  "SL-1044": [
+    "A young domain is a reason to look closer, not an answer. How did these people end up on the site?",
+    "Open the Email that carried the link tab.",
+    "Check whether the sender and the site fit a business relationship (Vendor and campaign records tab) and what the visitors sent to the site (Web proxy log tab).",
+  ],
+  "SL-1045": [
+    "A burst of blocked attack patterns is what scanning looks like. Who might be allowed to scan the portal?",
+    "Open the Pentest engagement record tab.",
+    "Check that the address, time and target all fall inside what was approved, then see whether anything got through (WAF log summary tab and Portal health during the window tab).",
+  ],
+  "SL-1046": [
+    "A voice can be copied, so judge the facts around the call, not how it sounded. What can you check without trusting the caller?",
+    "Open the Call record tab.",
+    "Find out whether the number belongs to the CFO and whether he confirmed on a number we already trust (Callback and confirmation tab), and whether the payment itself looks normal (Payment and supplier record tab).",
+  ],
+  "SL-1047": [
+    "Which system sent the data, and is it supposed to talk to that destination?",
+    "Open the Destination details tab.",
+    "Compare the size and time with earlier months (Backup schedule and transfer history tab) and look for an agreement that covers it (Contract and change record tab).",
+  ],
+  "SL-1048": [
+    "Did these messages leave from the mailbox itself, or did another service send them as this address?",
+    "Open the Sending platform and authentication tab.",
+    "Check whether a campaign was planned (Campaign record tab) and what the messages contain (Message content and links tab).",
+  ],
+  "SL-1049": [
+    "Is a burst of deletions always destruction? Look at what was deleted and who has the right to do it.",
+    "Open the Ticket and approval tab and compare its scope with the SharePoint audit log tab.",
+    "Find out whether anything is lost (Recycle bin and retention tab) and what the user's situation is (User and role context tab).",
+  ],
+  "SL-1050": [
+    "Spend that jumps can mean someone else has the key or that the company's own work grew. Where are the requests coming from?",
+    "Open the Usage and billing tab.",
+    "Check what was being called (API request log tab) and whether a project explains it (Project and approval record tab).",
+  ],
+  "SL-1051": [
+    "Assistants can be told to send files by text they read. Who told this one to send it?",
+    "Open the Conversation and confirmation tab.",
+    "Check whether the recipient is someone we share files with (Partner and document record tab) and what the assistant's rules allow (Assistant policy settings tab).",
   ],
 };

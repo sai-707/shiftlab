@@ -60,8 +60,8 @@ export const LOG_LINKS: Record<string, LogLink[]> = {
     { ask: "What happened on the jump server?", q: "host:JUMP-ADM-01" },
   ],
   "SL-1017": [
-    { ask: "What did p.sharma's computer do around the click?", q: "user:p.sharma" },
-    { ask: "Who else connected to the fake site?", q: "harborpine-sso.test" },
+    { ask: "Everything r.pillai's account and laptop did", q: "user:r.pillai" },
+    { ask: "Who else connected to the personal storage site?", q: "cloudbox-personal.test" },
   ],
   "SL-1018": [
     { ask: "Where did r.dsouza's sign-in attempts come from?", q: "user:r.dsouza" },
@@ -91,8 +91,8 @@ export const LOG_LINKS: Record<string, LogLink[]> = {
     { ask: "What the new address did", q: "src:192.0.2.64" },
   ],
   "SL-1025": [
-    { ask: "s.nair's sign-ins", q: "user:s.nair" },
-    { ask: "Who else signed in from the gateway range?", q: "192.0.2.1" },
+    { ask: "Everything the spraying address did", q: "src:198.51.100.219" },
+    { ask: "What e.mathew's account did", q: "user:e.mathew" },
   ],
   "SL-1026": [
     { ask: "Who contacted the new domain?", q: "api-voxline-cdn.test" },
@@ -142,5 +142,53 @@ export const LOG_LINKS: Record<string, LogLink[]> = {
   "SL-1038": [
     { ask: "Everything sent to the add-on's domain", q: "api.sumly-ai.test" },
     { ask: "Everything l.gupta did", q: "user:l.gupta" },
+  ],
+  "SL-1039": [
+    { ask: "What did v.joshi do on the file server?", q: "user:v.joshi" },
+    { ask: "Everything that ran on SRV-FS-03", q: "host:SRV-FS-03" },
+  ],
+  "SL-1040": [
+    { ask: "What did the backup account run on FS-02?", q: "host:FS-02" },
+    { ask: "Where else did the backup account delete shadow copies?", q: "user:svc-backup" },
+  ],
+  "SL-1041": [
+    { ask: "What happened on HR-WS-019 after the install?", q: "host:HR-WS-019" },
+    { ask: "What did the NorthPDF update site get?", q: "updates.northpdf.test" },
+  ],
+  "SL-1042": [
+    { ask: "Everything this visitor did on the shop", q: "src:198.51.100.206" },
+    { ask: "All WAF events for the shop", q: "shop.harborpine.test" },
+  ],
+  "SL-1043": [
+    { ask: "What did the service account do?", q: "user:svc-mfp-mail" },
+    { ask: "What else came from the printer's address?", q: "src:10.20.60.23" },
+  ],
+  "SL-1044": [
+    { ask: "Everyone who visited the new domain", q: "brightlane-campaign.test" },
+    { ask: "What did r.kulkarni do?", q: "user:r.kulkarni" },
+  ],
+  "SL-1045": [
+    { ask: "Everything from the testing address", q: "src:203.0.113.55" },
+    { ask: "What did the WAF block on the portal?", q: "portal.harborpine.test" },
+  ],
+  "SL-1047": [
+    { ask: "Everything BKP-REPO-01 sent that night", q: "src:10.20.8.40" },
+    { ask: "Everything to the backup provider's address", q: "dst:203.0.113.171" },
+  ],
+  "SL-1048": [
+    { ask: "All mail from the marketing sender", q: "user:marketing@harborpine.test" },
+    { ask: "Everything from the platform's addresses", q: "src:198.51.100.150" },
+  ],
+  "SL-1049": [
+    { ask: "Everything p.dutta did", q: "user:p.dutta" },
+    { ask: "What happened on the Project-Atlas site?", q: "Project-Atlas" },
+  ],
+  "SL-1050": [
+    { ask: "What did the embedding key do?", q: "user:svc-ds-embeddings" },
+    { ask: "Everything from the first cluster node", q: "src:10.20.12.31" },
+  ],
+  "SL-1051": [
+    { ask: "What did the assistant do for n.kulkarni?", q: "user:n.kulkarni" },
+    { ask: "Everything sent to the partner's domain", q: "partner-ardent.test" },
   ],
 };
