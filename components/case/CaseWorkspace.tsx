@@ -21,8 +21,7 @@ import RelatedAlerts from "./RelatedAlerts";
 import { LOG_LINKS } from "@/content/logLinks";
 import { topicSlug } from "@/content/playbooks";
 import { TOPIC_COLOR } from "@/lib/topics";
-import { FP_REASONS } from "@/content/fp-reasons";
-import type { Alert, Briefing as BriefingData, EvidenceBlock, FpReason, ReportSections, Submission, Verdict } from "@/lib/types";
+import type { Alert, Briefing as BriefingData, EvidenceBlock, ReportSections, Submission, Verdict } from "@/lib/types";
 
 const panel = "rounded-2xl border border-line bg-panel p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.03)]";
 
@@ -172,7 +171,6 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
   const have = openedCount(opened);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [escalate, setEscalate] = useState<boolean | null>(null);
-  const [reason, setReason] = useState<FpReason | null>(null);
   const [sections, setSections] = useState<ReportSections>({
     happened: "",
     confirmed: "",
@@ -188,17 +186,13 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
       setError("Choose a verdict and whether to escalate.");
       return;
     }
-    if (verdict === "fp" && reason === null) {
-      setError("Choose why this is a false positive.");
-      return;
-    }
     const problems = reportProblems(sections);
     if (problems.length) {
       setError(problems[0]);
       return;
     }
     setError("");
-    const submission: Submission = { alertId: alert.id, verdict, escalate, ...(verdict === "fp" && reason ? { reason } : {}), sections, ...(need ? { opened } : {}) };
+    const submission: Submission = { alertId: alert.id, verdict, escalate, sections, ...(need ? { opened } : {}) };
     startTransition(async () => {
       const result = await submitCase(submission, trackingVisitorId());
       if (!result.ok) {
@@ -254,23 +248,6 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
           </label>
         </div>
       </fieldset>
-
-      {verdict === "fp" && (
-        <fieldset className="grid gap-2 md:grid-cols-[13rem_1fr] md:gap-4">
-          <legend className="mb-2 text-sm font-semibold md:mb-0 md:float-left md:w-52">
-            Why is it a false positive?
-            <span className="mt-1 block text-xs font-normal text-muted">The reason you would write on the ticket when you close it. Not scored.</span>
-          </legend>
-          <div className="grid gap-2 sm:grid-cols-2 md:col-start-2">
-            {FP_REASONS.map((r) => (
-              <label key={r.id} className={choice}>
-                <input type="radio" name="reason" className="accent-accent" checked={reason === r.id} onChange={() => setReason(r.id)} />
-                {r.label}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      )}
 
       <div className="grid gap-3 md:grid-cols-[13rem_1fr] md:gap-4">
         <div>
@@ -408,27 +385,6 @@ function EvidenceTabs({ alert, opened, isActive, hideEvidence, alertBlock }: { a
   );
 }
 
-/** The alert header a real console shows: where it came from, which rule fired, what it maps to. No story. */
-function AlertMeta({ alert }: { alert: Alert }) {
-  const rows: [string, string][] = [
-    ["Source", alert.briefing.source],
-    ["Rule", alert.briefing.rule],
-    ...(alert.category ? ([["Category", alert.category]] as [string, string][]) : []),
-    ...(alert.technique ? ([["Technique", alert.technique]] as [string, string][]) : []),
-    ["Status", "New"],
-  ];
-  return (
-    <dl className="mt-3 flex max-w-4xl flex-wrap gap-x-6 gap-y-1.5 text-xs">
-      {rows.map(([k, v]) => (
-        <div key={k} className="flex gap-1.5">
-          <dt className="text-muted">{k}</dt>
-          <dd className="font-mono text-ink">{v}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
 export default function CaseWorkspace({ alert }: { alert: Alert }) {
   const progress = useProgress();
   const guestLimit = useGuestLimit();
@@ -463,7 +419,6 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
           </span>
         </div>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{alert.title}</h1>
-        <AlertMeta alert={alert} />
         {(alert.difficulty === "Beginner" || !alert.description) && <p className="mt-2 max-w-3xl text-sm text-muted">{alert.summary}</p>}
         {alert.task && (
           <p className="mt-3 max-w-3xl rounded-lg border border-accent/40 bg-accent/10 px-4 py-2.5 text-sm">
@@ -535,7 +490,7 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
           <Section n={1} title="The alert">
             <div className="space-y-4">
               <dl className="divide-y divide-line/60 text-sm">
-                {alert.description && alert.difficulty === "Beginner" && (
+                {alert.description && (
                   <div className="grid gap-1 pb-2.5 sm:grid-cols-[10rem_1fr]">
                     <dt className="text-muted">Description</dt>
                     <dd className="leading-relaxed">{alert.description}</dd>
@@ -547,7 +502,7 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
                   <EvidenceBody block={alertBlock} />
                 </div>
               )}
-              <BriefingBits b={alert.briefing} topic={alert.topic} showLooksFor={!(alert.description && alert.difficulty === "Beginner")} openQuestions={alert.difficulty === "Beginner"} />
+              <BriefingBits b={alert.briefing} topic={alert.topic} showLooksFor={!alert.description} openQuestions={alert.difficulty === "Beginner"} />
             </div>
           </Section>
 

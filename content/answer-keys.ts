@@ -24,7 +24,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1002": {
     verdict: "fp",
-    reason: "business",
     escalate: false,
     evidence: [
       { label: "SPF and DKIM both passed", matches: ["spf", "dkim"] },
@@ -57,7 +56,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1004": {
     verdict: "fp",
-    reason: "testing",
     escalate: false,
     evidence: [
       {
@@ -114,7 +112,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1007": {
     verdict: "fp",
-    reason: "testing",
     escalate: false,
     evidence: [
       {
@@ -155,7 +152,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1009": {
     verdict: "fp",
-    reason: "system",
     escalate: false,
     evidence: [
       {
@@ -238,7 +234,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1013": {
     verdict: "fp",
-    reason: "admin",
     escalate: false,
     evidence: [
       {
@@ -294,7 +289,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1016": {
     verdict: "fp",
-    reason: "admin",
     escalate: false,
     evidence: [
       { label: "PsExec was run by svc-patch from JUMP-ADM-01", matches: ["psexec", "svc-patch", "jump-adm-01"] },
@@ -318,7 +312,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1018": {
     verdict: "fp",
-    reason: "user",
     escalate: false,
     evidence: [
       { label: "all failures came from r.dsouza's own registered iPhone on the staff Wi-Fi", matches: ["10.20.30.115", "iphone", "phone"] },
@@ -396,7 +389,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1025": {
     verdict: "fp",
-    reason: "admin",
     escalate: false,
     evidence: [
       { label: "both sign-ins came from the same managed, compliant device (dev-7731) and the same browser", matches: ["dev-7731", "same device", "managed", "compliant", "ops-lt-044"] },
@@ -452,7 +444,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1030": {
     verdict: "fp",
-    reason: "system",
     escalate: false,
     evidence: [
       { label: "all queries came from ShieldSenseSvc.exe, signed by ShieldSense Inc., the company's endpoint security agent", matches: ["shieldsensesvc", "shieldsense", "signed", "agent"] },
@@ -497,7 +488,6 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1034": {
     verdict: "fp",
-    reason: "business",
     escalate: false,
     evidence: [
       { label: "the upload went to the company's own tenant of Lumen Workspace Enterprise, an approved tool (AI-APP-006) allowed up to Confidential", matches: ["approved", "ai-app-006", "company tenant", "own tenant", "lumen", "up to confidential", "enterprise"] },
