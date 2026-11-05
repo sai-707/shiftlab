@@ -14,11 +14,9 @@ import { reportProblems } from "@/lib/reportRules";
 import { createClient } from "@/lib/supabase/server";
 import { track } from "@/lib/track";
 import { MIN_SOURCES, isGated, openedCount } from "@/lib/sourceRules";
-import { FP_REASONS } from "@/content/fp-reasons";
-import type { CaseRecord, FpReason, IntelResult, Submission, SubmitResult } from "@/lib/types";
+import type { CaseRecord, IntelResult, Submission, SubmitResult } from "@/lib/types";
 
 const MAX_TEXT = 2000;
-const FP_REASON_IDS: string[] = FP_REASONS.map((r) => r.id);
 
 function text(value: unknown): string {
   return typeof value === "string" ? value.trim().slice(0, MAX_TEXT) : "";
@@ -47,11 +45,6 @@ export async function submitCase(input: Submission, visitor?: string): Promise<S
       next: text(input.sections?.next),
     },
   };
-
-  if (input.verdict === "fp") {
-    if (!FP_REASON_IDS.includes(input.reason as string)) return { ok: false, error: "Choose why this is a false positive." };
-    submission.reason = input.reason as FpReason;
-  }
 
   const alert = ALERTS.find((x) => x.id === alertId)!;
   const gated = isGated(alert);

@@ -5,7 +5,6 @@ import AfterAction from "./AfterAction";
 import RealWorld from "./RealWorld";
 import ReviewPanel from "./ReviewPanel";
 import { hintsUsed } from "@/lib/hintsUsed";
-import { FP_REASONS } from "@/content/fp-reasons";
 import type { CaseRecord } from "@/lib/types";
 
 function band(score: number): string {
@@ -42,16 +41,6 @@ export default function FeedbackPanel({ record }: { record: CaseRecord }) {
         <span className="text-ink">{name(feedback.correctVerdict)}</span>
         {feedback.correctEscalate ? ", with escalation." : ", no escalation."}
       </p>
-
-      {feedback.reason && (
-        <p className="text-sm text-muted">
-          Reason for closing:{" "}
-          <span className={feedback.reason.ok ? "text-correct" : "text-missed"}>
-            {feedback.reason.picked ? FP_REASONS.find((r) => r.id === feedback.reason!.picked)?.label : "none chosen"}
-          </span>
-          {feedback.reason.ok ? ". Correct (not scored)." : `. The better reason was "${FP_REASONS.find((r) => r.id === feedback.reason!.correct)?.label}" (not scored).`}
-        </p>
-      )}
 
       <ul className="space-y-4">
         {feedback.items.map((item) => {

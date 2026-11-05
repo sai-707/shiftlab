@@ -135,8 +135,5 @@ export function gradeSubmission(key: AnswerKey, sub: Submission, gated = false):
     items[3].note += " A report that contradicts the evidence caps the score at 70.";
   }
 
-  // Unscored, like the bonus question: a false positive also needs the right reason, as in a real console.
-  const reason = key.reason ? { picked: sub.reason ?? null, correct: key.reason, ok: sub.reason === key.reason } : undefined;
-
-  return { score, correctVerdict: key.verdict, correctEscalate: key.escalate, ...(reason ? { reason } : {}), items, explanation: key.explanation };
+  return { score, correctVerdict: key.verdict, correctEscalate: key.escalate, items, explanation: key.explanation };
 }
