@@ -301,14 +301,14 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   },
   "SL-1017": {
     verdict: "tp",
-    escalate: false,
+    escalate: true,
     evidence: [
-      { label: "p.sharma opened a link to the fake page harborpine-sso.test", matches: ["sharma", "harborpine-sso"] },
-      { label: "no form was submitted (no POST) and no new sign-in followed", matches: ["no post", "no sign-in", "nothing was entered"] },
-      { label: "other recipients and the blocked click by f.reyes", matches: ["reyes", "recipients", "blocked"] },
+      { label: "1,940 files (6.8 GB) in 28 minutes against a usual 38 files a day", matches: ["1,940", "6.8", "38"] },
+      { label: "6.1 GB copied to an unapproved USB drive, and three uploads to personal cloud storage blocked", matches: ["usb", "6.1", "sandisk", "cloudbox", "blocked"] },
+      { label: "resigned on 20 October, last day 6 November, and no handover or ticket explains the download", matches: ["resignation", "last working day", "2026-11-06", "handover"] },
     ],
     explanation:
-      "This is a real phishing email with an adversary-in-the-middle page, so it is a true positive. But it is contained: the proxy shows p.sharma only loaded the page and sent no form data, the identity log shows no sign-in from a new address and no MFA or mailbox changes, and f.reyes's click was blocked. Handle it yourself: block the domain, remove the email from the other mailboxes and tell both users. It would become an escalation if a POST or a new sign-in appeared.",
+      "A download this size could be a migration or a handover, but nothing supports that here. r.pillai resigned on 20 October, pulled 61 customer and pricing folders as ZIP files in 28 minutes (only 4 are their own accounts), copied 6.1 GB to a USB drive that is not approved and tried three uploads to personal cloud storage, which DLP blocked. Escalate to the insider-risk process: preserve the logs, ask HR and the manager to recover the drive, restrict access and look back over the last 30 days. This is an HR and legal matter, so contact with the user goes through them.",
   },
   "SL-1018": {
     verdict: "fp",
@@ -388,15 +388,15 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
       "The reset was done on a weak check by phone, the next sign-in came from a rented server on an unknown computer, and the attacker registered their own MFA device. Meanwhile a.menon is on leave. Within 20 minutes the account exported the supplier list and asked to change Northwind Freight's bank details, a payment fraud pattern. Escalate now so the account is locked, the bank change is stopped and Finance is warned.",
   },
   "SL-1025": {
-    verdict: "fp",
-    escalate: false,
+    verdict: "tp",
+    escalate: true,
     evidence: [
-      { label: "both sign-ins came from the same managed, compliant device (dev-7731) and the same browser", matches: ["dev-7731", "same device", "managed", "compliant", "ops-lt-044"] },
-      { label: "change CHG-2291 started the gateway pilot at 09:00 and routes pilot laptops through Frankfurt (192.0.2.128/26)", matches: ["chg-2291", "edgeshield", "gateway", "pilot", "192.0.2.128"] },
-      { label: "other Operations pilot users show the same pattern and nobody outside the group does", matches: ["k.thomas", "a.bhatt", "d.menon", "other users", "operations", "pilot group"] },
+      { label: "one outside address (198.51.100.219) tried 207 accounts, about two attempts each, in alphabetical order", matches: ["198.51.100.219", "207", "alphabetical", "spray"] },
+      { label: "e.mathew signed in once with a password only, no MFA, over legacy IMAP", matches: ["e.mathew", "no mfa", "imap", "legacy", "exception"] },
+      { label: "the account then read 340 messages including the Invoices mailbox, and later attempts on other apps were blocked", matches: ["340", "invoices", "blocked", "conditional access"] },
     ],
     explanation:
-      "The laptop never moved. Its web traffic started leaving through the new gateway's Frankfurt data centre when the pilot began at 09:00, and the same managed device, same browser and normal activity follow. Other Operations users show the same pattern and nobody outside the pilot does. Close it as a false positive and ask for the gateway range to be treated as a known location.",
+      "Many accounts with one or two failures each, in alphabetical order, from a hosting-provider address is password spraying. It stays under the lockout limit of 10, so no account locked. One of the 207 worked. e.mathew has no MFA because the legacy-authentication exception from INC-4710 expired on 30 June and was never removed, so a password alone was enough over IMAP, and 340 messages were read including the Invoices mailbox. Conditional access blocked the later attempts on SharePoint and Outlook on the web. Escalate now: reset the password, revoke sessions, remove the exception and check the Invoices mailbox for supplier or bank detail changes.",
   },
   "SL-1026": {
     verdict: "tp",
@@ -540,5 +540,158 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
     ],
     explanation:
       "The add-on started as a harmless page summariser, then changed owner and, three days ago, updated itself to read every website. It now uploads the full text of each page to api.sumly-ai.test, including payment batches, supplier bank details and bank portal pages from six Finance users. It is not on the approved list and browser policy lets users install add-ons. Typed passwords were not seen, but the access would allow it. Escalate now to remove the add-on by policy, block the domain, work out what was sent and warn Finance.",
+  },
+  "SL-1039": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the encoded text decodes to a log-archiving command (Get-ChildItem, Compress-Archive), shown in the script block log", matches: ["decod", "get-childitem", "compress-archive", "archiv", "script block", "4104"] },
+      { label: "v.joshi started it by PowerShell remoting from JUMP-ADM-01, as on 41 earlier days", matches: ["jump-adm-01", "remoting", "wsmprovhost", "41", "usual", "normal"] },
+      { label: "incident INC-5604 (disk nearly full) and the ticket note describe this exact work", matches: ["inc-5604", "ticket", "disk", "d: drive", "space", "full"] },
+      { label: "no network connections were opened and no files were deleted", matches: ["no network", "no connection", "not deleted", "nothing deleted", "no files deleted", "none"] },
+    ],
+    explanation:
+      "An encoded command is a reason to look, not a verdict. The script block log shows the decoded text: it zips application logs older than 30 days on SRV-FS-03. v.joshi ran it by PowerShell remoting from JUMP-ADM-01, which is how this account works on 41 of the last 90 days, and incident INC-5604 (D: drive nearly full) and the ticket note describe the same job. The script opened no connections and deleted nothing. Close it as a false positive and suggest tuning the rule for administrators on the jump server.",
+  },
+  "SL-1040": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the command was started by the NorthVault backup agent (NVAgent.exe) as part of backup job 4471", matches: ["nvagent", "northvault", "backup agent", "backup job", "job 4471", "svc-backup"] },
+      { label: "it deleted only the oldest snapshot (/oldest) because the policy keeps two, not all of them", matches: ["oldest", "/oldest", "keeps 2", "keep 2", "retention", "policy", "not all"] },
+      { label: "the same command runs every night on FS-01, FS-02 and FS-03, 14 nights in a row", matches: ["14", "every night", "nightly", "fs-01", "fs-03", "same command"] },
+      { label: "nothing else happened on the server: no file changes, no new services, and the backup succeeded", matches: ["no file", "no rename", "encrypt", "succeeded", "success", "verification", "restore", "nothing else"] },
+    ],
+    explanation:
+      "Deleting shadow copies is what ransomware does first, but so does backup software cleaning up. Here the parent process is the NorthVault agent, the command is 'delete shadows /oldest' (one snapshot, not all), the backup job log says the policy keeps two snapshots, and the same command ran on 14 nights on three servers. Afterwards there are no file renames, no new services and no outside connections, and the backup finished with a successful test restore. Close it as a false positive and suggest excluding exactly this command from this agent.",
+  },
+  "SL-1041": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the task was created by msiexec during an installation that g.thomas started from Software Center", matches: ["msiexec", "software center", "installer", "install", "catalogue", "catalog"] },
+      { label: "NorthPDF Reader 12 is approved software and updater.exe is signed by NorthPDF Ltd", matches: ["northpdf", "approved", "signed", "signer", "sr-2207"] },
+      { label: "14 other computers have the same task, all installed from Software Center", matches: ["14", "other computers", "same task", "known hash", "0 detections"] },
+    ],
+    explanation:
+      "A new scheduled task can be how malware survives a restart, but this one was created by the installer of an approved program that g.thomas installed from Software Center two minutes earlier. The task runs a file signed by NorthPDF Ltd with a known clean hash, and 14 other computers have the same task from the same installer. The only connection so far is a version check to the vendor's update site. Close it as a false positive and suggest excluding this signed installer.",
+  },
+  "SL-1042": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the matched text is an apostrophe and a double dash in a product search: Rock'n'Roll tee -- size M", matches: ["rock", "apostrophe", "--", "search", "tee", "'"] },
+      { label: "the shop answered normally: 200, no results, no errors, no database problems", matches: ["200", "0 results", "no results", "no error", "no 500", "parameteris", "no database"] },
+      { label: "the visitor searched again, then paid for an order, and the same rule fires for other ordinary customers", matches: ["checkout", "order", "cart", "paid", "bought", "other customers", "o'brien", "7 days", "different addresses"] },
+    ],
+    explanation:
+      "The rule matched an apostrophe and '--' in a customer's search for a band T-shirt. The shop returned a normal 8 KB page with no results, with no server or database errors and nothing unusually large. The same visitor rephrased the search, added the shirt to the cart and paid, and the same rule fired for 19 other ordinary customers this week with the same harmless answers. Close it as a false positive and suggest scoring a single match on /search lower.",
+  },
+  "SL-1043": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the sign-in came from the printer MFP-FLR3-03 (10.20.60.23), inside the printer network the exception allows", matches: ["10.20.60.23", "mfp", "printer", "10.20.60.0/24"] },
+      { label: "conditional access exception CHG-2188 approves SMTP AUTH without MFA for this account from the printer network only, with a review date", matches: ["chg-2188", "exception", "approved", "smtp", "review"] },
+      { label: "it matches 30 nights of identical 02:00 sign-ins and the scheduled counter report to finance-ops", matches: ["02:00", "30", "every night", "counter report", "scheduled", "finance-ops", "same pattern"] },
+      { label: "the mailbox shows one internal email, no forwarding, no rules and no outside recipients", matches: ["one email", "1 message", "internal", "no forwarding", "no rules", "no outside", "finance-ops"] },
+    ],
+    explanation:
+      "A password-only sign-in with a legacy protocol at 02:00 is exactly what a stolen service password would look like, so the answer is in the details. The sign-in came from the printer's own address, which is the only network CHG-2188 allows, and it repeats 30 nights in a row at 02:00 to send the scheduled counter report. The mailbox shows one internal message and no rules or forwarding, and the account has never signed in from anywhere else. Close it as a false positive, and keep the review date of the exception in mind.",
+  },
+  "SL-1044": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the users were sent the link by an email from Brightlane Creative, a known vendor, passing SPF, DKIM and DMARC", matches: ["brightlane", "maya", "email", "spf", "dkim", "vendor", "agency", "sender"] },
+      { label: "the vendor register and campaign plan show the agency building the Winter Sale microsite for launch on 2026-11-03", matches: ["winter sale", "campaign", "contract", "vendor register", "launch", "microsite", "approved"] },
+      { label: "the visitors only viewed pages and posted one feedback comment: no downloads, no sign-in form, no password", matches: ["no download", "no sign-in", "no password", "feedback", "comment", "post", "only viewed"] },
+      { label: "the domain is six days old with a privacy service and shared hosting, but has no detections", matches: ["6 days", "six days", "privacy", "shared", "0 detections", "no detections", "registered"] },
+    ],
+    explanation:
+      "A six-day-old domain with hidden registrant details is what a phishing site often looks like, but every other fact points to a business reason. The four users received an email from the agency Brightlane Creative, a vendor with a contract and 14 earlier emails, passing all email checks and asking for feedback on the Winter Sale preview. The page has no sign-in form or download, the only data sent was a comment, and Marketing confirmed the agency promised the preview. Close it as a false positive and suggest lowering severity for domains of vendors in the register.",
+  },
+  "SL-1045": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "203.0.113.55 is one of the two addresses Redwater Security gave for pentest SEC-PT-77", matches: ["203.0.113.55", "redwater", "sec-pt-77", "pentest", "penetration"] },
+      { label: "the traffic is inside the approved window and scope: the portal only, today, with the X-Pentest-Id header RW-0077", matches: ["window", "scope", "x-pentest-id", "rw-0077", "portal", "in scope", "within"] },
+      { label: "nothing got through: the attack patterns were blocked, with no 500 errors and no new accounts", matches: ["blocked", "0 allowed", "no 500", "no new account", "403", "401", "nothing got through", "did not get through"] },
+      { label: "IT Security asked the SOC not to block or escalate these addresses during the window", matches: ["notice", "email from it security", "not block", "not escalate", "do not block", "it security"] },
+    ],
+    explanation:
+      "1,840 blocked attack patterns from one address looks like an attack, and a real one would be treated as one. This address, the day, the time, the single target and the X-Pentest-Id header all match engagement SEC-PT-77, signed by the CISO, and IT Security told the SOC not to block or escalate these addresses. The WAF blocked every attack pattern, the portal had no errors or new accounts, and nothing else was touched. Close it as a false positive, keep logging, and suggest tagging approved test windows in the rule.",
+  },
+  "SL-1046": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the call came from +1 555 0142, the CFO's company mobile listed in the staff directory", matches: ["0142", "company mobile", "directory", "caller id", "registered", "staff directory"] },
+      { label: "the SOC called the CFO back on the directory number and he, then his assistant, confirmed the request", matches: ["callback", "called back", "call back", "confirmed", "c.rivera", "assistant"] },
+      { label: "PR-30502 is a normal payment: approved supplier, same bank account, matching purchase order and invoice, already approved by the CFO", matches: ["pr-30502", "po-88213", "marlowe", "same bank", "approved supplier", "invoice", "first approval", "already approved"] },
+      { label: "the payment still needs the Controller's second approval and has not been released", matches: ["second approval", "m.iyer", "controller", "not released", "17:00"] },
+    ],
+    explanation:
+      "A voice that sounds like the CFO proves nothing, and n.fernandes was right to report it. What settles it is everything that does not depend on the voice: the call came from the CFO's company mobile in the staff directory, and a callback to that directory number was answered by the CFO and confirmed by his assistant. The payment is also normal: a supplier on the approved list since 2025 with an unchanged bank account, a matching purchase order and invoice, and the CFO's approval already in the system. It still needs the Controller's approval before release. Close it as a false positive and thank the clerk for following the procedure.",
+  },
+  "SL-1047": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the destination 203.0.113.171 belongs to CloudVault Offsite Ltd, the company's offsite backup provider (contract CNT-0412)", matches: ["cloudvault", "offsite", "backup provider", "cnt-0412", "vendor"] },
+      { label: "the firewall rule OFFSITE-BACKUP (CHG-2044) allows exactly this host to this address on port 443", matches: ["chg-2044", "offsite-backup", "firewall rule", "allowed", "443"] },
+      { label: "38 GB matches the monthly full copy: 35 to 38 GB on the last three months, plus nightly incrementals", matches: ["monthly full", "36.9", "37.7", "35.2", "monthly", "history", "previous", "last three"] },
+      { label: "the host sent nothing anywhere else and no incidents involve it", matches: ["nothing else", "no other", "no incident", "only", "internal"] },
+    ],
+    explanation:
+      "38 GB leaving at night to an outside address is what data theft looks like, but every fact here points to the backup job. The address belongs to CloudVault Offsite, the company's backup provider under contract CNT-0412, and a firewall rule approved in CHG-2044 allows exactly this host to reach it on 443. The size matches the monthly full copy on the last three months (35 to 38 GB), the time matches the 01:30 schedule, and the host contacted nothing else. Close it as a false positive and suggest raising the threshold for this approved route.",
+  },
+  "SL-1048": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the mail came from the SendBridge marketing platform (198.51.100.150 to .152), not from the marketing@ mailbox itself", matches: ["sendbridge", "platform", "198.51.100.150", "not from the mailbox", "0 messages", "marketing platform"] },
+      { label: "SPF, DKIM and DMARC all pass, and the platform is on the approved marketing tools list", matches: ["spf", "dkim", "dmarc", "pass", "approved", "authenticat"] },
+      { label: "campaign MKT-311 was approved and scheduled for 10:00, and the recipients are opted-in customers from the CRM", matches: ["mkt-311", "campaign", "approved", "scheduled", "opted", "crm", "10:00"] },
+      { label: "the messages contain only company and tracking links, an unsubscribe link and no request for logins or payment", matches: ["unsubscribe", "links", "tracking", "no request", "no attachment", "harborpine.test/winter"] },
+    ],
+    explanation:
+      "A burst from one sender is what a hijacked mailbox sending spam looks like, but here the mail came from SendBridge, the approved marketing platform, not from the mailbox itself, and every message passes SPF, DKIM and DMARC. The campaign record shows MKT-311, approved on 2026-10-22 and scheduled for 10:00, going to opted-in customers, and the previous campaign was almost the same size at the same time. The links are the company's own pages and the platform's tracking domain, with an unsubscribe link and no request for a login or payment. Close it as a false positive and suggest tuning for the approved platform.",
+  },
+  "SL-1049": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "the deleted folders match the scope of approved ticket CHG-2418, and Final and Contracts were not touched", matches: ["chg-2418", "working", "final", "contracts"] },
+      { label: "p.dutta owns the site, is active and is moving to another project, and signed in normally with MFA", matches: ["owner", "active", "borealis", "mfa", "pmo-lt-009"] },
+      { label: "all 1,206 items are in the recycle bin and a protected retention copy exists", matches: ["recycle bin", "retention", "1,206"] },
+    ],
+    explanation:
+      "1,206 deletions in 14 minutes in the evening looks like destruction, but the details do not fit. p.dutta owns the site, the eight folders deleted are exactly the working folders listed in the approved ticket CHG-2418, and Final and Contracts were not touched. p.dutta is active and moving to another project rather than leaving, and signed in with MFA from the usual laptop. Nothing is lost: the items are in the recycle bin and a protected retention copy exists. Close as a false positive and suggest tuning for approved site closures.",
+  },
+  "SL-1050": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "all requests came from the machine learning cluster 10.20.12.31 to .38, the network this key has always used", matches: ["10.20.12", "ml cluster", "cluster", "same network", "usual", "only", "internal"] },
+      { label: "only the embedding model text-embedding-large was called, no chat or text-generation and no key management calls", matches: ["text-embedding-large", "embedding", "no chat", "no text-generation", "only", "listmodels", "no key"] },
+      { label: "project AIP-0091 (480,000 contract pages) is approved with a $900 per day budget, and the job started at 13:00", matches: ["aip-0091", "contract search", "approved", "$900", "480,000", "13:00", "batch"] },
+      { label: "the $300 threshold was set before the project and the key shows no sign of exposure", matches: ["threshold", "out of date", "not raised", "no exposure", "not found", "exposure scan"] },
+    ],
+    explanation:
+      "Six times the usual spend is what a leaked key being used by someone else looks like, but the pattern is the opposite. All 1.3 million requests came from the eight nodes of the ML cluster the key has always used, they call only the embedding model, and no one probed the key's settings. Data governance approved project AIP-0091 (480,000 contract pages, up to $900 a day), the batch job started at 13:00 and the $300 alert threshold was simply never raised. The key is not in any public repository. Close it as a false positive and suggest raising the threshold with the project.",
+  },
+  "SL-1051": {
+    verdict: "fp",
+    escalate: false,
+    evidence: [
+      { label: "n.kulkarni asked for the send in her own words and clicked Send after the assistant asked to confirm", matches: ["asked", "typed", "user message", "confirmed", "clicked send", "confirm"] },
+      { label: "the assistant read only the NDA, which has no instructions in it, and sent nothing else", matches: ["only the nda", "no instructions", "read only", "nothing else", "only one", "no other"] },
+      { label: "partner-ardent.test is an approved partner under a signed mutual NDA, and the partner had asked for the signed copy", matches: ["approved", "partner", "ardent", "mutual nda", "asked for", "2026-10-22"] },
+      { label: "the assistant's policy allows sending to approved partner domains after confirmation, and the file is classed Internal", matches: ["policy", "allowed", "internal", "approved partner", "confirmation", "not confidential"] },
+    ],
+    explanation:
+      "An AI assistant emailing a file outside is exactly what injected instructions cause, so the check is where the instruction came from. Here n.kulkarni typed the request, the assistant showed the recipient and file and waited for her to click Send, and the only file it read was the NDA, which holds no instructions. Ardent Logistics is an approved partner with a signed mutual NDA who had asked for the copy, and the assistant's policy allows sending Internal files to approved partners after confirmation. Close it as a false positive and suggest lowering severity for policy-approved sends.",
   },
 };

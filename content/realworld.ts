@@ -67,14 +67,14 @@ export const REAL_WORLD: Record<string, RealWorld> = {
     ],
   },
   "SL-1017": {
-    incident: "Fake sign-in pages that steal the session after MFA (AiTM)",
-    year: "2022",
+    incident: "Self-driving car files downloaded before leaving Google",
+    year: "2016 (sentenced 2020)",
     summary:
-      "Microsoft described a large phishing campaign where a fake page sat between the user and the real Microsoft sign-in page. It copied the session after the user passed MFA, and the attackers then used the mailboxes for payment fraud.",
-    lesson: "MFA does not make a click harmless. After a phishing click, check for a form submission and then look at the sign-in log for a new address or device.",
-    differs: "In our alert nothing was submitted and no new sign-in followed, so the harm stopped at the page view.",
+      "A US Justice Department release describes an engineer who, while preparing to leave Google in 2016, downloaded thousands of files about the company's self-driving car project, onto a personal laptop and from an internal server. He pleaded guilty to one count of trade secret theft and was sentenced to 18 months in prison in 2020.",
+    lesson: "The warning signs match our alert: a large download, just before a departure, with no business reason. Check the volume against the baseline, the timing against HR dates and where the files went.",
+    differs: "Our case is invented and much smaller. In the real case a criminal prosecution followed. For the SOC the first steps are the same: preserve evidence and bring in HR and Legal rather than confronting the person.",
     sources: [
-      { title: "Microsoft Security blog: From cookie theft to BEC, attackers use AiTM phishing sites", url: "https://www.microsoft.com/en-us/security/blog/2022/07/12/from-cookie-theft-to-bec-attackers-use-aitm-phishing-sites-as-entry-point-to-further-financial-fraud/" },
+      { title: "US Attorney's Office, Northern District of California: former Uber executive sentenced to 18 months in jail for trade secret theft from Google", url: "https://www.justice.gov/usao-ndca/pr/former-uber-executive-sentenced-18-months-jail-trade-secret-theft-google" },
     ],
   },
   "SL-1018": {
@@ -156,14 +156,14 @@ export const REAL_WORLD: Record<string, RealWorld> = {
     ],
   },
   "SL-1025": {
-    incident: "Impossible travel detections and their false positives",
-    year: "ongoing",
+    incident: "Microsoft and the Peach Sandstorm password sprays",
+    year: "2023",
     summary:
-      "Microsoft's identity protection documentation describes how impossible travel and atypical travel detections work, and notes that they can fire for VPNs and proxies that make users appear in another place.",
-    lesson: "A location is only where the traffic left the network. Check the device, the browser and what changed before you call it an attack.",
-    differs: "In an account takeover the second sign-in usually comes from a new device and browser, followed by changes such as mailbox rules or MFA methods. None appears here.",
+      "Microsoft described a state-backed group that sprayed passwords at thousands of organisations between February and July 2023, mostly from Tor addresses with a go-http-client user agent. After a successful sign-in the group explored the cloud directory, set up its own cloud subscriptions to stay in, and in a small number of cases took data.",
+    lesson: "Spraying is about the number of accounts, not attempts per account. Count accounts per source address, and treat any success from that address as urgent, especially on an account without MFA.",
+    differs: "Our spray comes from a hosting-provider server over legacy IMAP and ends with a mailbox being read. The real group used Tor and in some cases went on to build its own foothold in the cloud.",
     sources: [
-      { title: "Microsoft Learn: Risks in Microsoft Entra ID Protection", url: "https://learn.microsoft.com/en-us/entra/id-protection/concept-identity-protection-risks" },
+      { title: "Microsoft Security blog: Peach Sandstorm password spray campaigns enable intelligence collection at high-value targets", url: "https://www.microsoft.com/en-us/security/blog/2023/09/14/peach-sandstorm-password-spray-campaigns-enable-intelligence-collection-at-high-value-targets/" },
     ],
   },
   "SL-1026": {

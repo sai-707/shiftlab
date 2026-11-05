@@ -40,15 +40,6 @@ export const TUNING: Record<string, { question: string; options: string[] }> = {
       "Ignore every lockout alert",
     ],
   },
-  "SL-1025": {
-    question: "More pilot users will move to the gateway over the next weeks. What is the best tuning?",
-    options: [
-      "Turn the impossible travel rule off",
-      "Add the gateway's Frankfurt egress range as a known location in the rule",
-      "Ignore every sign-in from managed devices",
-      "Raise the rule's threshold to 24 hours",
-    ],
-  },
   "SL-1030": {
     question: "The agent will do this at every weekly scan. What is the best tuning?",
     options: [
@@ -101,6 +92,123 @@ export const TUNING: Record<string, { question: string; options: string[] }> = {
       "Delete the alert and say nothing",
       "Give every admin a permanent exception",
       "Check the on-call rota or ticket automatically and lower the severity when it matches",
+    ],
+  },
+  "SL-1039": {
+    question: "Administrators will keep running encoded commands for scripted work. What is the best tuning?",
+    options: [
+      "Turn the encoded command rule off",
+      "Exclude everything done by administrator accounts",
+      "Lower the severity when an administrator starts it through remoting from the jump server, and keep it high for every other parent process and host",
+      "Block encoded commands for everyone",
+    ],
+  },
+  "SL-1040": {
+    question: "The backup agent will remove old snapshots every night. What is the best tuning?",
+    options: [
+      "Disable the shadow copy rule",
+      "Exclude only 'delete shadows /oldest' started by NVAgent.exe under svc-backup on the backup-managed servers, and keep the rule for '/all' and every other parent process",
+      "Exclude vssadmin on every server",
+      "Ask the backup team to stop deleting snapshots",
+    ],
+  },
+  "SL-1041": {
+    question: "Every approved NorthPDF install will create this task. What is the best tuning?",
+    options: [
+      "Exclude tasks created by the signed NorthPDF installer from Software Center, and keep the rule for unsigned or unknown programs",
+      "Turn the scheduled task rule off for all installers",
+      "Ignore every task created by msiexec.exe",
+      "Raise the severity of every new task",
+    ],
+  },
+  "SL-1042": {
+    question: "Customers will keep typing apostrophes and dashes into the shop search. What is the best tuning?",
+    options: [
+      "Switch the WAF off for the search page",
+      "Block every request that contains an apostrophe",
+      "Stop logging rule 942100",
+      "Keep the rule on for the whole site, but alert on the search page only when one address triggers it repeatedly or the shop returns errors or unusually large answers",
+    ],
+  },
+  "SL-1043": {
+    question: "The printers will keep signing in this way until they are replaced. What is the best tuning?",
+    options: [
+      "Exclude svc-mfp-mail from 10.20.60.0/24 only, and alert on any other address, protocol or failed sign-in for this account",
+      "Remove the MFA requirement for all service accounts",
+      "Close every legacy sign-in alert",
+      "Raise the threshold so fewer alerts fire",
+    ],
+  },
+  "SL-1044": {
+    question: "Marketing launches new campaign sites often. What is the best tuning?",
+    options: [
+      "Turn off the new-domain rule",
+      "Lower the severity for new domains that belong to vendors in the vendor register, and keep it for every other domain",
+      "Exclude every domain registered behind a privacy service",
+      "Block all domains younger than 90 days",
+    ],
+  },
+  "SL-1045": {
+    question: "The SOC will see this again at every penetration test. What is the best tuning?",
+    options: [
+      "Disable the WAF threshold rule",
+      "Ignore any request that carries an X-Pentest-Id header",
+      "Raise the threshold to 5,000 blocked requests",
+      "Let the engagement record tag the approved test addresses for the approved window and scope, lower the severity there, and keep alerting outside it or on other targets",
+    ],
+  },
+  "SL-1046": {
+    question: "The clerk did the right thing and the callback settled it. What would improve the process?",
+    options: [
+      "Stop clerks from reporting calls from the CFO",
+      "Release payments after any call that sounds like the CFO",
+      "Show directory numbers as verified staff numbers on the phone display, and keep the callback and second-approval rule for every payment request made by phone",
+      "Delete the report once the case is closed",
+    ],
+  },
+  "SL-1047": {
+    question: "The backup repository will send this much to the provider every month. What is the best tuning?",
+    options: [
+      "Turn off the large outbound transfer rule",
+      "Allow any transfer to any cloud storage provider",
+      "Raise the threshold only for BKP-REPO-01 to 203.0.113.171 on port 443, and keep it for every other host and destination",
+      "Ask the backup team to send less data",
+    ],
+  },
+  "SL-1048": {
+    question: "Marketing will send campaigns like this every few weeks. What is the best tuning?",
+    options: [
+      "Raise the volume threshold for every sender to 10,000 an hour",
+      "Lower the severity when the mail comes from the approved SendBridge addresses and passes DKIM, and keep it for every other source",
+      "Turn off the outbound volume rule",
+      "Ignore every alert for the marketing@ address",
+    ],
+  },
+  "SL-1049": {
+    question: "Teams will close more project sites like this. What is the best tuning?",
+    options: [
+      "Turn off the mass delete rule",
+      "Raise the threshold to 5,000 files for everyone",
+      "Lower the severity when the deleter owns the site, an approved change ticket covers it and a retention copy exists, and keep it for every other case",
+      "Ignore every deletion made in the evening",
+    ],
+  },
+  "SL-1050": {
+    question: "The data science project will run for five days at this spend. What is the best tuning?",
+    options: [
+      "Turn off the daily spend alert",
+      "Raise this key's threshold to match the approved $900 budget for the project's dates, and keep the alert for every other key",
+      "Delete the key after each project",
+      "Raise every key's threshold to $1,000",
+    ],
+  },
+  "SL-1051": {
+    question: "The assistant will send files to approved partners all the time. What is the best tuning?",
+    options: [
+      "Stop the assistant from sending any email",
+      "Alert only when the assistant sends to a domain that is not on the partner list",
+      "Lower the severity when the assistant's policy allows the send (approved partner, Internal file, user confirmed), and keep it high for any other outside send",
+      "Close every assistant alert without reading it",
     ],
   },
 };

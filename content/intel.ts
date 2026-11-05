@@ -139,10 +139,10 @@ export const INTEL: Record<string, IntelEntry> = {
     kind: "IP address",
     note: "Reporting server owned by Data Engineering. Runs the nightly warehouse job.",
   },
-  "harborpine-sso.test": {
-    verdict: "malicious",
+  "cloudbox-personal.test": {
+    verdict: "suspicious",
     kind: "Domain",
-    note: "Registered 2 days ago. Shows a copy of a Microsoft 365 sign-in page that relays logins to the real service and keeps the session (adversary-in-the-middle phishing kit). Categorised as phishing.",
+    note: "Consumer file storage service. Not approved for company data. The web proxy blocks uploads to it under the DLP policy.",
   },
   "10.20.30.115": {
     verdict: "internal",
@@ -194,10 +194,10 @@ export const INTEL: Record<string, IntelEntry> = {
     kind: "IP address",
     note: "Cloud hosting provider address often used as a VPN or rented server. Not a normal location for any Harbor & Pine staff.",
   },
-  "192.0.2.140": {
-    verdict: "clean",
+  "198.51.100.219": {
+    verdict: "malicious",
     kind: "IP address",
-    note: "Inside 192.0.2.128/26, the EdgeShield secure web gateway Frankfurt egress range. Matches change CHG-2291.",
+    note: "Hosting provider virtual server in Amsterdam. Reported for password spraying by two threat feeds in the last 7 days. Not used by any Harbor & Pine staff or vendor.",
   },
   "10.20.9.40": {
     verdict: "internal",

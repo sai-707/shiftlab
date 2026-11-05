@@ -164,7 +164,7 @@ e("18:05:12", "proxy", "proxy-01", "j.mercer", "10.20.8.31", "filedrop-personal.
 e("18:19:40", "proxy", "proxy-01", "j.mercer", "10.20.8.31", "filedrop-personal.test", "http_post", "POST https://filedrop-personal.test/upload 200 sent 640 MB");
 e("18:41:03", "proxy", "proxy-01", "j.mercer", "10.20.8.31", "filedrop-personal.test", "http_post", "POST https://filedrop-personal.test/upload 200 sent 948 MB");
 
-// ── warehouse takeover (SL-1015), PsExec patching (SL-1016), fake sign-in page (SL-1017) ──
+// ── warehouse takeover (SL-1015), PsExec patching (SL-1016), bulk SharePoint download (SL-1017) ──
 e("02:00:03", "identity", "warehouse-idp", "svc_bi_report", "10.20.3.40", "-", "signin_ok", "Warehouse sign-in. BI connector, password only (service account, no MFA)");
 e("18:51:40", "identity", "warehouse-idp", "svc_bi_report", "203.0.113.166", "-", "signin_ok", "Warehouse sign-in. Command-line client not seen before, password only (service account, no MFA)");
 e("18:56:02", "firewall", "fw-edge-01", "svc_bi_report", "203.0.113.166", "files-transit.test", "allowed", "Warehouse export stage connection, 205 MB sent");
@@ -172,10 +172,11 @@ e("01:11:58", "endpoint", "JUMP-ADM-01", "svc-patch", "10.20.9.20", "-", "proces
 e("01:12:03", "endpoint", "JUMP-ADM-01", "svc-patch", "10.20.9.20", "-", "process_start", "PsExec64.exe @fs-servers.txt wusa.exe kb5044-oct.msu, signed by Microsoft");
 e("01:12:10", "auth", "FS-01", "svc-patch", "10.20.9.20", "10.20.9.101", "logon_ok", "Network logon (type 3) by svc-patch from JUMP-ADM-01");
 e("01:16:20", "endpoint", "FS-01", "svc-patch", "10.20.9.20", "-", "process_start", "PSEXESVC service removed after patch installed");
-e("10:38:05", "mail", "mail-gw-01", "p.sharma", "192.0.2.201", "p.sharma@harborpine.test", "delivered", "From share@harborpine-sso.test, subject 'Shared with you: Q4 supplier contracts'");
-e("10:41:12", "proxy", "proxy-01", "p.sharma", "10.20.9.31", "harborpine-sso.test", "http_get", "GET https://harborpine-sso.test/auth/signin 200");
-e("10:43:21", "proxy", "proxy-01", "p.sharma", "10.20.9.31", "harborpine-sso.test", "blocked", "GET https://harborpine-sso.test/auth/signin BLOCKED (Phishing category)");
-e("10:47:02", "proxy", "proxy-01", "f.reyes", "10.20.4.40", "harborpine-sso.test", "blocked", "GET https://harborpine-sso.test/auth/signin BLOCKED (Phishing category)");
+e("10:02:11", "proxy", "proxy-01", "r.pillai", "10.20.8.37", "sales-accounts.sharepoint.harborpine.test", "http_get", "FolderDownloadedAsZip Customers/Brightmill (112 files)");
+e("10:29:58", "proxy", "proxy-01", "r.pillai", "10.20.8.37", "sales-accounts.sharepoint.harborpine.test", "http_get", "FolderDownloadedAsZip Pricing/Price-lists-2026 (46 files). Session total 1,940 files, 6.8 GB");
+e("10:31:20", "endpoint", "SALES-LT-039", "r.pillai", "10.20.8.37", "-", "usb_connected", "USB mass storage SanDisk Ultra 128 GB serial ending 4C1B. Not on the approved device list");
+e("10:31:44", "endpoint", "SALES-LT-039", "r.pillai", "10.20.8.37", "-", "file_copy", "6.1 GB of ZIP files copied from Downloads to E:\\ (USB) by 10:49:10");
+e("10:50:12", "proxy", "proxy-01", "r.pillai", "10.20.8.37", "cloudbox-personal.test", "blocked", "POST /upload BLOCKED (personal cloud storage, DLP policy)");
 
 // ── Beginner additions: stale phone password (SL-1018), fake installer (SL-1019), web shell (SL-1020) ──
 e("08:37:02", "identity", "idp-01", "r.dsouza", "10.20.30.115", "-", "signin_failed", "iPhone Mail (ActiveSync). Bad password");
@@ -187,7 +188,7 @@ e("15:31:09", "waf", "waf-01", "-", "198.51.100.141", "portal.harborpine.test", 
 e("15:33:40", "waf", "waf-01", "-", "198.51.100.141", "portal.harborpine.test", "allowed", "GET /uploads/avatars/9f3a.php?c=id status=200");
 e("15:36:20", "waf", "waf-01", "-", "198.51.100.141", "portal.harborpine.test", "allowed", "GET /uploads/avatars/9f3a.php?c=cat .env status=200 size=612B");
 
-// ── Hard additions, first five: stolen session (SL-1021), file transfer web shell (SL-1022), Log4Shell scan (SL-1023), help desk reset (SL-1024), gateway pilot (SL-1025) ──
+// ── Hard additions, first five: stolen session (SL-1021), file transfer web shell (SL-1022), Log4Shell scan (SL-1023), help desk reset (SL-1024), password spray (SL-1025) ──
 e("13:46:03", "identity", "idp-01", "t.venkat", "203.0.113.178", "-", "session_reuse", "Session s-8841 used from a second address. python-requests/2.31. No sign-in, no MFA prompt");
 e("13:49:02", "identity", "idp-01", "t.venkat", "203.0.113.178", "-", "admin_action", "Session s-8841: CreateUser svc-sso-sync");
 e("13:50:15", "identity", "idp-01", "t.venkat", "203.0.113.178", "-", "admin_action", "Session s-8841: AssignRole svc-sso-sync to Super Admin");
@@ -203,8 +204,14 @@ e("07:50:12", "identity", "idp-01", "a.menon", "10.20.2.18", "-", "password_rese
 e("07:55:30", "identity", "idp-01", "a.menon", "192.0.2.64", "-", "signin_ok", "New device, password only. Hosting provider address");
 e("07:56:44", "identity", "idp-01", "a.menon", "192.0.2.64", "-", "mfa_added", "Authenticator app registered");
 e("08:14:45", "identity", "idp-01", "a.menon", "192.0.2.64", "-", "app_action", "Finance portal: bank detail change requested for Northwind Freight");
-e("09:11:08", "identity", "idp-01", "s.nair", "10.20.9.40", "-", "signin_ok", "Pune office, device dev-7731, MFA passed");
-e("09:15:22", "identity", "idp-01", "s.nair", "192.0.2.140", "-", "signin_ok", "Frankfurt (EdgeShield gateway), device dev-7731, MFA satisfied by device claim");
+e("06:41:02", "identity", "idp-01", "a.abraham", "198.51.100.219", "-", "signin_failed", "IMAP basic authentication. Bad password. python-imaplib");
+e("06:41:25", "identity", "idp-01", "a.agarwal", "198.51.100.219", "-", "signin_failed", "IMAP basic authentication. Bad password. python-imaplib");
+e("06:57:18", "identity", "idp-01", "e.mathew", "198.51.100.219", "-", "signin_failed", "IMAP basic authentication. Bad password (attempt 1)");
+e("07:58:31", "identity", "idp-01", "a.abraham", "198.51.100.219", "-", "signin_failed", "IMAP basic authentication. Bad password (second pass, attempt 2)");
+e("08:03:41", "identity", "idp-01", "e.mathew", "198.51.100.219", "-", "signin_ok", "IMAP basic authentication. Password accepted, no MFA (legacy-auth exception)");
+e("08:04:10", "mail", "mail-gw-01", "e.mathew", "198.51.100.219", "-", "mailbox_read", "340 messages read over IMAP between 08:04 and 08:19 (Inbox, Invoices, Sent Items)");
+e("08:26:12", "identity", "idp-01", "e.mathew", "198.51.100.219", "-", "signin_blocked", "SharePoint web sign-in blocked by conditional access (MFA required)");
+e("08:26:40", "identity", "idp-01", "e.mathew", "198.51.100.219", "-", "signin_blocked", "Outlook on the web sign-in blocked by conditional access (MFA required)");
 
 // ── Hard additions, second five: trojanized update (SL-1026), ransomware (SL-1027), leaked key (SL-1028), consent phishing (SL-1029), DNS lookups (SL-1030) ──
 e("08:02:05", "endpoint", "SALES-WS-027", "j.kapoor", "10.20.8.27", "-", "process_start", "CallBridge.exe started rundll32.exe vxcore2.dll,Init");
@@ -262,6 +269,43 @@ e("13:15:20", "endpoint", "FIN-WS-051", "a.chawla", "10.20.3.51", "-", "process_
 e("14:02:41", "proxy", "proxy-01", "l.gupta", "10.20.3.61", "api.sumly-ai.test", "http_post", "POST /v1/collect 200 18 KB, page text from erp.harborpine.test/payments/batch/7731");
 e("14:02:58", "proxy", "proxy-01", "l.gupta", "10.20.3.61", "api.sumly-ai.test", "http_post", "POST /v1/collect 200 22 KB, page text from the bank payment portal");
 e("14:11:09", "proxy", "proxy-01", "r.nambiar", "10.20.3.44", "api.sumly-ai.test", "http_post", "POST /v1/collect 200 15 KB, page text from erp.harborpine.test/suppliers/118");
+
+
+// ── False-positive additions: encoded PowerShell by an admin (SL-1039), backup shadow copies (SL-1040), installer task (SL-1041), shop search (SL-1042), printer sign-in (SL-1043), vendor preview site (SL-1044), approved pentest (SL-1045) ──
+e("10:38:10", "auth", "SRV-FS-03", "v.joshi", "10.20.9.20", "10.20.8.13", "logon_ok", "Event 4624 type 3 (network), PowerShell remoting from JUMP-ADM-01");
+e("10:38:12", "endpoint", "SRV-FS-03", "v.joshi", "-", "-", "process_start", "powershell.exe -NoProfile -NonInteractive -EncodedCommand (Base64, 452 characters). Parent wsmprovhost.exe");
+e("10:38:14", "endpoint", "SRV-FS-03", "v.joshi", "-", "-", "file_create", "D:\\Archive\\applogs-oct.zip created by powershell.exe. Script block: Get-ChildItem D:\\AppLogs ... Compress-Archive");
+e("23:02:31", "endpoint", "FS-01", "svc-backup", "-", "-", "process_start", "vssadmin delete shadows /for=D: /oldest /quiet (parent NVAgent.exe)");
+e("23:09:12", "endpoint", "FS-02", "svc-backup", "-", "-", "process_start", "vssadmin create shadow /for=D: (parent NVAgent.exe)");
+e("23:11:46", "endpoint", "FS-02", "svc-backup", "-", "-", "process_start", "vssadmin delete shadows /for=D: /oldest /quiet (parent NVAgent.exe, backup job 4471)");
+e("23:42:08", "endpoint", "FS-02", "svc-backup", "-", "BKP-REPO-01", "backup_job", "Job 4471 completed, 9.4 GB written, status success");
+e("09:53:38", "endpoint", "HR-WS-019", "g.thomas", "-", "-", "process_start", "schtasks /create /tn \"NorthPDF Updater\" /sc daily /st 00:00 (parent msiexec.exe, from a Software Center install)");
+e("09:55:10", "endpoint", "HR-WS-019", "g.thomas", "-", "-", "process_start", "NorthPDF.exe started from the Start menu");
+e("09:58:02", "proxy", "proxy-01", "g.thomas", "10.20.6.19", "updates.northpdf.test", "http_get", "GET /version.json 200 (update check, 1 KB)");
+e("14:24:09", "waf", "waf-edge-01", "-", "198.51.100.206", "shop.harborpine.test", "waf_match", "Rule 942100 on /search?q=Rock'n'Roll tee -- size M. Logged only. Shop answered 200 with 0 results");
+e("14:24:51", "waf", "waf-edge-01", "-", "198.51.100.206", "shop.harborpine.test", "http_get", "GET /search?q=Rock n Roll tee 200, 3 results. No rule matched");
+e("14:27:02", "waf", "waf-edge-01", "-", "198.51.100.206", "shop.harborpine.test", "http_post", "POST /checkout 200, order 91834. No rule matched");
+e("02:00:09", "identity", "idp-01", "svc-mfp-mail", "10.20.60.23", "-", "sign_in", "SMTP AUTH sign-in succeeded (legacy authentication, no MFA). Allowed by exception CHG-2188 for the printer network");
+e("02:00:12", "mail", "mail-gw", "svc-mfp-mail", "10.20.60.23", "finance-ops@harborpine.test", "mail_sent", "Subject 'MFP-FLR3-03 daily counter report', attachment counters-oct.csv 4 KB");
+e("11:47:30", "mail", "mail-gw", "r.kulkarni", "198.51.100.120", "r.kulkarni@harborpine.test", "mail_delivered", "From maya.dsilva@brightlane-creative.test, subject 'Winter Sale campaign site: preview and feedback'. SPF, DKIM and DMARC pass");
+e("11:52:18", "proxy", "proxy-01", "r.kulkarni", "10.20.7.18", "brightlane-campaign.test", "http_get", "GET /winter-sale/preview 200, 41 KB. Domain registered 6 days ago");
+e("11:58:44", "proxy", "proxy-01", "r.kulkarni", "10.20.7.18", "brightlane-campaign.test", "http_post", "POST /api/feedback 200, 186 bytes (comment box, no password field)");
+e("12:01:09", "proxy", "proxy-01", "s.bhatt", "10.20.7.22", "brightlane-campaign.test", "http_get", "GET /winter-sale/preview 200, 41 KB");
+e("10:36:41", "waf", "waf-edge-01", "-", "203.0.113.55", "portal.harborpine.test", "waf_block", "Rule 942100 on /products.php?id=1' OR '1'='1, user agent sqlmap/1.8, header X-Pentest-Id RW-0077. Blocked 403");
+e("10:52:09", "waf", "waf-edge-01", "-", "203.0.113.55", "portal.harborpine.test", "waf_block", "Rule 930110 path traversal in /download?file=../../../../etc/passwd. Blocked 403");
+e("11:03:34", "waf", "waf-edge-01", "-", "203.0.113.55", "portal.harborpine.test", "http_post", "POST /admin/login 401, 3 attempts then stopped");
+e("01:30:04", "firewall", "fw-edge-01", "-", "10.20.8.40", "203.0.113.171", "allowed", "OFFSITE-BACKUP: 4 TLS sessions to ingest.vault-offsite.test, 38.4 GB sent by 02:38");
+e("10:02:11", "mail", "mail-gw", "marketing@harborpine.test", "198.51.100.150", "c.dsouza@customer-a.test", "mail_sent", "Subject 'Winter Sale: early access for you' via out-3.sendbridge.test. SPF, DKIM, DMARC pass");
+e("10:14:22", "mail", "mail-gw", "marketing@harborpine.test", "198.51.100.152", "-", "mail_sent", "Campaign send finished: 4,212 messages in 12 minutes, 76 bounces");
+e("19:48:12", "proxy", "proxy-01", "p.dutta", "10.20.40.12", "sharepoint.harborpine.test", "http_post", "FolderDeleted /Project-Atlas/Drafts (212 files)");
+e("19:49:30", "proxy", "proxy-01", "p.dutta", "10.20.40.12", "sharepoint.harborpine.test", "http_post", "FolderDeleted /Project-Atlas/Working copies (388 files)");
+e("20:02:10", "proxy", "proxy-01", "p.dutta", "10.20.40.12", "sharepoint.harborpine.test", "http_post", "FolderDeleted /Project-Atlas/Mockups. Session total 1,206 files in 8 folders, all to the recycle bin");
+e("20:03:10", "identity", "idp-01", "a.menon", "192.0.2.162", "-", "sign_in", "CRM sign-in from the same address, same device, MFA satisfied by claim in token");
+e("13:02:10", "ai", "model-api", "svc-ds-embeddings", "10.20.12.31", "-", "api_call", "Embeddings, text-embedding-large, 96 inputs, 41,200 tokens");
+e("13:02:10", "ai", "model-api", "svc-ds-embeddings", "10.20.12.34", "-", "api_call", "Embeddings, text-embedding-large, 96 inputs, 39,800 tokens");
+e("16:40:00", "ai", "model-api", "svc-ds-embeddings", "10.20.12.31", "-", "budget_alert", "Daily spend $412, above the $300 threshold. 1,312,408 requests since 13:00, all embeddings");
+e("17:20:31", "ai", "pineassist", "n.kulkarni", "10.20.5.52", "-", "user_message", "Send the signed mutual NDA with Ardent to their legal team at legal@partner-ardent.test");
+e("17:21:08", "ai", "pineassist", "n.kulkarni", "10.20.5.52", "partner-ardent.test", "tool_call", "send_mail to legal@partner-ardent.test, 1 attachment (Mutual NDA - Ardent.pdf), user confirmed");
 
 export const LOGS: LogEvent[] = out.sort((a, b) => a.time.localeCompare(b.time));
 
