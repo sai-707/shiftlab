@@ -34,7 +34,7 @@ function Avatar({ photo, name, className }: { photo: string; name: string; class
 }
 
 // The first thing a new account sees: name and username (required), photo and GitHub (optional), with a live preview.
-// The email comes from the account and is shown read-only. completeProfile() saves it and then opens the dashboard.
+// The email comes from the account and is shown read-only. completeProfile() saves it and then opens the first alert.
 export default function SetupForm({ email, initial }: { email: string; initial: { name: string; avatar: string } }) {
   const [name, setName] = useState(initial.name);
   const [username, setUsername] = useState(() => {

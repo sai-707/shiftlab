@@ -1,6 +1,9 @@
-import type { ReportSections } from "./types";
+import type { Difficulty, ReportSections } from "./types";
 
-/** Every section is compulsory (it cannot be empty). There is no minimum length; checked in the browser and again on the server. */
+/** Intermediate and above: every section is compulsory (it cannot be empty). Beginner: only "What happened" is, and the rest may stay empty.
+ *  There is no minimum length either way. Checked in the browser and again on the server. */
+const EASY: Difficulty = "Beginner";
+export const isEasy = (d?: Difficulty) => d === EASY;
 const KEYS: (keyof ReportSections)[] = ["happened", "confirmed", "unknown", "next"];
 export const FIELD_NAME: Record<keyof ReportSections, string> = {
   happened: "What happened",
@@ -14,7 +17,7 @@ const FUNCTION_WORDS = new Set(
 );
 
 /** Returns a plain-English problem with one section, or null when it is acceptable. */
-export function sectionProblem(key: keyof ReportSections, raw: string): string | null {
+export function sectionProblem(key: keyof ReportSections, raw: string, easy = false): string | null {
   const text = raw.trim();
   const words = text.toLowerCase().match(/[a-z0-9][a-z0-9'.:/_-]*/g) ?? [];
   const name = FIELD_NAME[key];
@@ -24,6 +27,8 @@ export function sectionProblem(key: keyof ReportSections, raw: string): string |
   const acronyms = new Set(text.match(/\b[A-Z]{2,6}\b/g)?.map((a) => a.toLowerCase()));
   const readable = words.filter((w) => /[aeiouy]/.test(w) || /\d/.test(w) || acronyms.has(w)).length / words.length;
   if (readable < 0.7) return `${name} does not read as sentences.`;
+  // A first-timer's short note is judged only for gibberish, so the style checks below are for harder alerts.
+  if (easy) return null;
   // The two checks below only judge longer text: a short note has too few words to measure.
   const long = words.length >= 8;
   // A pile of keywords with no sentence around it is not a report. Short bullet notes are fine, so the bar is low.
@@ -32,11 +37,29 @@ export function sectionProblem(key: keyof ReportSections, raw: string): string |
   return null;
 }
 
+/** About a short sentence: enough to count as written, low enough that a one-line Beginner reason passes. */
+export const WRITTEN_MIN_CHARS = 20;
+
+/** The sections with something real in them. */
+export function writtenSections(s: ReportSections): (keyof ReportSections)[] {
+  return KEYS.filter((k) => (s[k] ?? "").trim().length >= WRITTEN_MIN_CHARS);
+}
+
+/** Marks for having written the report, never for the words in it (lib/grade.ts). The reason carries most of it and each
+ *  further section adds the rest, so a one-line Beginner answer still scores and a full report scores full. */
+export function reportWritten(s: ReportSections, max: number): number {
+  const w = writtenSections(s);
+  return Math.min(max, (w.includes("happened") ? 10 : 0) + 5 * w.filter((k) => k !== "happened").length);
+}
+
 /** All problems in a report, including copy-pasting one answer into several sections. */
-export function reportProblems(s: ReportSections): string[] {
+export function reportProblems(s: ReportSections, difficulty?: Difficulty): string[] {
+  const easy = isEasy(difficulty);
   const out: string[] = [];
   KEYS.forEach((k) => {
-    const p = sectionProblem(k, s[k] ?? "");
+    // Beginner: the extra sections are optional, but if someone writes in one it is still checked for gibberish.
+    if (easy && k !== "happened" && !(s[k] ?? "").trim()) return;
+    const p = sectionProblem(k, s[k] ?? "", easy);
     if (p) out.push(p);
   });
   const norm = (k: keyof ReportSections) => (s[k] ?? "").trim().toLowerCase().replace(/\s+/g, " ");

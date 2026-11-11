@@ -13,7 +13,7 @@ async function Content({ searchParams }: { searchParams: Search }) {
   const sp = await searchParams;
   const range = parseRange(sp.range);
   const metric = parseMetric(sp.metric);
-  const [account, overview, users] = await Promise.all([getAccount(), getOverview(range), getRecentUsers(10)]);
+  const [account, overview, users] = await Promise.all([getAccount(), getOverview(range), getRecentUsers(50)]);
 
   if (!overview.ok) return <Unavailable code={overview.code} />;
   const name = account?.name || account?.email.split("@")[0] || "there";

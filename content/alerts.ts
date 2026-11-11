@@ -174,7 +174,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1003",
     title: "Authentication: multiple failures followed by success (SSH)",
     topic: "Brute force",
-    severity: "critical",
+    severity: "high",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 02:45",
     description:
@@ -1027,7 +1027,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1014",
     title: "Sign-in from unfamiliar IP address",
     topic: "Cloud",
-    severity: "high",
+    severity: "medium",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 11:12",
     description:
@@ -3000,7 +3000,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1035",
     title: "Cloud AI usage above baseline",
     topic: "Cloud",
-    severity: "high",
+    severity: "medium",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 16:05",
     description:
@@ -3934,7 +3934,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1045",
     title: "WAF: high volume of blocked requests from one address",
     topic: "Web attack",
-    severity: "high",
+    severity: "low",
     difficulty: "Hard",
     raisedAt: "Oct 26, 11:20",
     description:

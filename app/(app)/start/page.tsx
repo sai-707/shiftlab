@@ -15,13 +15,11 @@ const STEPS = [
   { title: "Learn from the feedback", text: "You get a score, what you missed and what really happened. Compare with a similar alert to sharpen your instinct." },
 ];
 
+// Beginner weights. Intermediate and above move 25 points into Investigation (see lib/grade.ts).
 const SCORE = [
-  { part: "Verdict", points: 30, text: "True or false positive. A wrong verdict caps the whole score at 40." },
-  { part: "Escalation", points: 15, text: "Escalate or handle it yourself." },
-  { part: "What happened", points: 15, text: "The key facts, in this section." },
-  { part: "What is confirmed", points: 15, text: "The facts the evidence proves, and where they came from." },
-  { part: "What is unknown", points: 10, text: "The specific gaps you could not close." },
-  { part: "Next action", points: 15, text: "What should happen, and who does it." },
+  { part: "Verdict", points: 50, text: "True or false positive. A wrong verdict caps the whole score at 40." },
+  { part: "Escalation", points: 25, text: "Escalate or handle it yourself." },
+  { part: "Report written", points: 25, text: "Marks for writing the report, not for the words you choose." },
 ];
 
 const PAGES = [
@@ -74,7 +72,7 @@ export default function StartPage() {
 
           <section className={panel}>
             <h2 className="font-semibold">How scoring works</h2>
-            <p className="mt-1 text-sm text-muted">Each case is out of 100. All four report sections are compulsory, and each fact only counts in its own section. On Intermediate, Hard and AI Era alerts the evidence is hidden: you must open at least 3 sources (4 on Hard and AI Era) before you can report, and 15 points reward looking at the sources that matter, so the other parts count a little less. A report that names fewer than two key facts is capped at 40, and one that contradicts the evidence is capped at 70.</p>
+            <p className="mt-1 text-sm text-muted">Each case is out of 100, and the score is your decision: the verdict, whether to escalate, and that you wrote the report. Your wording is never scored, so a right call in your own words is a right call. How the report reads is coached afterwards instead, section by section, next to a model report you can compare against. On Beginner alerts a reason of one or two sentences is enough and the other three sections are optional, each adding marks. From Intermediate up the evidence is hidden: you must open at least 3 sources (4 on Hard and AI Era) before you can report, and 25 points move to how well you investigated. A wrong verdict caps the score at 40, and a report that contradicts the evidence caps it at 70.</p>
             <ul className="mt-3 divide-y divide-line text-sm">
               {SCORE.map((s) => (
                 <li key={s.part} className="flex items-baseline justify-between gap-4 py-2.5">

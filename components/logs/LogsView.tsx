@@ -6,7 +6,8 @@ import { checkLogAnswer } from "@/app/actions";
 import { LOGS, LOG_QUESTIONS, LOG_SOURCES, type LogSource } from "@/content/logs";
 import Segmented from "@/components/ui/Segmented";
 import { logProgress } from "@/lib/logProgress";
-import { searchLogs } from "@/lib/logsearch";
+import { searchLogs, questionsForAlert } from "@/lib/logsearch";
+import { LOG_LINKS } from "@/content/logLinks";
 
 const panel = "rounded-2xl border border-line bg-panel p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.03)]";
 const LIMIT = 100;
@@ -80,6 +81,26 @@ export default function LogsView() {
 
   const rows = searchLogs(LOGS, query, source);
   const shown = rows.slice(0, LIMIT);
+  // Arriving from an alert, the questions about that alert's own hosts and addresses come first; the rest stay available below.
+  const hereIds = questionsForAlert(from, LOG_LINKS[from ?? ""] ?? [], LOG_QUESTIONS);
+  const here = LOG_QUESTIONS.filter((q) => hereIds.includes(q.id));
+  const rest = LOG_QUESTIONS.filter((q) => !hereIds.includes(q.id));
+  const list = (qs: typeof LOG_QUESTIONS) => (
+    <ul className="mt-4 grid gap-3 lg:grid-cols-2">
+      {qs.map((q) => (
+        <Question
+          key={q.id}
+          q={q}
+          solved={progress.solved.includes(q.id)}
+          onTry={(t) => {
+            setQuery(t);
+            setSource("all");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
+      ))}
+    </ul>
+  );
 
   return (
     <div className="space-y-6">
@@ -182,20 +203,18 @@ export default function LogsView() {
           Find the answer in the logs above. Use the suggested search if you are stuck. These are the same hosts and
           addresses you meet in the alerts.
         </p>
-        <ul className="mt-4 grid gap-3 lg:grid-cols-2">
-          {LOG_QUESTIONS.map((q) => (
-            <Question
-              key={q.id}
-              q={q}
-              solved={progress.solved.includes(q.id)}
-              onTry={(t) => {
-                setQuery(t);
-                setSource("all");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            />
-          ))}
-        </ul>
+        {here.length > 0 ? (
+          <>
+            <h3 className="mt-4 text-sm font-semibold">About alert {from}</h3>
+            {list(here)}
+            <details className="mt-4">
+              <summary className="cursor-pointer text-sm text-accent">The other {rest.length} questions</summary>
+              {list(rest)}
+            </details>
+          </>
+        ) : (
+          list(LOG_QUESTIONS)
+        )}
       </section>
     </div>
   );

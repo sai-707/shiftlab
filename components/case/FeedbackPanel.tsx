@@ -17,30 +17,33 @@ export default function FeedbackPanel({ record }: { record: CaseRecord }) {
   const { feedback, submission } = record;
   const hints = hintsUsed.useStore().used[record.alertId] ?? 0;
   const name = (v: "tp" | "fp") => (v === "tp" ? "True positive" : "False positive");
+  // The call is the thing being taught, so it is said plainly before the number: a right call with a thin report still reads as a right call.
+  const verdictOk = submission.verdict === feedback.correctVerdict;
 
   return (
     <div className="space-y-4">
     <section className="space-y-4 rounded-xl border border-line bg-panel p-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-wide text-muted">Your score</p>
-          <p className="mt-1 text-4xl font-semibold tracking-tight">
-            {feedback.score}
-            <span className="text-lg text-muted">/100</span>
+          <p className="text-xs uppercase tracking-wide text-muted">Your call</p>
+          <p className={`mt-1 text-2xl font-semibold tracking-tight ${verdictOk ? "text-correct" : "text-missed"}`}>
+            {verdictOk ? "Correct" : "Not this time"}
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            You marked this as <span className="text-ink">{name(submission.verdict)}</span>
+            {submission.escalate ? " and escalated it." : " without escalating."}
+            {verdictOk ? "" : ` It was a ${name(feedback.correctVerdict)}.`}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-sm font-medium text-accent">{band(feedback.score)}</p>
+          <p className="text-4xl font-semibold tracking-tight">
+            {feedback.score}
+            <span className="text-lg text-muted">/100</span>
+          </p>
+          <p className="mt-1 text-sm font-medium text-accent">{band(feedback.score)}</p>
           <p className="mt-1 text-xs text-muted">Hints used: {hints} of 3. Hints do not change your score.</p>
         </div>
       </div>
-
-      <p className="text-sm text-muted">
-        You marked this as <span className="text-ink">{name(submission.verdict)}</span>
-        {submission.escalate ? " and escalated it." : " without escalating."} The correct call was{" "}
-        <span className="text-ink">{name(feedback.correctVerdict)}</span>
-        {feedback.correctEscalate ? ", with escalation." : ", no escalation."}
-      </p>
 
       <ul className="space-y-4">
         {feedback.items.map((item) => {
@@ -63,29 +66,30 @@ export default function FeedbackPanel({ record }: { record: CaseRecord }) {
         })}
       </ul>
 
+      <p className="text-xs text-muted">
+        The score is your decision and whether you wrote the report. The wording itself is never scored — it is coached
+        below, with a model report you can compare against.
+      </p>
+
       <div className="rounded-lg border border-line bg-canvas p-4">
         <p className="text-xs uppercase tracking-wide text-muted">What actually happened</p>
         <p className="mt-2 text-sm leading-relaxed">{feedback.explanation}</p>
       </div>
-
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/queue"
-          className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-canvas hover:opacity-90"
-        >
-          Back to queue
-        </Link>
-        <Link
-          href="/reports"
-          className="rounded-lg border border-line px-4 py-2 text-sm font-medium hover:border-accent hover:text-accent"
-        >
-          All case reports
-        </Link>
-      </div>
     </section>
+
     <ReviewPanel alertId={record.alertId} sections={submission.sections} />
     <RealWorld alertId={record.alertId} />
     <AfterAction alertId={record.alertId} verdict={feedback.correctVerdict} />
+
+    {/* Last, so the way out of the page comes after the coaching rather than before it. */}
+    <section className="flex flex-wrap gap-3 rounded-xl border border-line bg-panel p-5">
+      <Link href="/queue" className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-canvas hover:opacity-90">
+        Next alert
+      </Link>
+      <Link href="/reports" className="rounded-lg border border-line px-4 py-2 text-sm font-medium hover:border-accent hover:text-accent">
+        All case reports
+      </Link>
+    </section>
     </div>
   );
 }

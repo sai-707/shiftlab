@@ -2,7 +2,7 @@
 // Never throws: counting a visit must never break the page or lose a student's case.
 import { createClient } from "@/lib/supabase/server";
 
-type Kind = "view" | "case_closed";
+type Kind = "view" | "case_closed" | "report_started" | "report_blocked";
 type Props = Record<string, string | number | boolean>;
 
 // shortcut: callers wait for this write (one extra round trip, usually under 100 ms). Move it into next/server's after() if submit ever feels slow.

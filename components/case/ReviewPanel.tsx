@@ -116,8 +116,9 @@ export default function ReviewPanel({ alertId, sections }: { alertId: string; se
       </section>
 
       <section className="rounded-2xl border border-line bg-panel p-5">
-        <details>
-          <summary className="cursor-pointer text-sm text-accent">See a full model report</summary>
+        {/* Open by default: the model report is the main thing a student wants after a low score. */}
+        <details open>
+          <summary className="cursor-pointer text-sm text-accent">A full model report</summary>
           <p className="mt-2 text-sm text-muted">One strong way to write it. Yours can be different if it covers the same facts.</p>
           <div className="mt-3 space-y-2 text-sm leading-relaxed">
             {ORDER.map((k) => (

@@ -56,7 +56,7 @@ export async function submitCase(input: Submission, visitor?: string): Promise<S
     }
   }
 
-  const problems = reportProblems(submission.sections);
+  const problems = reportProblems(submission.sections, alert.difficulty);
   if (problems.length) return { ok: false, error: problems[0] };
 
   const feedback = gradeSubmission(ANSWER_KEYS[alertId], submission, gated);

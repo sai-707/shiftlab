@@ -72,14 +72,18 @@ export default function Home() {
           <h1 className="tag">Your first shift starts here.</h1>
           <div className="cta">
             <Link className="btn primary" href={GUEST_HREF}>
-              Try it as a guest
+              Start your first alert
               <Arrow />
             </Link>
             <Link className="btn" href={START_HREF}>
               Create a free account
             </Link>
           </div>
-          <p className="cta-note">No account needed. Your first alert takes about ten minutes.</p>
+          <ul className="cta-points" aria-label="What to expect">
+            <li>No account needed</li>
+            <li>About ten minutes</li>
+            <li>Scored and coached</li>
+          </ul>
         </section>
 
         <section className="s">
@@ -152,7 +156,7 @@ export default function Home() {
             <h2>Clock in.</h2>
             <div className="cta">
               <Link className="btn primary" href={GUEST_HREF}>
-                Try it as a guest
+                Start your first alert
                 <Arrow />
               </Link>
               <Link className="btn" href={START_HREF}>
