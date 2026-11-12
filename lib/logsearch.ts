@@ -35,3 +35,20 @@ export function searchLogs(events: LogEvent[], query: string, source: LogSource 
     });
   });
 }
+
+/** The hosts, addresses and people named in a search: "src:203.0.113.58 event:failed" -> ["203.0.113.58"].
+ *  An identifier carries a dot, a hyphen or a digit; plain words like "failed" or "post" are in too many searches to mean anything. */
+const entities = (q: string): string[] =>
+  q
+    .toLowerCase()
+    .split(/\s+/)
+    .map((t) => t.replace(/^-/, "").split(":").pop() ?? "")
+    .filter((t) => t.length > 3 && /[.\-\d]/.test(t));
+
+/** Ids of the practice questions that are about the same host, address or person as this alert's ready-made searches.
+ *  Empty when the alert has none, which is why the page keeps showing the rest of the questions underneath. */
+export function questionsForAlert(alertId: string | null, links: { q: string }[], questions: { id: string; tryQuery: string }[]): string[] {
+  if (!alertId) return [];
+  const wanted = new Set(links.flatMap((l) => entities(l.q)));
+  return questions.filter((q) => entities(q.tryQuery).some((v) => wanted.has(v))).map((q) => q.id);
+}

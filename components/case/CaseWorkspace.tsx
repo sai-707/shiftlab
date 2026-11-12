@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { submitCase } from "@/app/actions";
 import { GUEST_LIMIT, assignAlert, closeCase, useGuestLimit, useProgress } from "@/lib/progress";
 import { isUnlocked } from "@/lib/levels";
-import { reportProblems } from "@/lib/reportRules";
+import { isEasy, reportProblems } from "@/lib/reportRules";
+import { blockReason, reportEvent } from "@/lib/reportEvents";
 import { INTEL_SOURCE, LOG_SOURCE, MIN_SOURCES, isGated, openedCount, sourceBlocks } from "@/lib/sourceRules";
 import { markOpened, useOpened } from "@/lib/sources";
 import { toast } from "@/lib/toast";
@@ -160,7 +161,7 @@ const choice =
   "flex flex-1 cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:text-accent";
 
 const FIELDS: { key: keyof ReportSections; label: string; hint: string }[] = [
-  { key: "happened", label: "What happened", hint: "The activity, in plain words, with times." },
+  { key: "happened", label: "What happened", hint: "What the alert shows, with times. Name the domain, address or user you saw." },
   { key: "confirmed", label: "What is confirmed", hint: "Facts the evidence proves: IPs, accounts, hosts." },
   { key: "unknown", label: "What is still unknown", hint: "What you could not verify yet." },
   { key: "next", label: "Next action", hint: "What should happen now, and who should do it." },
@@ -179,15 +180,26 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
   });
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
+  // Beginner: one short reason is enough and the other three sections are optional (lib/reportRules.ts).
+  const easy = isEasy(alert.difficulty);
+  const started = useRef(false);
+  // Counted once per alert, on the first thing the student fills in, so the admin page can tell "opened" from "began a report".
+  const begin = () => {
+    if (started.current) return;
+    started.current = true;
+    reportEvent("started", alert.id);
+  };
 
   function submit(e: FormEvent) {
     e.preventDefault();
     if (verdict === null || escalate === null) {
+      reportEvent("blocked", alert.id, "decision");
       setError("Choose a verdict and whether to escalate.");
       return;
     }
-    const problems = reportProblems(sections);
+    const problems = reportProblems(sections, alert.difficulty);
     if (problems.length) {
+      reportEvent("blocked", alert.id, blockReason(problems[0]));
       setError(problems[0]);
       return;
     }
@@ -205,6 +217,28 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
       if (shouldAsk(readAsk())) window.setTimeout(() => window.dispatchEvent(new CustomEvent(FEEDBACK_EVENT, { detail: { auto: true } })), 1800);
     });
   }
+
+  const field = (f: (typeof FIELDS)[number]) => {
+    const required = !easy || f.key === "happened";
+    return (
+    <label key={f.key} className="block">
+      <span className="text-sm font-medium">
+        {f.label} {required ? <span className="text-missed">*</span> : <span className="text-muted">(optional)</span>}
+      </span>
+      <span className="mb-1.5 block text-xs text-muted">{easy && f.key === "happened" ? "Your reason in one or two sentences. Use a time, name or address from the evidence." : f.hint}</span>
+      <textarea
+        value={sections[f.key]}
+        onChange={(e) => {
+          begin();
+          setSections({ ...sections, [f.key]: e.target.value });
+        }}
+        rows={easy && f.key === "happened" ? 4 : 3}
+        maxLength={2000}
+        className="w-full resize-y rounded-lg border border-line bg-canvas px-3 py-2 text-sm outline-none focus:border-accent"
+      />
+    </label>
+    );
+  };
 
   if (have < need) {
     return (
@@ -232,7 +266,10 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
               name="verdict"
               className="accent-accent"
               checked={verdict === "tp"}
-              onChange={() => setVerdict("tp")}
+              onChange={() => {
+                begin();
+                setVerdict("tp");
+              }}
             />
             True positive
           </label>
@@ -242,7 +279,10 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
               name="verdict"
               className="accent-accent"
               checked={verdict === "fp"}
-              onChange={() => setVerdict("fp")}
+              onChange={() => {
+                begin();
+                setVerdict("fp");
+              }}
             />
             False positive
           </label>
@@ -251,25 +291,19 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
 
       <div className="grid gap-3 md:grid-cols-[13rem_1fr] md:gap-4">
         <div>
-          <p className="text-sm font-semibold">Write it up</p>
-          <p className="mt-1 text-xs text-muted">Short plain sentences are fine. Use times, names and addresses from the evidence.</p>
+          <p className="text-sm font-semibold">{easy ? "Why?" : "Write it up"}</p>
+          <p className="mt-1 text-xs text-muted">{easy ? "A short reason is enough. Use a time, name or address from the evidence." : "Short plain sentences are fine. Use times, names and addresses from the evidence."}</p>
         </div>
         <div className="space-y-4">
-          {FIELDS.map((f) => (
-            <label key={f.key} className="block">
-              <span className="text-sm font-medium">
-                {f.label} <span className="text-missed">*</span>
-              </span>
-              <span className="mb-1.5 block text-xs text-muted">{f.hint}</span>
-              <textarea
-                value={sections[f.key]}
-                onChange={(e) => setSections({ ...sections, [f.key]: e.target.value })}
-                rows={3}
-                maxLength={2000}
-                className="w-full resize-y rounded-lg border border-line bg-canvas px-3 py-2 text-sm outline-none focus:border-accent"
-              />
-            </label>
-          ))}
+          {field(FIELDS[0])}
+          {easy ? (
+            <details className="rounded-lg border border-line px-3 py-2">
+              <summary className="cursor-pointer text-sm font-medium text-accent">Add more detail for a higher score (optional)</summary>
+              <div className="mt-3 space-y-4">{FIELDS.slice(1).map(field)}</div>
+            </details>
+          ) : (
+            FIELDS.slice(1).map(field)
+          )}
         </div>
       </div>
 
@@ -282,7 +316,10 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
               name="escalate"
               className="accent-accent"
               checked={escalate === true}
-              onChange={() => setEscalate(true)}
+              onChange={() => {
+                begin();
+                setEscalate(true);
+              }}
             />
             Yes
           </label>
@@ -292,7 +329,10 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
               name="escalate"
               className="accent-accent"
               checked={escalate === false}
-              onChange={() => setEscalate(false)}
+              onChange={() => {
+                begin();
+                setEscalate(false);
+              }}
             />
             No
           </label>
@@ -300,7 +340,10 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
       </fieldset>
 
       <p className="text-xs text-muted">
-        <span className="text-missed">*</span> Both decisions and all four report sections are compulsory.
+        <span className="text-missed">*</span>{" "}
+        {easy
+          ? "Both decisions and a short reason are needed. The other sections are optional, and fuller reports score higher."
+          : "Both decisions and all four report sections are compulsory."}
       </p>
 
       {error && (

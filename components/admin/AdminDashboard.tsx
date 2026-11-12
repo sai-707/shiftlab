@@ -88,7 +88,7 @@ export default function AdminDashboard({
 
         <section className={`${cell} sm:col-span-2 lg:col-span-3`} aria-labelledby="users-h">
           <h2 id="users-h" className={title}>Newest accounts</h2>
-          <p className={sub}>Emails are partly hidden, so a screenshot is safe to share.</p>
+          <p className={sub}>The newest {users.length}, up to 50. Emails are partly hidden, so a screenshot is safe to share.</p>
           {users.length === 0 ? (
             <Empty>No accounts yet.</Empty>
           ) : (

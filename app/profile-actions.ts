@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { FIRST_ALERT_HREF } from "@/components/site/links";
 import { cleanDetails } from "@/lib/profileRules";
 import { createClient } from "@/lib/supabase/server";
 
@@ -32,7 +33,7 @@ export async function saveProfile(input: { name?: string; avatar?: string; usern
   return write(cleaned.patch);
 }
 
-/** The welcome screen: name and username are required, photo and GitHub are optional. On success it opens the dashboard. */
+/** The welcome screen: name and username are required, photo and GitHub are optional. On success it opens the first alert, so a new account starts working at once. */
 export async function completeProfile(input: { name: string; username: string; github?: string; avatar?: string }): Promise<{ error: string }> {
   const cleaned = cleanDetails({ name: input.name, username: input.username, github: input.github ?? "", ...(input.avatar ? { avatar: input.avatar } : {}) });
   if ("error" in cleaned) return cleaned;
@@ -40,5 +41,5 @@ export async function completeProfile(input: { name: string; username: string; g
 
   const saved = await write(cleaned.patch);
   if ("error" in saved) return saved;
-  redirect("/dashboard"); // outside any try/catch on purpose: redirect works by throwing
+  redirect(FIRST_ALERT_HREF); // outside any try/catch on purpose: redirect works by throwing
 }
