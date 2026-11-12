@@ -567,7 +567,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1008",
     title: "WAF: SQL injection rule triggered (942100)",
     topic: "Web attack",
-    severity: "medium",
+    severity: "low",
     difficulty: "Beginner",
     raisedAt: "Oct 23, 13:07",
     description:
@@ -796,7 +796,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1011",
     title: "Storage bucket ACL changed: public access enabled",
     topic: "Cloud",
-    severity: "critical",
+    severity: "high",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 16:34",
     description:
@@ -879,7 +879,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1012",
     title: "DLP: large upload to personal cloud storage",
     topic: "Insider",
-    severity: "high",
+    severity: "medium",
     difficulty: "Intermediate",
     raisedAt: "Oct 23, 18:44",
     description:
@@ -1287,7 +1287,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1017",
     title: "UEBA: unusual volume of file downloads from SharePoint",
     topic: "Insider",
-    severity: "high",
+    severity: "medium",
     difficulty: "Intermediate",
     raisedAt: "Oct 24, 10:34",
     description:
@@ -2024,7 +2024,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1025",
     title: "Password spray detected: failed sign-ins across many accounts from one IP",
     topic: "Brute force",
-    severity: "high",
+    severity: "medium",
     difficulty: "Hard",
     raisedAt: "Oct 24, 09:16",
     description:
@@ -2617,7 +2617,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1031",
     title: "Anomalous API usage by chatbot service",
     topic: "AI",
-    severity: "high",
+    severity: "medium",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 15:12",
     description:
@@ -2715,7 +2715,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1032",
     title: "User-reported: suspicious phone request for payment",
     topic: "AI",
-    severity: "critical",
+    severity: "high",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 14:34",
     description:
@@ -2911,7 +2911,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1034",
     title: "DLP: confidential file uploaded to unsanctioned web service",
     topic: "Insider",
-    severity: "high",
+    severity: "medium",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 12:20",
     description:
@@ -3298,7 +3298,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1038",
     title: "Web proxy: uploads to uncategorised domain from browser extension",
     topic: "AI",
-    severity: "high",
+    severity: "medium",
     difficulty: "AI Era",
     raisedAt: "Oct 24, 17:10",
     description:
@@ -3658,7 +3658,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1042",
     title: "WAF: SQL injection rule triggered on site search (942100)",
     topic: "Web attack",
-    severity: "medium",
+    severity: "low",
     difficulty: "Intermediate",
     raisedAt: "Oct 25, 14:26",
     description:
@@ -4031,7 +4031,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1046",
     title: "User-reported: unexpected payment request by phone",
     topic: "AI",
-    severity: "high",
+    severity: "medium",
     difficulty: "AI Era",
     raisedAt: "Oct 26, 15:35",
     description:
@@ -4382,7 +4382,7 @@ export const ALERTS: Alert[] = [
     id: "SL-1050",
     title: "Cloud AI: daily spend above budget threshold",
     topic: "AI",
-    severity: "medium",
+    severity: "low",
     difficulty: "AI Era",
     raisedAt: "Oct 26, 16:48",
     description:
