@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { markFeedbackRead } from "@/app/feedback-actions";
+import MessageList from "@/components/messages/MessageList";
+import ReplyForm from "@/components/messages/ReplyForm";
 import { ago } from "@/lib/adminStats";
 import type { FeedbackItem, Show } from "@/lib/feedbackData";
 import { Empty, PageTitle, pill } from "./parts";
@@ -13,6 +15,8 @@ const SHOWS: [Show, string][] = [
 ];
 
 function Item({ f, now }: { f: FeedbackItem; now: number }) {
+  const last = f.messages.at(-1);
+  const waiting = !f.read && last !== undefined && !last.from_admin; // the student wrote last, so a reply is due
   const where = f.alert ? `${f.alert}${f.level ? ` · ${f.level}` : ""}` : (f.path ?? "Unknown page");
   return (
     <li className={`flex flex-col gap-2 p-4 md:p-5 ${f.read ? "opacity-60" : ""}`}>
@@ -24,6 +28,7 @@ function Item({ f, now }: { f: FeedbackItem; now: number }) {
         <span aria-hidden="true">·</span>
         <time dateTime={f.at}>{ago(f.at, now)}</time>
         {f.contact_ok && <span className="rounded-full bg-correct/10 px-2 py-0.5 font-semibold text-correct">OK to contact</span>}
+        {waiting && <span className="rounded-full bg-accent px-2 py-0.5 font-semibold text-void">Student replied</span>}
         {!f.read && (
           <form action={markFeedbackRead.bind(null, f.id)} className="ml-auto">
             <button type="submit" className="rounded-md px-2 py-1 text-accent hover:underline">
@@ -57,6 +62,14 @@ function Item({ f, now }: { f: FeedbackItem; now: number }) {
           <span className="text-muted">Opinion: </span>
           {f.opinion}
         </p>
+      )}
+      {f.has_account ? (
+        <div className="mt-1 rounded-lg border border-line bg-canvas p-3">
+          {f.messages.length > 0 && <MessageList messages={f.messages} viewer="admin" now={now} />}
+          <ReplyForm fid={f.id} label={f.messages.length ? "Write a reply" : "Reply to this student. They will see it under Messages."} button="Send reply" />
+        </div>
+      ) : (
+        f.contact_ok && <p className="text-xs text-muted">Asked to be contacted but was not signed in, so there is no account to reply to.</p>
       )}
     </li>
   );

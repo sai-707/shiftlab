@@ -210,8 +210,11 @@ export default function FeedbackWindow() {
           </div>
 
           <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm">
-            <input type="checkbox" checked={contactOk} onChange={(e) => setContactOk(e.target.checked)} className="h-5 w-5 accent-[var(--color-accent)]" />
-            You may contact me about this
+            <input type="checkbox" checked={contactOk} onChange={(e) => setContactOk(e.target.checked)} className="h-5 w-5 shrink-0 accent-[var(--color-accent)]" />
+            <span>
+              You may reply to me about this
+              <span className="block text-xs text-muted">Sign in first, and the reply will appear under Messages.</span>
+            </span>
           </label>
 
           {err && (

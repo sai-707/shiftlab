@@ -1,5 +1,6 @@
 // SERVER ONLY. Reads feedback for the admin page. The database policy lets only an admin read the table, so for anyone else
 // this returns nothing even if the page gate were removed.
+import type { Message } from "@/lib/messages";
 import { createClient } from "@/lib/supabase/server";
 
 export type FeedbackItem = {
@@ -16,6 +17,9 @@ export type FeedbackItem = {
   contact_ok: boolean;
   signed_in: boolean;
   read: boolean;
+  /** Linked to an account (signed in and ticked "reply to me"), so a reply can reach them. */
+  has_account: boolean;
+  messages: Message[];
 };
 
 export type Show = "all" | "unread" | "contact";
@@ -28,7 +32,7 @@ export async function getFeedback(show: Show): Promise<FeedbackResult> {
   const supabase = await createClient();
   let q = supabase
     .from("feedback")
-    .select("id, at, path, alert, level, rating, evidence, confusing, opinion, role, contact_ok, signed_in, read")
+    .select("id, at, path, alert, level, rating, evidence, confusing, opinion, role, contact_ok, signed_in, read, user_id")
     .order("at", { ascending: false })
     .limit(100);
   if (show === "unread") q = q.eq("read", false);
@@ -38,5 +42,15 @@ export async function getFeedback(show: Show): Promise<FeedbackResult> {
     console.error("[admin] feedback failed:", list.error.code); // code only
     return { ok: false, code: list.error.code ?? "empty" };
   }
-  return { ok: true, items: (list.data ?? []) as FeedbackItem[], unread: count.count ?? 0 };
+  const rows = list.data ?? [];
+  // The threads for these rows. If 0011_feedback_replies.sql has not been run yet this fails; the list still works, just without threads.
+  const ids = rows.filter((r) => r.user_id).map((r) => r.id);
+  const byId = new Map<number, Message[]>();
+  if (ids.length) {
+    const msgs = await supabase.from("feedback_messages").select("id, feedback_id, from_admin, body, at, seen").in("feedback_id", ids).order("at").order("id");
+    if (msgs.error) console.error("[admin] messages failed:", msgs.error.code);
+    for (const m of msgs.data ?? []) byId.set(m.feedback_id, [...(byId.get(m.feedback_id) ?? []), m]);
+  }
+  const items = rows.map(({ user_id, ...r }) => ({ ...r, has_account: user_id !== null, messages: byId.get(r.id) ?? [] }));
+  return { ok: true, items: items as FeedbackItem[], unread: count.count ?? 0 };
 }

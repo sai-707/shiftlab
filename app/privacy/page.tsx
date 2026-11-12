@@ -42,7 +42,7 @@ export default function PrivacyPage() {
         <h2 style={H}>Feedback</h2>
         <p style={P}>
           If you use Send feedback, we save your ratings and what you wrote, the page you were on, the same random browser number as above, and whether you were signed in.
-          Your account is linked to it only if you tick &quot;You may contact me about this&quot;. Do not put personal details in the text boxes.
+          Your account is linked to it only if you tick &quot;You may reply to me about this&quot;. If the owner replies, the conversation (your feedback and the messages) is kept with your account and shown only to you and the owner. Do not put personal details in the text boxes.
         </p>
 
         <h2 style={H}>What we do not do</h2>
