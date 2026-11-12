@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { ThreatMap } from "@/components/backgrounds/Background";
 import FeedbackLink from "@/components/feedback/FeedbackLink";
+import MessagesBell from "@/components/messages/MessagesBell";
 import Interactions from "@/components/layout/Interactions";
 import ProgressSync from "@/components/layout/ProgressSync";
 import Sidebar from "@/components/layout/Sidebar";
@@ -39,7 +40,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Sidebar />
       </Suspense>
       {/* Top-right corner: inside the logo strip on a phone, fixed to the screen from md up. It needs the session cookie, so it waits in its own Suspense. */}
-      <div className="absolute right-3 top-2.5 z-40 md:fixed md:right-6 md:top-3">
+      <div className="absolute right-3 top-2.5 z-40 flex items-center gap-2 md:fixed md:right-6 md:top-3">
+        <Suspense fallback={null}>
+          <MessagesBell />
+        </Suspense>
         <Suspense fallback={null}>
           <SidebarAccount />
         </Suspense>
