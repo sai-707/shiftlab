@@ -35,6 +35,14 @@ const PATHS = {
       <path d="M4 21a8 8 0 0 1 16 0" />
     </>
   ),
+  students: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2 20a7 7 0 0 1 14 0" />
+      <path d="M16 4.6a3.5 3.5 0 0 1 0 6.8" />
+      <path d="M18 14.4A7 7 0 0 1 22 20" />
+    </>
+  ),
   feedback: (
     <>
       <path d="M4 4h16v12H8l-4 4z" />

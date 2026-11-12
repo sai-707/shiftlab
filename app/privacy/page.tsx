@@ -35,6 +35,8 @@ export default function PrivacyPage() {
         <p style={P}>
           Each page view is counted with a random number kept in your browser. It holds no name or email. Nothing is counted if your browser sends &quot;Do Not Track&quot;.
           When a case is closed we also count the alert, the score and whether the verdict was right, never your written report.
+          We also count when you start writing a report and when Submit is stopped by a check, with the alert and a short reason, never what you typed.
+          If the link you came from carries a label such as <code>?ref=linkedin</code>, that label is counted too, so the owner can see which post brought visitors.
         </p>
 
         <h2 style={H}>Feedback</h2>

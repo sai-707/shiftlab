@@ -1,3 +1,4 @@
+import { cleanRef } from "@/lib/ref";
 import { track } from "@/lib/track";
 
 // Receives the page-view beacon from components/analytics/Tracker.tsx and the report beacons from lib/reportEvents.ts. Everything in the body is checked again here.
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
 
   const raw = await req.text();
   if (raw.length > 400) return new Response(null, { status: 413 });
-  let body: { p?: unknown; v?: unknown; k?: unknown; a?: unknown; r?: unknown };
+  let body: { p?: unknown; v?: unknown; k?: unknown; a?: unknown; r?: unknown; s?: unknown };
   try {
     body = JSON.parse(raw);
   } catch {
@@ -45,6 +46,8 @@ export async function POST(req: Request) {
 
   if (typeof p !== "string" || !PATH.test(p) || p.startsWith("/admin")) return new Response(null, { status: 400 });
 
-  await track("view", { path: p, visitor: v });
+  // s = the ?ref= label of the link that brought the visit. A bad one is ignored, so the view still counts.
+  const ref = cleanRef(body.s);
+  await track("view", { path: p, visitor: v, props: ref ? { ref } : {} });
   return new Response(null, { status: 204 });
 }
