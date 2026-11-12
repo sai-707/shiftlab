@@ -37,7 +37,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={null}>
           <Tracker />
         </Suspense>
-        <FeedbackWindow />
+        {/* also reads the current path; without Suspense it blocks prerendering of dynamic routes such as /admin/students/[id] */}
+        <Suspense fallback={null}>
+          <FeedbackWindow />
+        </Suspense>
       </body>
     </html>
   );
