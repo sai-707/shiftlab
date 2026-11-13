@@ -629,6 +629,12 @@ html[data-js] .site .rv.in {
   box-shadow: 0 0 14px var(--c);
   flex: none;
 }
+.site .lv p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
 .site .bar {
   display: flex;
   align-items: flex-end;

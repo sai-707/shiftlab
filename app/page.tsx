@@ -25,10 +25,10 @@ const HELPS = [
 ];
 
 const LEVELS = [
-  { name: "Beginner", color: "var(--color-low)" },
-  { name: "Intermediate", color: "var(--color-medium)" },
-  { name: "Hard", color: "var(--color-high)" },
-  { name: "AI era", color: "var(--color-critical)" },
+  { name: "Beginner", color: "var(--color-low)", desc: "Evidence is shown. One short reason is enough." },
+  { name: "Intermediate", color: "var(--color-medium)", desc: "Evidence is hidden. Open at least 3 sources before you report." },
+  { name: "Hard", color: "var(--color-high)", desc: "Evidence is hidden. Open at least 4 sources before you report." },
+  { name: "AI era", color: "var(--color-critical)", desc: "Same rules as Hard, with alerts about AI tools and AI summaries you have to check." },
 ];
 
 const TOOLS = ["Intel check", "Log search", "Phishing mailbox", "Shift mode", "AI review"];
@@ -83,6 +83,7 @@ export default function Home() {
             <li>No account needed</li>
             <li>About ten minutes</li>
             <li>Scored and coached</li>
+            <li>51 fictional alerts</li>
           </ul>
         </section>
 
@@ -106,6 +107,7 @@ export default function Home() {
               <p className="label">Who it is for</p>
               <h2 className="h2s">Beginners aiming for a SOC job.</h2>
               <p className="nudge">Students and career switchers. No experience needed.</p>
+              <p className="nudge">A SOC (security operations centre) is the team that watches for cyber attacks. Level 1 analysts take each alert, decide if it is real, and pass serious ones to Level 2.</p>
               <ul className="helps" aria-label="What ShiftLab helps you do">
                 {HELPS.map((h) => (
                   <li key={h}>{h}</li>
@@ -137,6 +139,7 @@ export default function Home() {
                     <i />
                     {l.name}
                   </h3>
+                  <p>{l.desc}</p>
                 </div>
               ))}
             </div>

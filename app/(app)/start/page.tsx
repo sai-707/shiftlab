@@ -9,9 +9,9 @@ const panel = "rounded-2xl border border-line bg-panel p-5 shadow-[inset_0_1px_0
 const STEPS = [
   { title: "Take an alert", text: "Open the Alert queue and press Assign to me. You work on one alert at a time, like a real shift." },
   { title: "Read the briefing", text: "Each alert starts with what raised it, what the rule looks for and who is involved, plus questions to ask first." },
-  { title: "Investigate", text: "Study the evidence. Use the Intel lookup for IPs, domains and hashes, and the Log search for the wider picture." },
+  { title: "Investigate", text: "Study the evidence. Use the Intel lookup for IPs, domains and hashes, and the Log search (links inside each alert, or Practice and learn → Log search) for the wider picture." },
   { title: "Decide", text: "Choose true positive or false positive, and whether to escalate. Both choices matter and are scored separately." },
-  { title: "Write your report", text: "Say what happened, what is confirmed, what is still unknown and what should happen next. Keep it short and factual." },
+  { title: "Write your report", text: "Write four short parts: What happened, Confirmed, Not known, Next steps. Keep it short and factual." },
   { title: "Learn from the feedback", text: "You get a score, what you missed and what really happened. Compare with a similar alert to sharpen your instinct." },
 ];
 
@@ -72,7 +72,7 @@ export default function StartPage() {
 
           <section className={panel}>
             <h2 className="font-semibold">How scoring works</h2>
-            <p className="mt-1 text-sm text-muted">Each case is out of 100, and the score is your decision: the verdict, whether to escalate, and that you wrote the report. Your wording is never scored, so a right call in your own words is a right call. How the report reads is coached afterwards instead, section by section, next to a model report you can compare against. On Beginner alerts a reason of one or two sentences is enough and the other three sections are optional, each adding marks. From Intermediate up the evidence is hidden: you must open at least 3 sources (4 on Hard and AI Era) before you can report, and 25 points move to how well you investigated. A wrong verdict caps the score at 40, and a report that contradicts the evidence caps it at 70.</p>
+            <p className="mt-1 text-sm text-muted">Each case is out of 100, and the score is your decision: the verdict, whether to escalate, and that you wrote the report. Your wording is never scored, so a right call in your own words is a right call. How the report reads is coached afterwards instead, section by section, next to a model report you can compare against. On Beginner alerts a reason of one or two sentences is enough and the other three sections are optional, each adding marks. From Intermediate up the evidence is hidden: you must open at least 3 sources (4 on Hard and AI Era) before you can report, and 25 points move to how well you investigated. A wrong verdict caps the score at 40, and a report that says the opposite of what the evidence shows caps it at 70. This checks facts, not your style.</p>
             <ul className="mt-3 divide-y divide-line text-sm">
               {SCORE.map((s) => (
                 <li key={s.part} className="flex items-baseline justify-between gap-4 py-2.5">
