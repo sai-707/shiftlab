@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
+import { useCallback, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { submitCase } from "@/app/actions";
 import { GUEST_LIMIT, assignAlert, closeCase, useGuestLimit, useProgress } from "@/lib/progress";
 import { isUnlocked } from "@/lib/levels";
@@ -15,6 +15,7 @@ import { readAsk, shouldAsk } from "@/lib/feedbackAsk";
 import { trackingVisitorId } from "@/lib/visitor";
 import LookupBox from "@/components/lookup/LookupBox";
 import SeverityBadge from "@/components/ui/SeverityBadge";
+import CompleteModal from "./CompleteModal";
 import FeedbackPanel from "./FeedbackPanel";
 import HintSection from "./HintSection";
 import LogLinks from "./LogLinks";
@@ -22,7 +23,7 @@ import RelatedAlerts from "./RelatedAlerts";
 import { LOG_LINKS } from "@/content/logLinks";
 import { topicSlug } from "@/content/playbooks";
 import { TOPIC_COLOR } from "@/lib/topics";
-import type { Alert, Briefing as BriefingData, EvidenceBlock, ReportSections, Submission, Verdict } from "@/lib/types";
+import type { Alert, Briefing as BriefingData, CaseRecord, EvidenceBlock, ReportSections, Submission, Verdict } from "@/lib/types";
 
 const panel = "rounded-2xl border border-line bg-panel p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.03)]";
 
@@ -167,7 +168,7 @@ const FIELDS: { key: keyof ReportSections; label: string; hint: string }[] = [
   { key: "next", label: "Next action", hint: "What should happen now, and who should do it." },
 ];
 
-function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
+function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: string[]; onClosed: (r: CaseRecord) => void }) {
   const need = MIN_SOURCES[alert.difficulty];
   const have = openedCount(opened);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -211,10 +212,10 @@ function DecisionForm({ alert, opened }: { alert: Alert; opened: string[] }) {
         setError(result.error);
         return;
       }
-      closeCase({ alertId: alert.id, submission, feedback: result.feedback, closedAt: Date.now() });
-      toast(`${alert.id} closed: ${result.feedback.score}/100`);
-      // Let the score be seen first, then offer the feedback window. It has a Skip button and stops asking after a few skips (lib/feedbackAsk.ts).
-      if (shouldAsk(readAsk())) window.setTimeout(() => window.dispatchEvent(new CustomEvent(FEEDBACK_EVENT, { detail: { auto: true } })), 1800);
+      const record: CaseRecord = { alertId: alert.id, submission, feedback: result.feedback, closedAt: Date.now() };
+      closeCase(record);
+      // This form unmounts once the case closes, so the parent shows the pop-up (CompleteModal).
+      onClosed(record);
     });
   }
 
@@ -431,6 +432,18 @@ function EvidenceTabs({ alert, opened, isActive, hideEvidence, alertBlock }: { a
 export default function CaseWorkspace({ alert }: { alert: Alert }) {
   const progress = useProgress();
   const guestLimit = useGuestLimit();
+  // The pop-up shows once, straight after a submit. Opening a closed case later goes straight to the report.
+  const [done, setDone] = useState<CaseRecord | null>(null);
+  const askAfter = useRef(false);
+  const closeDone = useCallback((viewReport: boolean) => {
+    setDone(null);
+    if (viewReport) window.setTimeout(() => document.getElementById("report-review")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    // Let the score be seen first, then offer the feedback window. It has a Skip button and stops asking after a few skips (lib/feedbackAsk.ts).
+    if (askAfter.current) {
+      askAfter.current = false;
+      window.setTimeout(() => window.dispatchEvent(new CustomEvent(FEEDBACK_EVENT, { detail: { auto: true } })), 1200);
+    }
+  }, []);
   const record = progress.cases[alert.id];
   const isActive = progress.activeAlertId === alert.id;
   const otherActive = progress.activeAlertId !== null && !isActive;
@@ -562,13 +575,22 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
 
           {isActive && (
             <Section n={3} title="Your report">
-              <DecisionForm alert={alert} opened={opened} />
+              <DecisionForm
+                alert={alert}
+                opened={opened}
+                onClosed={(r) => {
+                  askAfter.current = shouldAsk(readAsk());
+                  setDone(r);
+                }}
+              />
             </Section>
           )}
 
           <RelatedAlerts alert={alert} closed={Boolean(record)} />
         </>
       )}
+
+      {done && <CompleteModal alert={alert} record={done} onClose={closeDone} />}
     </div>
   );
 }

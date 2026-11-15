@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { reviewCase, type ReviewResult } from "@/app/review-actions";
-import type { ReportSections } from "@/lib/types";
+import type { FeedbackItem, ReportSections } from "@/lib/types";
 import type { Status } from "@/lib/review";
 
 const CHIP: Record<Status, { label: string; cls: string }> = {
@@ -33,7 +33,7 @@ function Marked({ text }: { text: string }) {
 const TITLE = { happened: "What happened", confirmed: "Confirmed", unknown: "Not known", next: "Next steps" } as const;
 
 /** Written feedback on the submitted report. It never changes the score. */
-export default function ReviewPanel({ alertId, sections }: { alertId: string; sections: ReportSections }) {
+export default function ReviewPanel({ alertId, sections, fixes }: { alertId: string; sections: ReportSections; fixes: FeedbackItem[] }) {
   const [r, setR] = useState<ReviewResult | null>(null);
   const sig = JSON.stringify(sections);
 
@@ -48,8 +48,40 @@ export default function ReviewPanel({ alertId, sections }: { alertId: string; se
   if (!r) return <p className="text-sm text-muted">Preparing your review…</p>;
   if (!r.ok) return null;
 
+  // Everything that cost marks or reads weakly, in one list, before the section-by-section detail.
+  const todo = [
+    ...fixes.map((f) => ({ key: f.label, title: f.label, tag: `${f.points}/${f.max}`, text: f.note })),
+    ...r.sections
+      .filter((s) => s.status !== "strong")
+      .map((s) => ({ key: s.section, title: `Report: ${s.title}`, tag: CHIP[s.status].label, text: s.fix[0] ?? (s.text ? "Add more detail here." : "Left empty. Add a line here.") })),
+  ];
+
   return (
     <div className="space-y-4">
+      <section className={`rounded-2xl border bg-panel p-5 ${todo.length ? "border-medium/40" : "border-correct/40"}`}>
+        <p className={`text-xs uppercase tracking-wide ${todo.length ? "text-medium" : "text-correct"}`}>What to change</p>
+        {todo.length ? (
+          <>
+            <h3 className="mt-1 text-base font-semibold">{todo.length === 1 ? "1 thing to change" : `${todo.length} things to change`}</h3>
+            <ol className="mt-3 space-y-2.5">
+              {todo.map((t, i) => (
+                <li key={t.key} className="flex gap-3 rounded-lg border border-line bg-canvas p-3 text-sm">
+                  <span className="flex size-6 flex-none items-center justify-center rounded-full bg-medium/15 text-xs font-bold text-medium">{i + 1}</span>
+                  <div className="min-w-0">
+                    <p className="font-medium">
+                      {t.title} <span className="ml-1 font-mono text-xs text-missed">{t.tag}</span>
+                    </p>
+                    <p className="mt-1 text-muted">{t.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </>
+        ) : (
+          <p className="mt-1 text-sm">Nothing to change. Compare your wording with the model report below.</p>
+        )}
+      </section>
+
       <section className="rounded-2xl border border-line bg-panel p-5">
         <p className="text-xs uppercase tracking-wide text-muted">Your report</p>
         <h3 className="mt-1 text-base font-semibold">Review and improve</h3>

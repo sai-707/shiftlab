@@ -325,3 +325,129 @@ html {
     animation: none;
   }
 }
+
+/* ---- alert complete pop-up (components/case/CompleteModal.tsx) ---- */
+@keyframes cc-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(16px);
+  }
+}
+@keyframes cc-slam {
+  0% {
+    transform: rotate(-7deg) scale(3.4);
+    opacity: 0;
+  }
+  52% {
+    transform: rotate(-7deg) scale(0.92);
+    opacity: 1;
+  }
+  72% {
+    transform: rotate(-7deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(-7deg) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes cc-shake {
+  20% {
+    transform: translate(-6px, 3px);
+  }
+  40% {
+    transform: translate(6px, -3px);
+  }
+  60% {
+    transform: translate(-3px, 2px);
+  }
+  80% {
+    transform: translate(2px, -1px);
+  }
+}
+@keyframes cc-wave {
+  from {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.9;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(5.5);
+    opacity: 0;
+  }
+}
+@keyframes cc-spark {
+  from {
+    transform: rotate(var(--a)) translateX(34px) scaleX(0.4);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(var(--a)) translateX(var(--r)) scaleX(1);
+    opacity: 0;
+  }
+}
+@keyframes cc-fall {
+  0% {
+    transform: translate(0, -40px) rotate(0deg);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--sx), 108vh) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+.cc-pop {
+  animation: cc-pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+.cc-shake {
+  animation: cc-shake 0.45s ease-out 0.38s both;
+}
+.cc-stamp {
+  animation: cc-slam 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) 0.3s both;
+}
+.cc-wave {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid;
+  animation: cc-wave 0.9s ease-out 0.62s both;
+}
+.cc-spark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  transform-origin: 0 50%;
+  animation: cc-spark 0.8s ease-out 0.62s both;
+}
+.cc-fall {
+  position: absolute;
+  top: 0;
+  animation: cc-fall var(--d) linear var(--dl) both;
+}
+.cc-in {
+  animation: rise 0.5s ease-out var(--dl) both;
+}
+.cc-bar {
+  animation: grow 1s cubic-bezier(0.2, 0.8, 0.2, 1) var(--dl) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cc-pop,
+  .cc-shake,
+  .cc-stamp,
+  .cc-wave,
+  .cc-spark,
+  .cc-in,
+  .cc-bar {
+    animation: none;
+  }
+  .cc-fall {
+    display: none;
+  }
+}
