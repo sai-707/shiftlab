@@ -1,9 +1,10 @@
 // SERVER ONLY. Rule-based review of a submitted report. It never touches the score.
 import { ANSWER_KEYS } from "@/content/answer-keys";
 import { REVIEW_KEYS, type Section } from "@/content/review-keys";
+import { unreadable } from "@/lib/reportRules";
 import type { ReportSections } from "@/lib/types";
 
-export type Status = "strong" | "detail" | "missing" | "vague";
+export type Status = "strong" | "detail" | "missing" | "vague" | "unreadable" | "wrong";
 export type SectionReview = {
   section: Section;
   title: string;
@@ -90,6 +91,12 @@ export function reviewReport(alertId: string, sections: ReportSections): ReviewD
     const fix: string[] = [];
     let status: Status;
 
+    // Nothing is blocked when the report is submitted, so random characters can arrive here. Say so, and show what to write.
+    if (unreadable(t)) {
+      fix.push("This does not read as words, so it earned no report marks. Write what you saw in simple words. A strong version is shown below.");
+      return { section: s, title: TITLES[s], text: t, status: "unreadable", good, fix, tryThis: key.model[s] };
+    }
+
     if (n < 3) {
       status = "missing";
       if (s === "unknown") fix.push("Every case has gaps. Writing them down shows judgement and tells L2 where to look.");
@@ -148,7 +155,18 @@ export function reviewReport(alertId: string, sections: ReportSections): ReviewD
       else status = hit.length >= need && !fix.some((x) => !x.startsWith("Consider")) ? "strong" : "detail";
     }
 
-    for (const w of wrong) if (s === "happened" || s === "confirmed" || s === "next") { if (!fix.includes(w) && s === "confirmed") fix.unshift(w); }
+    // A claim that says the opposite of the evidence is called out in the section where it was written, with the correct version.
+    const own = contradictions(l, key.avoid);
+    if (own.length) {
+      fix.unshift(...own);
+      status = "wrong";
+    }
+    // Pasting one answer under several headings earns the marks once.
+    const same = ORDER.slice(0, ORDER.indexOf(s)).find((o) => text[o] && text[o].toLowerCase().replace(/\s+/g, " ") === t.toLowerCase().replace(/\s+/g, " "));
+    if (same) {
+      fix.unshift(`This is the same text as "${TITLES[same]}". Each heading answers a different question, so it earned no extra marks.`);
+      if (status === "strong") status = "detail";
+    }
     if (wrong.length && status === "strong") status = "detail";
     return { section: s, title: TITLES[s], text: t, status, good, fix, tryThis: status === "strong" ? null : key.model[s] };
   });

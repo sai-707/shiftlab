@@ -6,24 +6,24 @@ export type Part = "time" | "entities" | "reason" | "escalate" | "remediation" |
 
 /** `into` says which stored section a heading feeds. */
 const PARTS: { part: Part; label: string; re: RegExp; into: keyof ReportSections }[] = [
-  { part: "time", label: "Time of activity", re: /^time of activity\s*:/i, into: "happened" },
-  { part: "entities", label: "List of Affected Entities", re: /^list of affected entities\s*:/i, into: "confirmed" },
+  { part: "time", label: "Time of activity", re: /^time of activity\s*\*?\s*:/i, into: "happened" },
+  { part: "entities", label: "List of Affected Entities", re: /^list of affected entities\s*\*?\s*:/i, into: "confirmed" },
   { part: "reason", label: "", re: /^reason for classifying as\b[^:\n]*:/i, into: "happened" },
-  { part: "escalate", label: "Reason for Escalating the Alert", re: /^reason for escalating( the alert)?\s*:/i, into: "next" },
-  { part: "remediation", label: "Recommended Remediation Actions", re: /^recommended remediation actions\s*:/i, into: "next" },
-  { part: "indicators", label: "List of Attack Indicators", re: /^list of attack indicators\s*:/i, into: "confirmed" },
-  { part: "unknown", label: "What Is Still Unknown", re: /^what is still unknown\s*:/i, into: "unknown" },
+  { part: "escalate", label: "Reason for Escalating the Alert", re: /^reason for escalating( the alert)?\s*\*?\s*:/i, into: "next" },
+  { part: "remediation", label: "Recommended Remediation Actions", re: /^recommended remediation actions\s*\*?\s*:/i, into: "next" },
+  { part: "indicators", label: "List of Attack Indicators", re: /^list of attack indicators\s*\*?\s*:/i, into: "confirmed" },
+  { part: "unknown", label: "What Is Still Unknown", re: /^what is still unknown\s*\*?\s*:/i, into: "unknown" },
 ];
 
 /** The reason heading follows the verdict the student has chosen. */
 export const reasonHeading = (v: Verdict | null) => `Reason for Classifying as ${v === "tp" ? "True Positive" : v === "fp" ? "False Positive" : "True or False Positive"}`;
 const heading = (p: (typeof PARTS)[number], v: Verdict | null) => (p.part === "reason" ? reasonHeading(v) : p.label);
 
-/** The text the box starts with: every heading, with room to type under each. */
-export const template = (v: Verdict | null) => PARTS.map((p) => `${heading(p, v)}:\n\n`).join("\n");
+/** The text the box starts with: every heading, with room to type under each. A * marks what is compulsory: the reason always, every heading above Beginner. */
+export const template = (v: Verdict | null, easy: boolean) => PARTS.map((p) => `${heading(p, v)}${easy && p.part !== "reason" ? "" : " *"}:\n\n`).join("\n");
 
 /** Swaps the reason heading when the verdict changes, keeping everything typed. */
-export const retitle = (text: string, v: Verdict) => text.replace(/^reason for classifying as\b[^:\n]*:/im, `${reasonHeading(v)}:`);
+export const retitle = (text: string, v: Verdict) => text.replace(/^reason for classifying as\b[^:\n]*:/im, `${reasonHeading(v)} *:`);
 
 /** Splits the box by heading. Text before the first heading, or in a box with no headings left, counts as the reason. */
 export function parseReport(text: string): Record<Part, string> {

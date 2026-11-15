@@ -3,25 +3,39 @@ import assert from "node:assert/strict";
 import { parseReport, reasonHeading, retitle, template, templateProblem, toSections } from "../lib/reportTemplate.ts";
 import { reportProblems, reportWritten } from "../lib/reportRules.ts";
 
-const fill = (t, heading, text) => t.replace(`${heading}:\n`, `${heading}:\n${text}`);
+const fill = (t, heading, text) => t.replace(new RegExp(`${heading}( \\*)?:\\n`), (m) => m + text);
 
 test("the box starts with every heading and the reason heading follows the verdict", () => {
-  const t = template(null);
+  const t = template(null, false);
   for (const h of ["Time of activity", "List of Affected Entities", "Reason for Escalating the Alert", "Recommended Remediation Actions", "List of Attack Indicators", "What Is Still Unknown"])
-    assert.ok(t.includes(`${h}:`), h);
-  assert.ok(t.includes("Reason for Classifying as True or False Positive:"));
-  assert.ok(retitle(t, "tp").includes("Reason for Classifying as True Positive:"));
-  assert.ok(retitle(retitle(t, "tp"), "fp").includes("Reason for Classifying as False Positive:"));
+    assert.ok(t.includes(`${h} *:`), h);
+  assert.ok(t.includes("Reason for Classifying as True or False Positive *:"));
+  assert.ok(retitle(t, "tp").includes("Reason for Classifying as True Positive *:"));
+  assert.ok(retitle(retitle(t, "tp"), "fp").includes("Reason for Classifying as False Positive *:"));
+});
+
+test("a * marks what is compulsory: only the reason on Beginner, every heading on other levels", () => {
+  const stars = (t) => t.split("\n").filter((l) => l.endsWith(" *:")).length;
+  assert.equal(stars(template("tp", true)), 1);
+  assert.ok(template("tp", true).includes("Reason for Classifying as True Positive *:"));
+  assert.equal(stars(template("tp", false)), 7);
+  assert.ok(retitle(template(null, true), "fp").includes("Reason for Classifying as False Positive *:"));
+});
+
+test("starred headings are read the same as plain ones", () => {
+  const p = parseReport("Time of activity *:\n09:12\nReason for Classifying as True Positive *:\nIt is phishing.");
+  assert.equal(p.time, "09:12");
+  assert.equal(p.reason, "It is phishing.");
 });
 
 test("changing the verdict keeps what was typed", () => {
-  const typed = fill(template("tp"), reasonHeading("tp"), "It is a look-alike domain.");
-  assert.ok(retitle(typed, "fp").includes("False Positive:\nIt is a look-alike domain."));
+  const typed = fill(template("tp", false), reasonHeading("tp"), "It is a look-alike domain.");
+  assert.ok(retitle(typed, "fp").includes("False Positive *:\nIt is a look-alike domain."));
 });
 
 test("an empty box reads as empty, and the text under each heading goes to the right section", () => {
-  assert.deepEqual(Object.values(parseReport(template("tp"))), ["", "", "", "", "", "", ""]);
-  let t = template("tp");
+  assert.deepEqual(Object.values(parseReport(template("tp", false))), ["", "", "", "", "", "", ""]);
+  let t = template("tp", false);
   t = fill(t, "Time of activity", "09:12 to 09:15");
   t = fill(t, "List of Affected Entities", "d.okafor");
   t = fill(t, reasonHeading("tp"), "The domain copies ours.");
@@ -46,7 +60,7 @@ test("headings still work when typed on the same line, in any case, or when the 
 });
 
 test("Beginner needs only the reason, every other level needs every heading", () => {
-  const blank = parseReport(template("tp"));
+  const blank = parseReport(template("tp", false));
   assert.equal(templateProblem(blank, "tp", true), "Reason for Classifying as True Positive is required.");
   assert.equal(templateProblem({ ...blank, reason: "x" }, "tp", true), null);
   const msg = templateProblem({ ...blank, reason: "x" }, "tp", false);
@@ -56,7 +70,7 @@ test("Beginner needs only the reason, every other level needs every heading", ()
 });
 
 test("a missing-heading message ends the way lib/reportEvents.ts counts as empty", () => {
-  for (const easy of [true, false]) assert.match(templateProblem(parseReport(template("tp")), "tp", easy), /\b(is|are) required\.$/);
+  for (const easy of [true, false]) assert.match(templateProblem(parseReport(template("tp", false)), "tp", easy), /\b(is|are) required\.$/);
 });
 
 test("a full report still earns the full 25 report marks", () => {

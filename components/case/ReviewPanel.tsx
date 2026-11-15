@@ -10,6 +10,8 @@ const CHIP: Record<Status, { label: string; cls: string }> = {
   detail: { label: "Needs detail", cls: "border-medium/40 text-medium" },
   vague: { label: "Too vague", cls: "border-missed/40 text-missed" },
   missing: { label: "Missing", cls: "border-missed/40 text-missed" },
+  unreadable: { label: "Not readable", cls: "border-missed/40 text-missed" },
+  wrong: { label: "Not correct", cls: "border-missed/40 text-missed" },
 };
 const ORDER = ["happened", "confirmed", "unknown", "next"] as const;
 

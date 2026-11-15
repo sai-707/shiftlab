@@ -13,9 +13,11 @@ test("a one-line reason scores, and a full report scores full", () => {
   assert.equal(reportWritten(empty, 25), 0);
 });
 
-test("the wording never changes the marks: only whether a section was written", () => {
-  const vague = { happened: "x".repeat(WRITTEN_MIN_CHARS), confirmed: "y".repeat(WRITTEN_MIN_CHARS), unknown: "z".repeat(WRITTEN_MIN_CHARS), next: "w".repeat(WRITTEN_MIN_CHARS) };
-  assert.equal(reportWritten(vague, 25), reportWritten(full, 25));
+test("the wording never changes the marks: only whether a section was written in words", () => {
+  const rough = { happened: "mail is from fake domain not ours", confirmed: "spf is fail and reply to is free mail", unknown: "not know if other people click link", next: "send to level 2 and reset the password" };
+  assert.equal(reportWritten(rough, 25), reportWritten(full, 25));
+  const junk = { happened: "x".repeat(WRITTEN_MIN_CHARS), confirmed: "y".repeat(WRITTEN_MIN_CHARS), unknown: "z".repeat(WRITTEN_MIN_CHARS), next: "w".repeat(WRITTEN_MIN_CHARS) };
+  assert.equal(reportWritten(junk, 25), 0);
 });
 
 test("text shorter than a sentence does not count as written", () => {
