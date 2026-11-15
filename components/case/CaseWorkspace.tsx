@@ -6,6 +6,7 @@ import { submitCase } from "@/app/actions";
 import { GUEST_LIMIT, assignAlert, closeCase, useGuestLimit, useProgress } from "@/lib/progress";
 import { isUnlocked } from "@/lib/levels";
 import { isEasy, reportProblems } from "@/lib/reportRules";
+import { parseReport, retitle, template, templateProblem, toSections } from "@/lib/reportTemplate";
 import { blockReason, reportEvent } from "@/lib/reportEvents";
 import { INTEL_SOURCE, LOG_SOURCE, MIN_SOURCES, isGated, openedCount, sourceBlocks } from "@/lib/sourceRules";
 import { markOpened, useOpened } from "@/lib/sources";
@@ -23,7 +24,7 @@ import RelatedAlerts from "./RelatedAlerts";
 import { LOG_LINKS } from "@/content/logLinks";
 import { topicSlug } from "@/content/playbooks";
 import { TOPIC_COLOR } from "@/lib/topics";
-import type { Alert, Briefing as BriefingData, CaseRecord, EvidenceBlock, ReportSections, Submission, Verdict } from "@/lib/types";
+import type { Alert, Briefing as BriefingData, CaseRecord, EvidenceBlock, Submission, Verdict } from "@/lib/types";
 
 const panel = "rounded-2xl border border-line bg-panel p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.03)]";
 
@@ -161,27 +162,16 @@ function Section({ n, title, children }: { n: number; title: string; children: R
 const choice =
   "flex flex-1 cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:text-accent";
 
-const FIELDS: { key: keyof ReportSections; label: string; hint: string }[] = [
-  { key: "happened", label: "What happened", hint: "What the alert shows, with times. Name the domain, address or user you saw." },
-  { key: "confirmed", label: "What is confirmed", hint: "Facts the evidence proves: IPs, accounts, hosts." },
-  { key: "unknown", label: "What is still unknown", hint: "What you could not verify yet." },
-  { key: "next", label: "Next action", hint: "What should happen now, and who should do it." },
-];
-
 function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: string[]; onClosed: (r: CaseRecord) => void }) {
   const need = MIN_SOURCES[alert.difficulty];
   const have = openedCount(opened);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [escalate, setEscalate] = useState<boolean | null>(null);
-  const [sections, setSections] = useState<ReportSections>({
-    happened: "",
-    confirmed: "",
-    unknown: "",
-    next: "",
-  });
+  // One box with the headings already in it (lib/reportTemplate.ts). It is read back as the four report sections on submit.
+  const [text, setText] = useState(() => template(null));
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
-  // Beginner: one short reason is enough and the other three sections are optional (lib/reportRules.ts).
+  // Beginner: only the reason for classifying is needed, and each heading filled in earns more marks (lib/reportRules.ts).
   const easy = isEasy(alert.difficulty);
   const started = useRef(false);
   // Counted once per alert, on the first thing the student fills in, so the admin page can tell "opened" from "began a report".
@@ -198,7 +188,9 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
       setError("Choose a verdict and whether to escalate.");
       return;
     }
-    const problems = reportProblems(sections, alert.difficulty);
+    const parts = parseReport(text);
+    const sections = toSections(parts);
+    const problems = [templateProblem(parts, verdict, easy), ...reportProblems(sections, alert.difficulty)].filter((p): p is string => p !== null);
     if (problems.length) {
       reportEvent("blocked", alert.id, blockReason(problems[0]));
       setError(problems[0]);
@@ -218,28 +210,6 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
       onClosed(record);
     });
   }
-
-  const field = (f: (typeof FIELDS)[number]) => {
-    const required = !easy || f.key === "happened";
-    return (
-    <label key={f.key} className="block">
-      <span className="text-sm font-medium">
-        {f.label} {required ? <span className="text-missed">*</span> : <span className="text-muted">(optional)</span>}
-      </span>
-      <span className="mb-1.5 block text-xs text-muted">{easy && f.key === "happened" ? "Your reason in one or two sentences. Use a time, name or address from the evidence." : f.hint}</span>
-      <textarea
-        value={sections[f.key]}
-        onChange={(e) => {
-          begin();
-          setSections({ ...sections, [f.key]: e.target.value });
-        }}
-        rows={easy && f.key === "happened" ? 4 : 3}
-        maxLength={2000}
-        className="w-full resize-y rounded-lg border border-line bg-canvas px-3 py-2 text-sm outline-none focus:border-accent"
-      />
-    </label>
-    );
-  };
 
   if (have < need) {
     return (
@@ -270,6 +240,7 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
               onChange={() => {
                 begin();
                 setVerdict("tp");
+                setText((x) => retitle(x, "tp"));
               }}
             />
             True positive
@@ -283,6 +254,7 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
               onChange={() => {
                 begin();
                 setVerdict("fp");
+                setText((x) => retitle(x, "fp"));
               }}
             />
             False positive
@@ -292,20 +264,26 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
 
       <div className="grid gap-3 md:grid-cols-[13rem_1fr] md:gap-4">
         <div>
-          <p className="text-sm font-semibold">{easy ? "Why?" : "Write it up"}</p>
-          <p className="mt-1 text-xs text-muted">{easy ? "A short reason is enough. Use a time, name or address from the evidence." : "Short plain sentences are fine. Use times, names and addresses from the evidence."}</p>
+          <label htmlFor="report-box" className="text-sm font-semibold">
+            Your report
+          </label>
+          <p className="mt-1 text-xs text-muted">
+            {easy
+              ? "Type under each heading. On this level only the reason for classifying is needed. The other headings make a fuller report and score higher."
+              : "Type under each heading. Every heading needs an answer. Short plain sentences are fine. Use times, names and addresses from the evidence."}
+          </p>
         </div>
-        <div className="space-y-4">
-          {field(FIELDS[0])}
-          {easy ? (
-            <details className="rounded-lg border border-line px-3 py-2">
-              <summary className="cursor-pointer text-sm font-medium text-accent">Add more detail for a higher score (optional)</summary>
-              <div className="mt-3 space-y-4">{FIELDS.slice(1).map(field)}</div>
-            </details>
-          ) : (
-            FIELDS.slice(1).map(field)
-          )}
-        </div>
+        <textarea
+          id="report-box"
+          value={text}
+          onChange={(e) => {
+            begin();
+            setText(e.target.value);
+          }}
+          rows={18}
+          maxLength={5000}
+          className="w-full resize-y rounded-lg border border-line bg-canvas px-3 py-2 text-sm leading-relaxed outline-none focus:border-accent"
+        />
       </div>
 
       <fieldset className="grid gap-2 md:grid-cols-[13rem_1fr] md:items-center md:gap-4">
@@ -343,8 +321,8 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
       <p className="text-xs text-muted">
         <span className="text-missed">*</span>{" "}
         {easy
-          ? "Both decisions and a short reason are needed. The other sections are optional, and fuller reports score higher."
-          : "Both decisions and all four report sections are compulsory."}
+          ? "Both decisions and the reason for classifying are needed. Filling in the other headings makes a fuller report and scores higher."
+          : "Both decisions and every heading in the report are needed."}
       </p>
 
       {error && (
