@@ -11,7 +11,7 @@ const STEPS = [
   { title: "Read the briefing", text: "Each alert starts with what raised it, what the rule looks for and who is involved, plus questions to ask first." },
   { title: "Investigate", text: "Study the evidence. Use the Intel lookup for IPs, domains and hashes, and the Log search (links inside each alert, or Practice and learn → Log search) for the wider picture." },
   { title: "Decide", text: "Choose true positive or false positive, and whether to escalate. Both choices matter and are scored separately." },
-  { title: "Write your report", text: "Write four short parts: What happened, Confirmed, Not known, Next steps. Keep it short and factual." },
+  { title: "Write your report", text: "Say what happened, what is confirmed, what is still unknown and what should happen next. Keep it short and factual." },
   { title: "Learn from the feedback", text: "You get a score, what you missed and what really happened. Compare with a similar alert to sharpen your instinct." },
 ];
 
