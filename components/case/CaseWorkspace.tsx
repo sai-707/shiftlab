@@ -168,7 +168,7 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [escalate, setEscalate] = useState<boolean | null>(null);
   // One box with the headings already in it (lib/reportTemplate.ts). It is read back as the four report sections on submit.
-  const [text, setText] = useState(() => template(null));
+  const [text, setText] = useState(() => template(null, isEasy(alert.difficulty)));
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
   // Beginner: only the reason for classifying is needed, and each heading filled in earns more marks (lib/reportRules.ts).
@@ -269,8 +269,8 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
           </label>
           <p className="mt-1 text-xs text-muted">
             {easy
-              ? "Type under each heading. On this level only the reason for classifying is needed. The other headings make a fuller report and score higher."
-              : "Type under each heading. Every heading needs an answer. Short plain sentences are fine. Use times, names and addresses from the evidence."}
+              ? "Type under each heading. A * marks what is needed: on this level only the reason for classifying. The other headings make a fuller report and score higher."
+              : "Type under each heading. Every heading is marked * and needs an answer. Short plain sentences are fine. Use times, names and addresses from the evidence."}
           </p>
         </div>
         <textarea

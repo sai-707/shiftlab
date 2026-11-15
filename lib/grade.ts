@@ -4,7 +4,7 @@
 // the written review (lib/review.ts, shown by components/case/ReviewPanel.tsx) and in the model report beside it.
 import { REVIEW_KEYS } from "@/content/review-keys";
 import { contradictions } from "@/lib/review";
-import { reportWritten, writtenSections } from "@/lib/reportRules";
+import { reportWritten, unreadable, writtenSections } from "@/lib/reportRules";
 import { INVESTIGATION_KEYS } from "@/content/investigation-keys";
 import type { AnswerKey, Feedback, FeedbackItem, Submission, Verdict } from "./types";
 
@@ -71,6 +71,8 @@ export function gradeSubmission(key: AnswerKey, sub: Submission, gated = false):
           : "You gave your reason, which is all this level asks for. Each extra section you fill in adds marks, and the review below shows what would go in them.",
   };
   items.push(reportItem);
+  // Nothing is blocked at submit, so random characters get through. They earn no report marks, and the review says what to write instead.
+  if (Object.values(sub.sections).some((x) => unreadable(x))) reportItem.note = "Some of what you wrote did not read as words, so it earned no report marks. The review below shows what to write.";
 
   // Saying the opposite of what the evidence shows is an analyst error, not a wording one, so it still costs.
   const wrong = contradictions(Object.values(sub.sections).join("\n").toLowerCase(), rk?.avoid);
