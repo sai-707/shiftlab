@@ -16,4 +16,4 @@ export function reportEvent(k: ReportEvent, alertId: string, reason?: BlockReaso
 }
 
 /** "empty" when the problem is a missing section, otherwise "quality". Matches the wording in lib/reportRules.ts. */
-export const blockReason = (problem: string): BlockReason => (problem.endsWith("is required.") ? "empty" : "quality");
+export const blockReason = (problem: string): BlockReason => (/\b(is|are) required\.$/.test(problem) ? "empty" : "quality");

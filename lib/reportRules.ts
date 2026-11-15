@@ -59,7 +59,8 @@ export function reportProblems(s: ReportSections, difficulty?: Difficulty): stri
   KEYS.forEach((k) => {
     // Beginner: the extra sections are optional, but if someone writes in one it is still checked for gibberish.
     if (easy && k !== "happened" && !(s[k] ?? "").trim()) return;
-    const p = sectionProblem(k, s[k] ?? "", easy);
+    // "Confirmed" is now the two List headings (entities and indicators), which are lists by design, so only gibberish is checked there.
+    const p = sectionProblem(k, s[k] ?? "", easy || k === "confirmed");
     if (p) out.push(p);
   });
   const norm = (k: keyof ReportSections) => (s[k] ?? "").trim().toLowerCase().replace(/\s+/g, " ");
