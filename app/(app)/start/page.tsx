@@ -11,7 +11,7 @@ const STEPS = [
   { title: "Read the briefing", text: "Each alert starts with what raised it, what the rule looks for and who is involved, plus questions to ask first." },
   { title: "Investigate", text: "Study the evidence. Use the Intel lookup for IPs, domains and hashes, and the Log search (links inside each alert, or Practice and learn → Log search) for the wider picture." },
   { title: "Decide", text: "Choose true positive or false positive, and whether to escalate. Both choices matter and are scored separately." },
-  { title: "Write your report", text: "Say what happened, what is confirmed, what is still unknown and what should happen next. Keep it short and factual." },
+  { title: "Write your report", text: "Fill in the headings in the report box: time, affected entities, your reason, why to escalate, remediation, attack indicators and what is still unknown. Keep it short and factual." },
   { title: "Learn from the feedback", text: "You get a score, what you missed and what really happened. Compare with a similar alert to sharpen your instinct." },
 ];
 
@@ -19,7 +19,7 @@ const STEPS = [
 const SCORE = [
   { part: "Verdict", points: 50, text: "True or false positive. A wrong verdict caps the whole score at 40." },
   { part: "Escalation", points: 25, text: "Escalate or handle it yourself." },
-  { part: "Report written", points: 25, text: "Marks for writing the report, not for the words you choose." },
+  { part: "Report written", points: 25, text: "Marks for writing the report, not for the words you choose. On Beginner alerts only the reason is needed, and each other heading you fill in adds marks." },
 ];
 
 const PAGES = [
