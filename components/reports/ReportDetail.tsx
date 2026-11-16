@@ -78,11 +78,20 @@ function Report({ record, title, topic, level }: { record: CaseRecord; title: st
   const { feedback: fb, submission: sub } = record;
   const [tab, setTab] = useState<Tab>("score");
   const [r, setR] = useState<ReviewResult | null>(null);
-  const sig = JSON.stringify(sub.sections);
+  // Revising is practice: the edited text is reviewed again, never saved, and the score is frozen at submit.
+  const [sections, setSections] = useState<ReportSections>(sub.sections);
+  const [first, setFirst] = useState<Record<string, Status>>({});
+  const [editing, setEditing] = useState<keyof ReportSections | null>(null);
+  const [draft, setDraft] = useState("");
+  const sig = JSON.stringify(sections);
 
   useEffect(() => {
     let live = true;
-    reviewCase(record.alertId, JSON.parse(sig) as ReportSections).then((x) => live && setR(x));
+    reviewCase(record.alertId, JSON.parse(sig) as ReportSections).then((x) => {
+      if (!live) return;
+      setR(x);
+      if (x.ok) setFirst((f) => (Object.keys(f).length ? f : Object.fromEntries(x.sections.map((s) => [s.section, s.status]))));
+    });
     return () => {
       live = false;
     };
@@ -90,6 +99,8 @@ function Report({ record, title, topic, level }: { record: CaseRecord; title: st
 
   const t = tone(fb.score);
   const marks = sectionMarks(sub.sections);
+  const correctNow = r?.ok ? r.sections.filter((s) => s.status === "strong").length : 0;
+  const correctFirst = Object.values(first).filter((x) => x === "strong").length;
   const reportItem = fb.items.find((i) => i.label === "Report written");
 
   // Everything that cost marks, biggest first: the scored decisions, then the report sections that read weakly.
@@ -207,6 +218,17 @@ function Report({ record, title, topic, level }: { record: CaseRecord; title: st
 
       {tab === "report" && (
         <div role="tabpanel" id="panel-report" aria-labelledby="tab-report" className="space-y-3">
+          <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/40 bg-panel p-4">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-accent">Revise and check again</p>
+              <p className="mt-1 text-sm text-muted">Edit any section, then check it. The review updates; your score does not change, and a refresh brings your original back.</p>
+            </div>
+            {r?.ok && (
+              <Chip cls={correctNow > correctFirst ? "border-correct/40 text-correct" : "border-line text-muted"}>
+                {correctFirst} of 4 Correct{correctNow !== correctFirst ? ` → ${correctNow} of 4` : ""}
+              </Chip>
+            )}
+          </section>
           {!r ? (
             <p className="text-sm text-muted">Preparing your review…</p>
           ) : !r.ok ? (
@@ -216,14 +238,59 @@ function Report({ record, title, topic, level }: { record: CaseRecord; title: st
               <section key={s.section} className="rounded-xl border border-line bg-panel p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h2 className="font-semibold">{FIELD_NAME[s.section]}</h2>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     <Chip cls={CHIP[s.status].cls}>{CHIP[s.status].label}</Chip>
+                    {first[s.section] && first[s.section] !== s.status && (
+                      <span className="text-xs text-muted">
+                        was <span className={CHIP[first[s.section]].cls.split(" ")[1]}>{CHIP[first[s.section]].label}</span>
+                      </span>
+                    )}
                     <Marks points={marks[s.section]} max={SECTION_MAX[s.section]} />
+                    {editing !== s.section && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditing(s.section);
+                          setDraft(sections[s.section]);
+                        }}
+                        className="min-h-9 rounded-lg border border-line px-3 text-xs font-medium hover:border-accent hover:text-accent"
+                      >
+                        Edit
+                      </button>
+                    )}
                   </div>
                 </div>
-                <blockquote className="mt-3 whitespace-pre-wrap rounded-md border-l-2 border-line bg-canvas px-3 py-2 text-sm text-ink/80">
-                  {s.text || <span className="text-muted">(left empty)</span>}
-                </blockquote>
+                {editing === s.section ? (
+                  <form
+                    className="mt-3"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setSections({ ...sections, [s.section]: draft });
+                      setEditing(null);
+                    }}
+                  >
+                    <textarea
+                      aria-label={FIELD_NAME[s.section]}
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                      rows={4}
+                      maxLength={2000}
+                      className="w-full rounded-lg border border-accent bg-canvas px-3 py-2 text-sm leading-relaxed text-ink"
+                    />
+                    <div className="mt-2 flex gap-2">
+                      <button type="submit" className="min-h-9 rounded-lg bg-accent px-3 text-xs font-semibold text-canvas hover:opacity-90">
+                        Check this section
+                      </button>
+                      <button type="button" onClick={() => setEditing(null)} className="min-h-9 rounded-lg border border-line px-3 text-xs font-medium hover:border-accent hover:text-accent">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <blockquote className="mt-3 whitespace-pre-wrap rounded-md border-l-2 border-line bg-canvas px-3 py-2 text-sm text-ink/80">
+                    {s.text || <span className="text-muted">(left empty)</span>}
+                  </blockquote>
+                )}
                 {(s.good.length > 0 || s.fix.length > 0) && (
                   <ul className="mt-3 space-y-1 text-sm leading-relaxed">
                     {s.good.map((g) => (
