@@ -38,11 +38,16 @@ export function writtenSections(s: ReportSections): (keyof ReportSections)[] {
   });
 }
 
-/** Marks for having written the report, never for the words in it (lib/grade.ts). The reason carries most of it and each
- *  further section adds the rest, so a one-line Beginner answer still scores and a full report scores full. */
-export function reportWritten(s: ReportSections, max: number): number {
+/** Marks for having written each section: the reason section carries 10, each other one 5. Never for the words in it. */
+export const SECTION_MAX: Record<keyof ReportSections, number> = { happened: 10, confirmed: 5, unknown: 5, next: 5 };
+export function sectionMarks(s: ReportSections): Record<keyof ReportSections, number> {
   const w = writtenSections(s);
-  return Math.min(max, (w.includes("happened") ? 10 : 0) + 5 * w.filter((k) => k !== "happened").length);
+  return { happened: 0, confirmed: 0, unknown: 0, next: 0, ...Object.fromEntries(w.map((k) => [k, SECTION_MAX[k]])) };
+}
+
+/** The report's marks (lib/grade.ts) are those section marks added up, so a one-line Beginner reason still scores and a full report scores full. */
+export function reportWritten(s: ReportSections, max: number): number {
+  return Math.min(max, KEYS.reduce((sum, k) => sum + sectionMarks(s)[k], 0));
 }
 
 /** The only reason to stop a submit is a compulsory section left empty. What was written is judged afterwards, in the review. */

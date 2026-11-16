@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { submitCase } from "@/app/actions";
 import { GUEST_LIMIT, assignAlert, closeCase, useGuestLimit, useProgress } from "@/lib/progress";
@@ -413,15 +414,17 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
   // The pop-up shows once, straight after a submit. Opening a closed case later goes straight to the report.
   const [done, setDone] = useState<CaseRecord | null>(null);
   const askAfter = useRef(false);
+  const router = useRouter();
   const closeDone = useCallback((viewReport: boolean) => {
     setDone(null);
-    if (viewReport) window.setTimeout(() => document.getElementById("report-review")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    // "View report" opens this case in Case reports, where the score, the review and the model answer sit together.
+    if (viewReport) router.push(`/reports/${alert.id}`);
     // Let the score be seen first, then offer the feedback window. It has a Skip button and stops asking after a few skips (lib/feedbackAsk.ts).
     if (askAfter.current) {
       askAfter.current = false;
       window.setTimeout(() => window.dispatchEvent(new CustomEvent(FEEDBACK_EVENT, { detail: { auto: true } })), 1200);
     }
-  }, []);
+  }, [router, alert.id]);
   const record = progress.cases[alert.id];
   const isActive = progress.activeAlertId === alert.id;
   const otherActive = progress.activeAlertId !== null && !isActive;

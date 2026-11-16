@@ -1,7 +1,7 @@
 // SERVER ONLY. The score is the decision: the verdict, whether to escalate, and on gated alerts whether the sources
 // that mattered were opened. The report earns marks for being written, never for containing particular words, so a
 // correct call written in the student's own words is never marked down. How well it is written is coached instead, in
-// the written review (lib/review.ts, shown by components/case/ReviewPanel.tsx) and in the model report beside it.
+// the written review (lib/review.ts, shown on the case report page, components/reports/ReportDetail.tsx) and in the model report beside it.
 import { REVIEW_KEYS } from "@/content/review-keys";
 import { contradictions } from "@/lib/review";
 import { reportWritten, unreadable, writtenSections } from "@/lib/reportRules";
@@ -65,14 +65,14 @@ export function gradeSubmission(key: AnswerKey, sub: Submission, gated = false):
     max: W.report,
     note:
       filled.length === 4
-        ? "Every section has something in it. The review below is about how it reads, not whether it is there."
+        ? "Every section has something in it. Open Your report to see how it reads."
         : gated
-          ? `${filled.length} of 4 sections have something in them. The review below shows what to add.`
-          : "You gave your reason, which is all this level asks for. Each extra section you fill in adds marks, and the review below shows what would go in them.",
+          ? `${filled.length} of 4 sections have something in them. Open Your report to see what to add.`
+          : "You gave your reason, which is all this level asks for. Each extra section you fill in adds marks, and Your report shows what would go in them.",
   };
   items.push(reportItem);
   // Nothing is blocked at submit, so random characters get through. They earn no report marks, and the review says what to write instead.
-  if (Object.values(sub.sections).some((x) => unreadable(x))) reportItem.note = "Some of what you wrote did not read as words, so it earned no report marks. The review below shows what to write.";
+  if (Object.values(sub.sections).some((x) => unreadable(x))) reportItem.note = "Some of what you wrote did not read as words, so it earned no report marks. Open Your report to see what to write.";
 
   // Saying the opposite of what the evidence shows is an analyst error, not a wording one, so it still costs.
   const wrong = contradictions(Object.values(sub.sections).join("\n").toLowerCase(), rk?.avoid);
