@@ -35,7 +35,7 @@ export const INVESTIGATION_KEYS: Record<string, string[]> = {
   "SL-1043": ["Sign-in log for svc-mfp-mail (last 30 days)", "Conditional access exception record", "Mailbox activity (svc-mfp-mail)", "Printer and network record"],
   "SL-1044": ["Web proxy log (brightlane-campaign.test)", "Domain and certificate details", "Email that carried the link", "Vendor and campaign records"],
   "SL-1045": ["WAF log summary (waf-edge-01)", "Sample requests and answers", "Pentest engagement record", "Portal health during the window"],
-  "SL-1046": ["Call record", "Callback and confirmation", "Payment and supplier record", "Timeline"],
+  "SL-1046": ["Call record", "Callback and confirmation", "Payment and supplier record"],
   "SL-1047": ["Firewall log (fw-edge-01)", "Destination details", "Backup schedule and transfer history", "Contract and change record"],
   "SL-1048": ["Mail gateway log (mail-gw)", "Sending platform and authentication", "Campaign record", "Message content and links"],
   "SL-1049": ["SharePoint audit log (p.dutta)", "Ticket and approval", "Recycle bin and retention", "User and role context (p.dutta)"],
