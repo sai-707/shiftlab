@@ -109,8 +109,12 @@ export async function importCases(records: CaseRecord[]): Promise<{ imported: nu
     closed_at: new Date(r.closedAt).toISOString(),
   }));
 
-  // ignoreDuplicates = ON CONFLICT DO NOTHING: skip rows that already exist without needing UPDATE privilege on the PK columns
-  const { data: inserted, error } = await supabase.from("cases").insert(rows, { defaultToNull: false }).select("alert_id");
+  // ignoreDuplicates = ON CONFLICT DO NOTHING: a case the server already holds is skipped, so one repeat never fails the whole batch.
+  // It does not need UPDATE privilege on the PK columns. Only rows that were really inserted come back from .select().
+  const { data: inserted, error } = await supabase
+    .from("cases")
+    .upsert(rows, { onConflict: "user_id,alert_id", ignoreDuplicates: true })
+    .select("alert_id");
   if (error) {
     console.error("[progress] importCases:", error.code);
     return { imported: 0 };
