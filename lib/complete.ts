@@ -13,6 +13,12 @@ export function tone(score: number): Tone {
 /** The scored decisions that lost marks, in the order they are scored. */
 export const decisionFixes = (items: FeedbackItem[]): FeedbackItem[] => items.filter((i) => i.points < i.max);
 
+/** The report page's "what to change" heading: what cost marks first, then wording tips, which never change the score. */
+export function fixHeading(lost: number, tips: number): string {
+  const t = tips ? ` · ${tips} wording ${tips === 1 ? "tip" : "tips"}` : "";
+  return (lost ? `${lost} ${lost === 1 ? "thing costs" : "things cost"} you marks` : "No marks lost") + t;
+}
+
 /** The short "what you chose" line beside each score bar. */
 export function itemSub(label: string, sub: Submission): string {
   if (label === "Verdict") return sub.verdict === "tp" ? "True positive" : "False positive";
