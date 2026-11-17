@@ -167,7 +167,7 @@ export default function CompleteModal({
             </ul>
 
             <div className={`cc-in mt-5 rounded-xl border bg-canvas p-3.5 ${fixes.length ? "border-medium/40" : "border-correct/40"}`} style={css({ "--dl": "1.3s" })}>
-              <p className={`text-xs uppercase tracking-wide ${fixes.length ? "text-medium" : "text-correct"}`}>{fixes.length ? "What to change" : "Nothing to fix"}</p>
+              <p className={`text-xs uppercase tracking-wide ${fixes.length ? "text-medium" : "text-correct"}`}>{fixes.length ? "What to change" : "No marks lost"}</p>
               {fixes.length ? (
                 <ul className="mt-2 space-y-1.5 text-[13px]">
                   {fixes.slice(0, 2).map((f) => (
