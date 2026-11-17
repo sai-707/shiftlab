@@ -6,7 +6,7 @@ import { reviewCase, type ReviewResult } from "@/app/review-actions";
 import AfterAction from "@/components/case/AfterAction";
 import RealWorld from "@/components/case/RealWorld";
 import { ALERTS } from "@/content/alerts";
-import { tone } from "@/lib/complete";
+import { fixHeading, tone } from "@/lib/complete";
 import { useProgress } from "@/lib/progress";
 import { FIELD_NAME, SECTION_MAX, sectionMarks } from "@/lib/reportRules";
 import type { Status } from "@/lib/review";
@@ -117,6 +117,8 @@ function Report({ record, title, topic, level }: { record: CaseRecord; title: st
           }))
       : []),
   ].sort((a, b) => b.gain - a.gain);
+  // A report section that reads weakly still earns its marks for being written, so it is a wording tip, not a loss.
+  const lost = todo.filter((x) => x.gain > 0).length;
 
   return (
     <div className="space-y-5">
@@ -181,27 +183,27 @@ function Report({ record, title, topic, level }: { record: CaseRecord; title: st
             })}
           </div>
 
-          <section className={`rounded-2xl border bg-panel p-5 ${todo.length ? "border-medium/40" : "border-correct/40"}`}>
-            <p className={`text-xs uppercase tracking-wide ${todo.length ? "text-medium" : "text-correct"}`}>What to change</p>
+          <section className={`rounded-2xl border bg-panel p-5 ${lost ? "border-medium/40" : "border-correct/40"}`}>
+            <p className={`text-xs uppercase tracking-wide ${lost ? "text-medium" : "text-correct"}`}>What to change</p>
             {!r ? (
               <p className="mt-2 text-sm text-muted">Preparing your review…</p>
             ) : todo.length ? (
               <>
-                <h2 className="mt-1 text-lg font-semibold">{todo.length === 1 ? "1 thing, in order of marks" : `${todo.length} things, most marks first`}</h2>
+                <h2 className="mt-1 text-lg font-semibold">{fixHeading(lost, todo.length - lost)}</h2>
                 <ol className="mt-3 space-y-3">
                   {todo.map((x, n) => (
                     <li key={x.key} className="flex gap-3 text-sm leading-relaxed">
                       <span className="font-mono font-semibold text-medium">{n + 1}</span>
                       <span>
                         <b>{x.title}.</b> <span className="text-muted">{x.text}</span>
-                        {x.gain > 0 && <span className="ml-2 font-mono text-xs text-missed">+{x.gain} marks</span>}
+                        {x.gain > 0 ? <span className="ml-2 font-mono text-xs text-missed">+{x.gain} marks</span> : <span className="ml-2 text-xs text-muted">wording tip</span>}
                       </span>
                     </li>
                   ))}
                 </ol>
               </>
             ) : (
-              <p className="mt-1 text-sm">Nothing to change. Compare your wording with the model answer.</p>
+              <p className="mt-1 text-sm">No marks lost and no wording tips. Compare your wording with the model answer.</p>
             )}
           </section>
 
@@ -229,6 +231,9 @@ function Report({ record, title, topic, level }: { record: CaseRecord; title: st
               </Chip>
             )}
           </section>
+          <p className="text-xs leading-relaxed text-muted">
+            For marking, your seven headings are grouped into four sections: What happened = Time of activity + Reason for classifying. What is confirmed = Affected entities + Attack indicators. What is still unknown. Next action = Reason for escalating + Remediation actions.
+          </p>
           {!r ? (
             <p className="text-sm text-muted">Preparing your review…</p>
           ) : !r.ok ? (
