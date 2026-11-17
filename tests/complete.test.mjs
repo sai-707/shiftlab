@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { decisionFixes, itemSub, tone } from "../lib/complete.ts";
+import { decisionFixes, fixHeading, itemSub, tone } from "../lib/complete.ts";
 
 test("score bands match the score panel and only a good score gets confetti", () => {
   assert.equal(tone(85).head, "Strong work");
@@ -20,6 +20,13 @@ test("only decisions that lost marks are listed, in scored order", () => {
   ];
   assert.deepEqual(decisionFixes(items).map((i) => i.label), ["Escalation"]);
   assert.deepEqual(decisionFixes(items.map((i) => ({ ...i, points: i.max }))), []);
+});
+
+test("the report heading separates what cost marks from wording tips", () => {
+  assert.equal(fixHeading(0, 3), "No marks lost · 3 wording tips");
+  assert.equal(fixHeading(0, 1), "No marks lost · 1 wording tip");
+  assert.equal(fixHeading(1, 2), "1 thing costs you marks · 2 wording tips");
+  assert.equal(fixHeading(2, 0), "2 things cost you marks");
 });
 
 test("each bar says what the student chose", () => {
