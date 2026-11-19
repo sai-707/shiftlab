@@ -56,6 +56,21 @@ const ICONS: Record<string, ReactNode> = {
   tools: <path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5z" />,
   sprint: <path d="M13 3 5 13.5h6L10 21l9-11.5h-6z" />,
   comms: <path d="M4 5h16v11H9l-5 4z" />,
+  roadmap: (
+    <>
+      <circle cx="6" cy="18" r="2" />
+      <circle cx="18" cy="6" r="2" />
+      <path d="M8 18h5a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h5" />
+    </>
+  ),
+  market: <path d="M5 20V11M12 20V5M19 20v-6" />,
+  certs: (
+    <>
+      <circle cx="12" cy="9" r="5" />
+      <path d="m9 13.5-1.5 7L12 18l4.5 2.5-1.5-7" />
+    </>
+  ),
+  projects: <path d="m8 7-5 5 5 5M16 7l5 5-5 5" />,
   profile: (
     <>
       <circle cx="12" cy="8" r="4" />
@@ -81,6 +96,17 @@ export const GROUPS = [
       { href: "/reports", label: "Case reports", icon: "reports" },
       { href: "/handover", label: "Shift handover", icon: "handover" },
       { href: "/profile", label: "Profile", icon: "profile" },
+    ],
+  },
+  // These are public pages outside the app, so a click leaves the sidebar.
+  {
+    label: "Roadmap",
+    items: [
+      { href: "/roadmap", label: "SOC roadmap", icon: "roadmap" },
+      { href: "/roadmap/market", label: "Job market", icon: "market" },
+      { href: "/roadmap/certificates", label: "Free certificates", icon: "certs" },
+      { href: "/roadmap/tools", label: "Tools to learn", icon: "tools" },
+      { href: "/roadmap/projects", label: "Projects to build", icon: "projects" },
     ],
   },
 ];
