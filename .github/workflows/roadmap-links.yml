@@ -1,0 +1,28 @@
+name: Roadmap links
+
+# Once a month, checks every outside link on the roadmap pages and opens an issue if any are broken.
+# Free offers and course pages move, and a dead link makes the roadmap look neglected.
+on:
+  schedule:
+    - cron: "30 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: check
+        run: node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-links.mjs --out report.md
+      - name: Open an issue when something is broken
+        if: steps.check.outputs.broken != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue create --title "Roadmap links: ${{ steps.check.outputs.broken }} broken ($(date +%F))" --body-file report.md

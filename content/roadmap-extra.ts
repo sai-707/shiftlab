@@ -466,6 +466,16 @@ export const TOOLS: ToolStage[] = [
         "pu": "https://github.com/uruc/SOC-Automation-Lab",
         "pn": "SOC Automation Lab",
         "time": "2 weeks"
+      },
+      {
+        "n": "garak and PyRIT",
+        "who": "E",
+        "why": "Scanners for AI. garak probes a model for injection, leaks and jailbreaks. PyRIT is a framework for red-teaming AI systems.",
+        "lu": "https://microsoft.github.io/PyRIT/",
+        "ln": "PyRIT documentation",
+        "pu": "https://github.com/NVIDIA/garak",
+        "pn": "garak: scan a small model you host",
+        "time": "1 to 2 weeks"
       }
     ]
   }
@@ -589,8 +599,8 @@ export const PROJECTS: Project[] = [
     "lvl": "Stretch",
     "who": "Engineer",
     "hrs": "15 hours",
-    "build": "Build a tiny chatbot, try prompt injections against it, add logging and guardrails, and report findings against the OWASP LLM Top 10. Use a local model if you want no cost.",
-    "tools": "Python, OWASP LLM Top 10, MITRE ATLAS",
+    "build": "Build a tiny chatbot, try prompt injections against it, scan it with garak, add logging and guardrails, and report findings against the OWASP LLM Top 10. Use a local model if you want no cost.",
+    "tools": "Python, garak, OWASP LLM Top 10, MITRE ATLAS",
     "ship": "A findings report and the hardened code",
     "u": "https://genai.owasp.org/llm-top-10/",
     "un": "OWASP LLM Top 10"
