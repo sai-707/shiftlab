@@ -11,7 +11,7 @@ import type { CaseRecord } from "@/lib/types";
 // in ON CONFLICT DO UPDATE); instead we update-then-insert or use ignoreDuplicates.
 
 const VALID_ALERT = /^SL-[0-9]{4}$/;
-const STATE_KEYS = new Set(["mail", "comms", "after", "sprint", "shift", "aicheck", "logs", "handover", "sources"]);
+const STATE_KEYS = new Set(["mail", "comms", "after", "sprint", "shift", "aicheck", "logs", "handover", "sources", "roadmap"]);
 const MAX_DATA_BYTES = 28_000; // leave room for jsonb overhead below the 30 000 column cap
 
 async function uid(): Promise<string | null> {

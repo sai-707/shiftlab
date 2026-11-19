@@ -121,8 +121,8 @@ export const PHASES: Phase[] = [
               "grep, find and pipes"
             ],
             "practice": {
-              "href": "/logs",
-              "label": "Read logs in Log search"
+              "href": "/logs?q=host:app-lin-02",
+              "label": "Find a new user and a cron job in a Linux server log"
             },
             "soc": "E",
             "eng": "E",
@@ -197,6 +197,10 @@ export const PHASES: Phase[] = [
               "TCP vs UDP",
               "DNS and DHCP"
             ],
+            "practice": {
+              "href": "/logs?q=source:dns",
+              "label": "Read DNS lookups and spot a look-alike domain"
+            },
             "soc": "E",
             "eng": "E",
             "time": "4 to 6 weeks",
@@ -763,6 +767,10 @@ export const PHASES: Phase[] = [
               "Snort and Suricata rules",
               "Tuning out noise"
             ],
+            "practice": {
+              "href": "/logs?q=src:198.51.100.230",
+              "label": "Spot a port scan in the firewall log"
+            },
             "soc": "E",
             "eng": "R",
             "time": "2 weeks",
@@ -889,6 +897,10 @@ export const PHASES: Phase[] = [
               "Privilege escalation",
               "Patching"
             ],
+            "practice": {
+              "href": "/logs?q=host:win-fs-05",
+              "label": "Follow a Windows logon attack in the event logs"
+            },
             "soc": "E",
             "eng": "E",
             "time": "3 weeks",

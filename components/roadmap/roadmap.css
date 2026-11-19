@@ -51,6 +51,19 @@
 .rm-root .rm-progress .key span { display: inline-flex; align-items: center; gap: 6px; }
 .rm-root .rm-progress .key span::before { content: ""; width: 4px; height: 14px; border-radius: 2px; background: var(--p); }
 .rm-root .rm-progress .key span.ours::before { width: 7px; height: 7px; border-radius: 50%; background: var(--color-accent); }
+.rm-root .rm-search { margin-top: 16px; }
+.rm-root .rm-search input { width: 100%; min-height: 44px; padding: 0 14px; border: 1px solid var(--color-line); border-radius: 12px; background: var(--color-panel); font: inherit; font-size: .92rem; color: var(--color-ink); }
+.rm-root .rm-search input::placeholder { color: var(--color-muted); }
+.rm-root .rm-search input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.rm-root .rm-results { margin-top: 12px; }
+.rm-root .rm-results .meta { margin: 0 0 8px 4px; font-size: .78rem; line-height: 1.5; color: var(--color-muted); }
+.rm-root .rm-results ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.rm-root .rm-results a { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 10px 6px 14px; border-radius: 8px; box-shadow: inset 3px 0 0 var(--pc); font-size: .92rem; color: #aab4c3; text-decoration: none; }
+.rm-root .rm-results a:hover { background: rgb(255 255 255 / .04); color: var(--color-ink); }
+.rm-root .rm-results .t { flex: 1; }
+.rm-root .rm-results .t small { display: block; font-size: .74rem; color: var(--color-muted); }
+.rm-root .rm-results .box { display: grid; place-items: center; flex-shrink: 0; width: 18px; height: 18px; border: 1.5px solid #3a4554; border-radius: 5px; font-size: 12px; font-weight: 700; line-height: 1; color: var(--color-void); }
+.rm-root .rm-results .box.on { border-color: var(--pc); background: var(--pc); }
 .rm-root .rm-phases { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
 .rm-root .rm-phase-btn { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 10px; border: 0; border-radius: 10px; background: none; text-align: left; cursor: pointer; }
 .rm-root .rm-phase-btn:hover { background: rgb(255 255 255 / .03); }

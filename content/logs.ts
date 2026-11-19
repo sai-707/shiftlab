@@ -1,6 +1,6 @@
 // Sample logs for the Log search practice page. All fictional, and consistent with the alerts:
 // the same hosts, users and addresses appear here as in the case evidence.
-export type LogSource = "auth" | "proxy" | "firewall" | "waf" | "vpn" | "identity" | "endpoint" | "mail" | "ai";
+export type LogSource = "auth" | "proxy" | "firewall" | "waf" | "vpn" | "identity" | "endpoint" | "mail" | "ai" | "dns";
 
 export type LogEvent = {
   time: string;
@@ -23,6 +23,7 @@ export const LOG_SOURCES: { id: LogSource; label: string; about: string }[] = [
   { id: "endpoint", label: "Endpoint", about: "Programs started on computers" },
   { id: "mail", label: "Mail", about: "Delivered email" },
   { id: "ai", label: "AI tools", about: "What company AI tools were asked and what they did" },
+  { id: "dns", label: "DNS", about: "Name lookups and the answers given" },
 ];
 
 const out: LogEvent[] = [];
@@ -307,6 +308,26 @@ e("16:40:00", "ai", "model-api", "svc-ds-embeddings", "10.20.12.31", "-", "budge
 e("17:20:31", "ai", "pineassist", "n.kulkarni", "10.20.5.52", "-", "user_message", "Send the signed mutual NDA with Ardent to their legal team at legal@partner-ardent.test");
 e("17:21:08", "ai", "pineassist", "n.kulkarni", "10.20.5.52", "partner-ardent.test", "tool_call", "send_mail to legal@partner-ardent.test, 1 attachment (Mutual NDA - Ardent.pdf), user confirmed");
 
+// ── Roadmap practice: a new Linux account and cron job (Linux), a Windows logon attack (Windows event logs), a port scan (firewall) and a look-alike domain (DNS) ──
+e("03:14:02", "auth", "app-lin-02", "deploy", "10.20.9.30", "10.20.1.60", "ssh_login_ok", "Accepted publickey for deploy");
+e("03:15:44", "auth", "app-lin-02", "deploy", "-", "-", "sudo_command", "COMMAND=/usr/sbin/useradd -m -s /bin/bash svc-backup2");
+e("03:15:45", "auth", "app-lin-02", "root", "-", "-", "useradd", "new user: name=svc-backup2, UID=1002, GID=1002, home=/home/svc-backup2, shell=/bin/bash");
+e("03:16:30", "auth", "app-lin-02", "root", "-", "-", "user_modify", "add 'svc-backup2' to group 'sudo'");
+e("03:17:12", "auth", "app-lin-02", "svc-backup2", "-", "-", "cron_edit", "(svc-backup2) REPLACE (svc-backup2): * * * * * /tmp/.x/sync.sh");
+["03:18:00", "03:19:00", "03:20:00"].forEach((t) => e(t, "auth", "app-lin-02", "svc-backup2", "-", "-", "cron_run", "(svc-backup2) CMD (/tmp/.x/sync.sh)"));
+for (let k = 0; k < 7; k++) e(hms(14710 + k * 4), "auth", "WIN-FS-05", "svc-print", "10.20.7.60", "10.20.3.25", "logon_failed", "Event 4625 type 3 (network), bad password 0xC000006A");
+e("04:05:42", "auth", "WIN-FS-05", "svc-print", "10.20.7.60", "10.20.3.25", "logon_ok", "Event 4624 type 3 (network)");
+e("04:09:31", "auth", "WIN-FS-05", "svc-print", "-", "-", "group_add", "Event 4732: helpdesk2 was added to the local Administrators group by svc-print");
+e("04:12:55", "auth", "WIN-FS-05", "svc-print", "-", "-", "log_cleared", "Event 1102: the Security audit log was cleared");
+[21, 23, 25, 110, 135, 139, 445, 1433, 3306, 5900, 8080].forEach((port, i) =>
+  e(hms(21600 + i), "firewall", "fw-01", "-", "198.51.100.230", "10.20.4.60", "deny", `DENY tcp 198.51.100.230:${40100 + i} -> 10.20.4.60:${port}`),
+);
+e("06:00:12", "firewall", "fw-01", "-", "198.51.100.230", "10.20.4.60", "allow", "ALLOW tcp 198.51.100.230:40111 -> 10.20.4.60:3389");
+e("07:30:11", "dns", "dns-01", "r.nambiar", "10.20.3.44", "-", "dns_query", "A intranet.harborpine.test -> 10.20.1.5");
+e("08:21:33", "dns", "dns-01", "m.silva", "10.20.4.52", "-", "dns_query", "A mail.harborpine-login.test -> 203.0.113.200 (domain registered 3 days ago)");
+e("08:22:41", "dns", "dns-01", "f.reyes", "10.20.4.40", "-", "dns_query", "A mail.harborpine-login.test -> 203.0.113.200 (domain registered 3 days ago)");
+e("08:25:02", "dns", "dns-01", "k.iyer", "10.20.9.33", "-", "dns_query", "A mail.harborpine.test -> 10.20.1.8");
+
 export const LOGS: LogEvent[] = out.sort((a, b) => a.time.localeCompare(b.time));
 
 export type LogQuestion = { id: string; level: "Easy" | "Medium"; question: string; tryQuery: string };
@@ -321,4 +342,11 @@ export const LOG_QUESTIONS: LogQuestion[] = [
   { id: "q6", level: "Medium", question: "Which website did d.okafor's workstation send a POST request to?", tryQuery: "user:d.okafor event:post" },
   { id: "q7", level: "Medium", question: "Which public IP did d.rossi connect to the VPN from?", tryQuery: "source:vpn user:d.rossi" },
   { id: "q8", level: "Medium", question: "One address appears on the phishing email delivered to d.okafor and on a later sign-in to the same account. Which address?", tryQuery: "user:d.okafor" },
+  { id: "q9", level: "Easy", question: "On the Linux server app-lin-02, which new user account did the useradd command create?", tryQuery: "host:app-lin-02 event:useradd" },
+  { id: "q10", level: "Medium", question: "That account then edited its crontab. Which file does the new cron job run every minute?", tryQuery: "host:app-lin-02 event:cron_run" },
+  { id: "q11", level: "Easy", question: "How many failed Windows logons (event 4625) came from 10.20.7.60 against WIN-FS-05?", tryQuery: "src:10.20.7.60 event:failed" },
+  { id: "q12", level: "Medium", question: "After that, which account was added to the local Administrators group on WIN-FS-05?", tryQuery: "host:win-fs-05 event:group_add" },
+  { id: "q13", level: "Medium", question: "At what time was the Windows Security log cleared on WIN-FS-05?", tryQuery: "host:win-fs-05 event:log_cleared" },
+  { id: "q14", level: "Easy", question: "198.51.100.230 tried many ports on 10.20.4.60. Which port did the firewall allow?", tryQuery: "src:198.51.100.230 event:allow" },
+  { id: "q15", level: "Medium", question: "Which IP address did the DNS server give for the look-alike name mail.harborpine-login.test?", tryQuery: "source:dns harborpine-login" },
 ];
