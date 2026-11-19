@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { ALERTS, TOPICS, bySeverity } from "@/content/alerts";
 import { isUnlocked } from "@/lib/levels";
 import { useProgress } from "@/lib/progress";
+import { roadmapProgress } from "@/lib/roadmapProgress";
+import type { Outline } from "@/lib/roadmapRows";
 import { rank, scoreColor } from "@/lib/stats";
 import { TOPIC_COLOR } from "@/lib/topics";
 import CountUp from "@/components/ui/CountUp";
@@ -99,7 +101,40 @@ function StatCard({
   );
 }
 
-export default function DashboardView() {
+function RoadmapCard({ outline }: { outline: Outline }) {
+  const { track, done } = roadmapProgress.useStore();
+  const list = outline[track];
+  const n = list.filter((t) => done[t.slug]).length;
+  const next = list.find((t) => !done[t.slug]);
+  const pct = Math.round((100 * n) / list.length);
+  return (
+    <section className={`${panel} rise flex flex-wrap items-center justify-between gap-4`} style={{ animationDelay: "280ms" }} aria-label="Roadmap progress">
+      <div className="min-w-0 flex-1 basis-64">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="font-semibold">Roadmap</h2>
+          <span className="text-xs text-muted">{track === "soc" ? "SOC analyst track" : "Security engineer track"}</span>
+        </div>
+        <p className="mt-1 text-sm text-muted">
+          {n} of {list.length} topics done
+        </p>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-label="Roadmap topics done" aria-valuemin={0} aria-valuemax={list.length} aria-valuenow={n}>
+          <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+      {next ? (
+        <Link href={`/roadmap#${next.slug}`} className="press rounded-lg border border-accent/50 px-4 py-2 text-sm font-medium text-accent hover:bg-accent/10">
+          {n === 0 ? "Start" : "Next"}: {next.name} →
+        </Link>
+      ) : (
+        <Link href="/roadmap" className="text-sm text-accent hover:underline">
+          Every topic done. Open the roadmap →
+        </Link>
+      )}
+    </section>
+  );
+}
+
+export default function DashboardView({ outline }: { outline: Outline }) {
   const progress = useProgress();
 
   const total = ALERTS.length;
@@ -224,7 +259,9 @@ export default function DashboardView() {
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <RoadmapCard outline={outline} />
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <section className={`${panel} rise`} style={{ animationDelay: "300ms" }}>
           <h2 className="font-semibold">Open alerts by topic</h2>
           <div className="mt-5 flex flex-wrap items-center gap-6">
@@ -318,7 +355,7 @@ export default function DashboardView() {
         </section>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <section className={`${panel} rise`} style={{ animationDelay: "420ms" }}>
           <h2 className="font-semibold">Skill coverage</h2>
           <p className="mt-1 text-xs text-muted">How much of each topic you have worked through.</p>

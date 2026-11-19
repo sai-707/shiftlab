@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GROUPS } from "@/components/layout/Sidebar";
 import { ALERTS } from "@/content/alerts";
@@ -24,20 +24,30 @@ const COMMANDS: Command[] = [
   })),
 ];
 
-/** Ctrl+K (or Cmd+K) opens a search that jumps to any page, practice module or alert. */
+/** Roadmap topics are loaded the first time the palette opens, so the 100 KB roadmap is not part of every page. */
+let topicCommands: Command[] | null = null;
+const loadTopics = () =>
+  topicCommands
+    ? Promise.resolve(topicCommands)
+    : import("@/content/roadmap").then(({ PHASES }) => (topicCommands = PHASES.flatMap((p) => p.sections.flatMap((s) => s.topics)).map((t) => ({ label: t.name, hint: "Roadmap", href: `/roadmap#${t.slug}`, find: `${t.name} ${t.text} roadmap`.toLowerCase() }))));
+
+/** Ctrl+K (or Cmd+K) opens a search that jumps to any page, practice module, alert or roadmap topic. */
 export default function CommandPalette() {
   const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [sel, setSel] = useState(0);
   const opener = useRef<Element | null>(null);
   const list = useRef<HTMLUListElement>(null);
 
+  const [topics, setTopics] = useState<Command[]>(topicCommands ?? []);
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  const results = COMMANDS.filter((c) => words.every((w) => c.find.includes(w))).slice(0, 9);
+  const results = [...COMMANDS, ...topics].filter((c) => words.every((w) => c.find.includes(w))).slice(0, 9);
   const active = Math.min(sel, results.length - 1);
 
   function show() {
+    loadTopics().then(setTopics);
     opener.current = document.activeElement;
     setQuery("");
     setSel(0);
@@ -50,7 +60,9 @@ export default function CommandPalette() {
   function go(c: Command | undefined) {
     if (!c) return;
     setOpen(false);
-    router.push(c.href);
+    // Already on the roadmap: a hash change is what makes the page switch topic, and router.push does not fire one.
+    if (c.href.startsWith("/roadmap#") && pathname === "/roadmap") location.hash = c.href.split("#")[1];
+    else router.push(c.href);
   }
 
   useEffect(() => {
@@ -84,7 +96,7 @@ export default function CommandPalette() {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Search pages and alerts"
+        aria-label="Search pages, alerts and roadmap topics"
         className="pal-in w-full max-w-xl overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl shadow-black/60"
       >
         <input
@@ -110,8 +122,8 @@ export default function CommandPalette() {
           aria-expanded="true"
           aria-controls="palette-list"
           aria-activedescendant={results.length ? `palette-${active}` : undefined}
-          placeholder="Go to a page or alert…"
-          aria-label="Search pages and alerts"
+          placeholder="Go to a page, alert or roadmap topic…"
+          aria-label="Search pages, alerts and roadmap topics"
           className="w-full border-b border-line bg-transparent px-5 py-4 text-[15px] outline-none placeholder:text-muted"
         />
         <ul ref={list} id="palette-list" role="listbox" className="max-h-80 overflow-y-auto p-1.5">

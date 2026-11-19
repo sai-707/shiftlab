@@ -2,19 +2,22 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { CHECKED, PHASES, type Kind, type Priority, type Topic } from "@/content/roadmap";
+import { CHECKED, PHASES, type Kind, type Priority } from "@/content/roadmap";
+import { roadmapProgress } from "@/lib/roadmapProgress";
+import { prio, rowsFor, type Track } from "@/lib/roadmapRows";
 
-type Track = "soc" | "eng";
-type Row = { topic: Topic; pi: number; section: string; code: string };
-
-const KEY = "shiftlab.roadmap.v1";
 // One colour per phase: the first five come from the site theme, the engineer track gets violet.
 const COLOR = ["var(--color-low)", "var(--color-accent)", "var(--color-correct)", "var(--color-high)", "var(--color-medium)", "#a78bfa"];
 const PRIORITY: Record<Priority, string> = { E: "Essential", R: "Recommended", O: "Optional", "-": "Not in this track" };
 const TRACK_NAME: Record<Track, string> = { soc: "SOC analyst", eng: "Security engineer" };
+const flip = (o: Record<string, true>, k: string) => {
+  const x = { ...o };
+  if (x[k]) delete x[k];
+  else x[k] = true;
+  return x;
+};
 const host = (url: string) => new URL(url).hostname.replace(/^www\./, "");
 const tint = (pi: number) => ({ "--pc": COLOR[pi] }) as CSSProperties;
-const prio = (t: Topic, track: Track): Priority => (track === "soc" ? t.soc : t.eng);
 
 function Ext({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -34,63 +37,35 @@ function KindTag({ kind }: { kind: Kind }) {
   );
 }
 
+// Every topic of both tracks with its search text, for the search box. Built once: the roadmap is static.
+const ALL = PHASES.flatMap((p, pi) => p.sections.flatMap((s) => s.topics.map((topic) => ({ topic, pi, section: s.name, hay: `${topic.name} ${topic.text} ${topic.sub.join(" ")} ${topic.tools.join(" ")}`.toLowerCase() }))));
+
 // The roadmap as a course explorer: phases and topics on the left, one topic at a time on the right.
-// Progress and the chosen track stay in this browser only (localStorage); nothing is sent anywhere.
+// Progress and the chosen track are kept in this browser and, for a signed-in student, saved to the account (lib/sync.ts).
 export default function RoadmapExplorer() {
-  const [track, setTrack] = useState<Track>("soc");
-  const [sel, setSel] = useState(PHASES[0].sections[0].topics[0].slug);
-  const [done, setDone] = useState<Record<string, true>>({});
-  const [ticks, setTicks] = useState<Record<string, true>>({});
-  const [open, setOpen] = useState<Record<string, boolean>>({ [PHASES[0].id]: true });
-  const [ready, setReady] = useState(false);
+  const { track, sel, done, ticks } = roadmapProgress.useStore();
+  const setTrack = (k: Track) => roadmapProgress.set({ track: k });
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [query, setQuery] = useState("");
   const detail = useRef<HTMLElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
 
-  const rows = useMemo(() => {
-    const out: Row[] = [];
-    PHASES.forEach((p, pi) => {
-      let k = 0;
-      for (const s of p.sections) for (const t of s.topics) if (prio(t, track) !== "-") out.push({ topic: t, pi, section: s.name, code: `${pi + 1}.${++k}` });
-    });
-    return out;
-  }, [track]);
+  const rows = useMemo(() => rowsFor(track), [track]);
 
-  /* eslint-disable react-hooks/set-state-in-effect -- saved progress can only be read in the browser, so it has to be applied after the first render */
-  // Restore saved progress, then honour a #topic link. Runs once, after the first paint, so the server and first client render match.
+  // A #topic link (from the dashboard, the Ctrl+K search or a bookmark) selects that topic. The address wins over the saved choice,
+  // so it is applied again if the account's saved copy arrives after the page opened and replaces the selection.
   useEffect(() => {
-    try {
-      const raw = JSON.parse(localStorage.getItem(KEY) || "{}");
-      if (raw.track === "eng") setTrack("eng");
-      if (raw.done && typeof raw.done === "object") setDone(raw.done);
-      if (raw.ticks && typeof raw.ticks === "object") setTicks(raw.ticks);
-      if (typeof raw.sel === "string") setSel(raw.sel);
-    } catch {
-      // private mode or bad data: start fresh
-    }
-    const fromHash = () => {
-      const slug = decodeURIComponent(location.hash.slice(1));
-      const hit = PHASES.flatMap((p, pi) => p.sections.flatMap((s) => s.topics).map((x) => ({ x, pi }))).find((o) => o.x.slug === slug);
-      if (!hit) return;
-      if (hit.x.soc === "-") setTrack("eng");
-      setSel(slug);
-      setOpen((o) => ({ ...o, [PHASES[hit.pi].id]: true }));
+    const hit = ALL.find((o) => o.topic.slug === decodeURIComponent(location.hash.slice(1)));
+    if (hit && sel !== hit.topic.slug) roadmapProgress.set({ sel: hit.topic.slug, ...(prio(hit.topic, track) === "-" ? { track: "eng" as Track } : {}) });
+  }, [sel, track]);
+  useEffect(() => {
+    const onHash = () => {
+      const hit = ALL.find((o) => o.topic.slug === decodeURIComponent(location.hash.slice(1)));
+      if (hit) roadmapProgress.set({ sel: hit.topic.slug, ...(prio(hit.topic, roadmapProgress.get().track) === "-" ? { track: "eng" as Track } : {}) });
     };
-    fromHash();
-    setReady(true);
-    window.addEventListener("hashchange", fromHash);
-    return () => window.removeEventListener("hashchange", fromHash);
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, []);
-
-  /* eslint-enable react-hooks/set-state-in-effect */
-
-  useEffect(() => {
-    if (!ready) return;
-    try {
-      localStorage.setItem(KEY, JSON.stringify({ track, sel, done, ticks }));
-    } catch {
-      // storage full or blocked: progress just will not persist
-    }
-  }, [ready, track, sel, done, ticks]);
 
   const at = Math.max(0, rows.findIndex((r) => r.topic.slug === sel));
   const cur = rows[at];
@@ -100,7 +75,8 @@ export default function RoadmapExplorer() {
   const pct = Math.round((doneCount / rows.length) * 100);
 
   const go = (slug: string, pi: number) => {
-    setSel(slug);
+    const tp = ALL.find((o) => o.topic.slug === slug)!.topic;
+    roadmapProgress.set({ sel: slug, ...(prio(tp, track) === "-" ? { track: "eng" as Track } : {}) });
     setOpen((o) => ({ ...o, [PHASES[pi].id]: true }));
     history.replaceState(null, "", `#${slug}`);
     // On a phone the topic list is above the detail, so bring the detail into view.
@@ -110,12 +86,15 @@ export default function RoadmapExplorer() {
     }
   };
 
+  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const found = words.length ? ALL.filter((o) => words.every((w) => o.hay.includes(w))).slice(0, 12) : [];
+
   const prev = rows[at - 1];
   const next = rows[at + 1];
 
   const bar = (cls: string) => (
     <div className={`rm-bar ${cls}`}>
-      <button type="button" className={done[t.slug] ? "rm-done on" : "rm-done"} aria-pressed={!!done[t.slug]} onClick={() => setDone((d) => { const x = { ...d }; if (x[t.slug]) delete x[t.slug]; else x[t.slug] = true; return x; })}>
+      <button type="button" className={done[t.slug] ? "rm-done on" : "rm-done"} aria-pressed={!!done[t.slug]} onClick={() => roadmapProgress.set({ done: flip(done, t.slug) })}>
         {done[t.slug] ? "✓ Done" : "Mark as done"}
       </button>
       <span className="sp" />
@@ -148,6 +127,47 @@ export default function RoadmapExplorer() {
           {track === "soc" ? "Alert triage and incident response. ShiftLab trains this track." : "Build, automate and secure. Adds Phase 6 and moves some topics up."}
         </p>
 
+        <div className="rm-search">
+          <label htmlFor="rm-q" className="sr-only">
+            Search all topics
+          </label>
+          <input id="rm-q" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search topics, tools, subjects" autoComplete="off" />
+        </div>
+
+        {words.length > 0 && (
+          <div className="rm-results" role="region" aria-label="Search results" aria-live="polite">
+            <p className="meta">
+              {found.length === 0 ? "No topic matches." : `${found.length} topic${found.length === 1 ? "" : "s"} found.`}
+              {found.length > 0 && " Picking one that is not in your track moves you to the track that has it."}
+            </p>
+            <ul>
+              {found.map((r) => (
+                <li key={r.topic.slug} style={tint(r.pi)}>
+                  <a
+                    href={`#${r.topic.slug}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      go(r.topic.slug, r.pi);
+                      setQuery("");
+                    }}
+                  >
+                    <span className={done[r.topic.slug] ? "box on" : "box"} aria-hidden="true">
+                      {done[r.topic.slug] ? "✓" : ""}
+                    </span>
+                    <span className="t">
+                      {r.topic.name}
+                      {done[r.topic.slug] && <span className="sr-only"> (done)</span>}
+                      <small>
+                        Phase {r.pi + 1} · {r.section}
+                      </small>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="rm-progress">
           <div className="top">
             <b>Your progress</b>
@@ -166,71 +186,73 @@ export default function RoadmapExplorer() {
           </p>
         </div>
 
-        <ol className="rm-phases">
-          {PHASES.map((p, pi) => {
-            const mine = rows.filter((r) => r.pi === pi);
-            if (mine.length === 0) return null;
-            const isOpen = !!open[p.id];
-            const n = mine.filter((r) => done[r.topic.slug]).length;
-            return (
-              <li key={p.id} style={tint(pi)}>
-                <button type="button" className="rm-phase-btn" aria-expanded={isOpen} aria-controls={`rm-ph-${p.id}`} onClick={() => setOpen((o) => ({ ...o, [p.id]: !isOpen }))}>
-                  <span className="dot" aria-hidden="true">
-                    {String(pi + 1).padStart(2, "0")}
-                  </span>
-                  <span className="name">{p.name}</span>
-                  <span className="cnt">
-                    {n}/{mine.length}
-                  </span>
-                  <span className="chev" aria-hidden="true">
-                    {isOpen ? "−" : "+"}
-                  </span>
-                </button>
-                {isOpen && (
-                  <div id={`rm-ph-${p.id}`} className="rm-phase-body">
-                    <p className="meta">
-                      {p.time} · You&apos;ll be able to {p.outcome}
-                    </p>
-                    {p.sections.map((s) => {
-                      const list = mine.filter((r) => r.section === s.name);
-                      if (list.length === 0) return null;
-                      return (
-                        <div key={s.name}>
-                          <p className="sec">{s.name}</p>
-                          <ul>
-                            {list.map((r) => (
-                              <li key={r.topic.slug}>
-                                <a
-                                  href={`#${r.topic.slug}`}
-                                  data-p={prio(r.topic, track)}
-                                  aria-current={r.topic.slug === t.slug ? "true" : undefined}
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    go(r.topic.slug, pi);
-                                  }}
-                                >
-                                  <span className={done[r.topic.slug] ? "box on" : "box"} aria-hidden="true">
-                                    {done[r.topic.slug] ? "✓" : ""}
-                                  </span>
-                                  <span className="t">
-                                    {r.topic.name}
-                                    {done[r.topic.slug] && <span className="sr-only"> (done)</span>}
-                                  </span>
-                                  <span className="sr-only"> {PRIORITY[prio(r.topic, track)]}.</span>
-                                  {r.topic.practice && <i className="ours" title="Practise on ShiftLab" aria-label="Practise on ShiftLab" />}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ol>
+        {words.length === 0 && (
+          <ol className="rm-phases">
+            {PHASES.map((p, pi) => {
+              const mine = rows.filter((r) => r.pi === pi);
+              if (mine.length === 0) return null;
+              const isOpen = open[p.id] ?? pi === cur.pi;
+              const n = mine.filter((r) => done[r.topic.slug]).length;
+              return (
+                <li key={p.id} style={tint(pi)}>
+                  <button type="button" className="rm-phase-btn" aria-expanded={isOpen} aria-controls={`rm-ph-${p.id}`} onClick={() => setOpen((o) => ({ ...o, [p.id]: !isOpen }))}>
+                    <span className="dot" aria-hidden="true">
+                      {String(pi + 1).padStart(2, "0")}
+                    </span>
+                    <span className="name">{p.name}</span>
+                    <span className="cnt">
+                      {n}/{mine.length}
+                    </span>
+                    <span className="chev" aria-hidden="true">
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div id={`rm-ph-${p.id}`} className="rm-phase-body">
+                      <p className="meta">
+                        {p.time} · You&apos;ll be able to {p.outcome}
+                      </p>
+                      {p.sections.map((s) => {
+                        const list = mine.filter((r) => r.section === s.name);
+                        if (list.length === 0) return null;
+                        return (
+                          <div key={s.name}>
+                            <p className="sec">{s.name}</p>
+                            <ul>
+                              {list.map((r) => (
+                                <li key={r.topic.slug}>
+                                  <a
+                                    href={`#${r.topic.slug}`}
+                                    data-p={prio(r.topic, track)}
+                                    aria-current={r.topic.slug === t.slug ? "true" : undefined}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      go(r.topic.slug, pi);
+                                    }}
+                                  >
+                                    <span className={done[r.topic.slug] ? "box on" : "box"} aria-hidden="true">
+                                      {done[r.topic.slug] ? "✓" : ""}
+                                    </span>
+                                    <span className="t">
+                                      {r.topic.name}
+                                      {done[r.topic.slug] && <span className="sr-only"> (done)</span>}
+                                    </span>
+                                    <span className="sr-only"> {PRIORITY[prio(r.topic, track)]}.</span>
+                                    {r.topic.practice && <i className="ours" title="Practise on ShiftLab" aria-label="Practise on ShiftLab" />}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        )}
       </aside>
 
       <article className="rm-detail" ref={detail} style={tint(cur.pi)} aria-label={`Topic: ${t.name}`}>
@@ -340,7 +362,7 @@ export default function RoadmapExplorer() {
               return (
                 <li key={m}>
                   <label>
-                    <input type="checkbox" checked={!!ticks[k]} onChange={() => setTicks((o) => { const x = { ...o }; if (x[k]) delete x[k]; else x[k] = true; return x; })} />
+                    <input type="checkbox" checked={!!ticks[k]} onChange={() => roadmapProgress.set({ ticks: flip(ticks, k) })} />
                     <span>{m}</span>
                   </label>
                 </li>

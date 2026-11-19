@@ -7,7 +7,10 @@ import { CERTS, MARKET, PROJECTS, TOOLS } from "../content/roadmap-extra.ts";
 const topics = PHASES.flatMap((p) => p.sections.flatMap((s) => s.topics));
 const app = new URL("../app/", import.meta.url);
 // A practice link must point at a page that exists, in the student workspace or at the top level.
-const isPage = (href) => existsSync(new URL(`(app)${href}`, app)) || existsSync(new URL(`.${href}`, app));
+const isPage = (href) => {
+  const path = href.split(/[?#]/)[0];
+  return existsSync(new URL(`(app)${path}`, app)) || existsSync(new URL(`.${path}`, app));
+};
 const https = /^https:\/\/[^\s]+$/;
 const KINDS = ["Video", "Course", "Lab", "Docs", "Book", "Tool", "Podcast"];
 

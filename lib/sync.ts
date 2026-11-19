@@ -6,6 +6,7 @@ import { registerOnWrite } from "./localStore";
 import { logProgress } from "./logProgress";
 import { afterProgress, aiCheckProgress, commsProgress, mailProgress, shiftProgress, sprintProgress } from "./practiceProgress";
 import { resetProgress, setProgressFromSync, type Progress } from "./progress";
+import { roadmapProgress } from "./roadmapProgress";
 import { sourcesStore } from "./sources";
 import { stepsProgress } from "./stepsProgress";
 import { hintsUsed } from "./hintsUsed";
@@ -83,6 +84,7 @@ const STORES: Record<string, StoreRef> = {
   logs: logProgress,
   handover: handoverNotes,
   sources: sourcesStore,
+  roadmap: roadmapProgress,
 };
 
 // ─── Hydrate (first load) ──────────────────────────────────────────────
@@ -249,6 +251,7 @@ const LOCAL_TO_STATE: Record<string, string> = {
   "shiftlab.logs.v1": "logs",
   "shiftlab.handover.v1": "handover",
   "shiftlab.sources.v1": "sources",
+  "shiftlab.roadmap.v1": "roadmap",
 };
 
 // Register the callback so every store.set() triggers a debounced server save.
