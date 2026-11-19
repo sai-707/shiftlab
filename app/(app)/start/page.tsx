@@ -27,6 +27,7 @@ const PAGES = [
   { href: "/practice", name: "Practice and learn", text: "Playbooks, glossary and short skill drills. Start here if you feel lost." },
   { href: "/reports", name: "Case reports", text: "Review your past reports." },
   { href: "/handover", name: "Shift handover", text: "Write notes for the next shift." },
+  { href: "/roadmap", name: "SOC roadmap", text: "What to learn next, with a free resource for every step." },
 ];
 
 export default function StartPage() {
