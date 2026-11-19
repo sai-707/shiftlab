@@ -12,19 +12,17 @@ export default function ToolsPage() {
   return (
     <RoadmapFrame
       active="/roadmap/tools"
-      label="Tools"
-      title="Which tools to learn, in this order."
-      lead="Every tool is free. Learn one stage at a time. For each tool you get the reason it was picked, one place to learn it and one place to practise it."
+      title="Tools to learn"
+      description="Every tool is free. Learn one stage at a time. For each tool you get the reason it was picked, one place to learn it and one place to practise it."
     >
       {TOOLS.map((st) => (
-        <section className="g-sec" key={st.stage}>
-          <div className="wrap rm-wide">
+        <section className="rm-sec" key={st.stage}>
             <div className="rm-stage">
               <span className="n" aria-hidden="true">
                 {st.stage}
               </span>
               <div>
-                <h2>{st.title}</h2>
+                <h2 className="rm-h2">{st.title}</h2>
                 <p>{st.sub}</p>
               </div>
             </div>
@@ -48,8 +46,7 @@ export default function ToolsPage() {
                 </li>
               ))}
             </ul>
-          </div>
-        </section>
+          </section>
       ))}
     </RoadmapFrame>
   );
