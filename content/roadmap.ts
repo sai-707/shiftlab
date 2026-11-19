@@ -1945,8 +1945,8 @@ export const PHASES: Phase[] = [
     "id": "advanced",
     "name": "Advanced",
     "time": "Ongoing",
-    "goal": "Understand attackers in depth and branch into specialist areas.",
-    "outcome": "read attacker behaviour, map it to ATT&CK, and look inside malware safely.",
+    "goal": "Understand attackers in depth, learn how AI is attacked and used, and branch into specialist areas.",
+    "outcome": "read attacker behaviour, map it to ATT&CK, look inside malware safely, and explain how AI systems are attacked.",
     "sections": [
       {
         "name": "Threats in depth",
@@ -2327,6 +2327,282 @@ export const PHASES: Phase[] = [
             "tools": [
               "Wireshark",
               "GRASSMARLIN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AI security",
+        "topics": [
+          {
+            "slug": "how-ai-systems-work-and-break",
+            "name": "How AI systems work and where they break",
+            "text": "Learn what a model, its training data and a prompt are, so you can see where an attacker gets a foothold.",
+            "sub": [
+              "Models, training and data",
+              "How language models answer",
+              "Search, plugins and agents",
+              "Where attacks enter"
+            ],
+            "soc": "R",
+            "eng": "E",
+            "time": "2 to 3 weeks",
+            "resources": [
+              {
+                "name": "Intro to Large Language Models (Andrej Karpathy)",
+                "url": "https://www.youtube.com/watch?v=zjkBMFhNj_g",
+                "kind": "Video",
+                "note": "A one-hour tour of how language models work and why they can be attacked."
+              },
+              {
+                "name": "Machine Learning Crash Course (Google)",
+                "url": "https://developers.google.com/machine-learning/crash-course",
+                "kind": "Course",
+                "note": "Videos and exercises on how models learn from data."
+              },
+              {
+                "name": "Hugging Face LLM Course",
+                "url": "https://huggingface.co/learn/llm-course",
+                "kind": "Course",
+                "note": "Free and hands-on. Do the first chapters to see how a model is used."
+              },
+              {
+                "name": "But what is a neural network? (3Blue1Brown)",
+                "url": "https://www.3blue1brown.com/lessons/neural-networks",
+                "kind": "Video",
+                "note": "A clear picture of what is inside a model."
+              },
+              {
+                "name": "NIST AI 100-2: Adversarial Machine Learning",
+                "url": "https://csrc.nist.gov/pubs/ai/100/2/e2025/final",
+                "kind": "Docs",
+                "note": "The standard attack vocabulary. Read the contents page and the summary tables."
+              }
+            ],
+            "books": [],
+            "exercises": [
+              "Write one paragraph on how a chatbot answers a question, in your own words",
+              "Draw a chatbot that can search the web and use tools, and mark every place an attacker could put text"
+            ],
+            "milestones": [
+              "You can explain training data, a prompt and a context window",
+              "You can name the attack families in NIST AI 100-2"
+            ],
+            "tools": [
+              "Python",
+              "Hugging Face"
+            ]
+          },
+          {
+            "slug": "prompt-injection-and-jailbreaks",
+            "name": "Prompt injection and jailbreaks",
+            "text": "See how text can take over an AI app, typed in directly or hidden in a web page or email the model reads.",
+            "sub": [
+              "Direct injection",
+              "Indirect injection",
+              "Jailbreaks",
+              "Why filters fail"
+            ],
+            "soc": "O",
+            "eng": "E",
+            "time": "2 weeks",
+            "resources": [
+              {
+                "name": "Gandalf prompt injection game",
+                "url": "https://gandalf.lakera.ai/baseline",
+                "kind": "Lab",
+                "note": "A free game that teaches prompt injection one level at a time."
+              },
+              {
+                "name": "PortSwigger: Web LLM attacks",
+                "url": "https://portswigger.net/web-security/llm-attacks",
+                "kind": "Lab",
+                "note": "Free labs on attacking apps that use language models."
+              },
+              {
+                "name": "Prompt Airlines (Wiz)",
+                "url": "https://promptairlines.com/",
+                "kind": "Lab",
+                "note": "A prompt injection challenge: talk a customer-service chatbot into a free ticket."
+              },
+              {
+                "name": "OWASP LLM01: Prompt Injection",
+                "url": "https://genai.owasp.org/llmrisk/llm01-prompt-injection/",
+                "kind": "Docs",
+                "note": "What it is, the types, and the usual defences."
+              },
+              {
+                "name": "Prompt injection series (Simon Willison)",
+                "url": "https://simonwillison.net/series/prompt-injection/",
+                "kind": "Docs",
+                "note": "23 posts. Read the first few for a plain account of what is still unsolved."
+              }
+            ],
+            "books": [],
+            "exercises": [
+              "Beat three Gandalf levels and write down what worked on each",
+              "Hide an instruction in a web page and check whether a small chatbot you built follows it"
+            ],
+            "milestones": [
+              "You can explain why prompt injection is hard to fully fix",
+              "You can tell direct from indirect injection, with an example of each"
+            ],
+            "tools": [
+              "Gandalf",
+              "Python"
+            ]
+          },
+          {
+            "slug": "ai-in-the-soc",
+            "name": "Using AI in the SOC and catching its mistakes",
+            "text": "Use AI to summarise alerts faster, and check every claim against the evidence before anyone acts on it.",
+            "sub": [
+              "AI triage and summaries",
+              "Invented evidence",
+              "Attacker text inside alert data",
+              "Human review habits"
+            ],
+            "practice": {
+              "href": "/ai-check",
+              "label": "Spot the AI's mistake"
+            },
+            "soc": "E",
+            "eng": "R",
+            "time": "1 to 2 weeks",
+            "resources": [
+              {
+                "name": "Enhance security operations with Microsoft Security Copilot (SC-5006)",
+                "url": "https://learn.microsoft.com/en-us/training/paths/security-copilot-and-ai",
+                "kind": "Course",
+                "note": "A free beginner path on how an AI assistant is used for alerts and incidents."
+              },
+              {
+                "name": "OWASP LLM01: Prompt Injection",
+                "url": "https://genai.owasp.org/llmrisk/llm01-prompt-injection/",
+                "kind": "Docs",
+                "note": "Alert fields like a User-Agent or an email body are attacker text. An AI that reads them can be steered."
+              },
+              {
+                "name": "OWASP Top 10 for LLM applications",
+                "url": "https://genai.owasp.org/llm-top-10/",
+                "kind": "Docs",
+                "note": "Read misinformation and excessive agency. Both matter when AI touches alerts."
+              }
+            ],
+            "books": [],
+            "exercises": [
+              "Take an AI summary of an alert and mark each claim true, false or unproven",
+              "Write a three-line rule for when you accept an AI verdict and when you check it"
+            ],
+            "milestones": [
+              "You catch an invented detail in an AI summary",
+              "You can explain why log text must never be treated as instructions"
+            ],
+            "tools": [
+              "ShiftLab Spot the AI's mistake",
+              "Microsoft Security Copilot"
+            ]
+          },
+          {
+            "slug": "ai-red-teaming-and-adversarial-ml",
+            "name": "AI red teaming and adversarial ML",
+            "text": "Attack your own model or app on purpose, using the same attack map and scanners defenders use.",
+            "sub": [
+              "MITRE ATLAS techniques",
+              "Evasion and data poisoning",
+              "Scanning with garak",
+              "Planning a red-team test"
+            ],
+            "soc": "-",
+            "eng": "R",
+            "time": "3 to 4 weeks",
+            "resources": [
+              {
+                "name": "MITRE ATLAS",
+                "url": "https://atlas.mitre.org/",
+                "kind": "Docs",
+                "note": "An ATT&CK-style map of attacks on AI systems."
+              },
+              {
+                "name": "garak (NVIDIA)",
+                "url": "https://github.com/NVIDIA/garak",
+                "kind": "Tool",
+                "note": "A free command-line scanner that probes a model for injection, leaks and jailbreaks."
+              },
+              {
+                "name": "PyRIT (Microsoft)",
+                "url": "https://github.com/microsoft/PyRIT",
+                "kind": "Tool",
+                "note": "An open-source framework for finding risks in generative AI systems."
+              },
+              {
+                "name": "OWASP GenAI Red Teaming Guide",
+                "url": "https://genai.owasp.org/resource/genai-red-teaming-guide/",
+                "kind": "Docs",
+                "note": "How to plan and run a red-team test of an AI system."
+              }
+            ],
+            "books": [],
+            "exercises": [
+              "Run garak against a small model you host yourself and read the report",
+              "Map three of your findings to MITRE ATLAS technique IDs"
+            ],
+            "milestones": [
+              "You ran an automated scan and sorted real findings from noise",
+              "You wrote a one-page test plan with scope and rules"
+            ],
+            "tools": [
+              "garak",
+              "PyRIT",
+              "MITRE ATLAS",
+              "Python"
+            ]
+          },
+          {
+            "slug": "ai-governance-and-risk",
+            "name": "AI governance and risk",
+            "text": "Know the frameworks and laws that tell companies how to run AI safely, and use them in a review.",
+            "sub": [
+              "NIST AI RMF",
+              "Google SAIF",
+              "EU AI Act basics",
+              "Writing an AI risk entry"
+            ],
+            "soc": "O",
+            "eng": "R",
+            "time": "2 weeks",
+            "resources": [
+              {
+                "name": "NIST AI Risk Management Framework",
+                "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+                "kind": "Docs",
+                "note": "The standard risk guide for AI. Learn its four functions: Govern, Map, Measure, Manage."
+              },
+              {
+                "name": "Google Secure AI Framework",
+                "url": "https://saif.google/",
+                "kind": "Docs",
+                "note": "A short guide to securing AI systems."
+              },
+              {
+                "name": "EU AI Act Explorer",
+                "url": "https://artificialintelligenceact.eu/",
+                "kind": "Docs",
+                "note": "Browse the law's text, and read the high-level summary first."
+              }
+            ],
+            "books": [],
+            "exercises": [
+              "Pick an AI feature and write a risk entry: threat, impact and control",
+              "Compare NIST AI RMF and SAIF in a half-page table"
+            ],
+            "milestones": [
+              "You can name the four NIST AI RMF functions",
+              "You wrote one AI risk entry a manager could act on"
+            ],
+            "tools": [
+              "NIST AI RMF",
+              "Google SAIF"
             ]
           }
         ]
@@ -3147,13 +3423,13 @@ export const PHASES: Phase[] = [
           },
           {
             "slug": "ai-and-llm-security",
-            "name": "AI and LLM security",
-            "text": "Test and defend apps that use language models: injection, leaks, and unsafe actions by agents.",
+            "name": "Securing LLM apps and agents",
+            "text": "Build and test apps that use language models: data leaks, unsafe agent actions, guardrails and logs.",
             "sub": [
-              "Prompt injection",
-              "Data leakage",
-              "Agent and tool risks",
-              "Guardrails and logging"
+              "Data leakage and RAG",
+              "Agent and tool permissions",
+              "Output handling and guardrails",
+              "Logging and monitoring"
             ],
             "soc": "-",
             "eng": "R",
@@ -3166,34 +3442,16 @@ export const PHASES: Phase[] = [
                 "note": "The list of risks. Read all ten."
               },
               {
-                "name": "Gandalf prompt injection game",
-                "url": "https://gandalf.lakera.ai/",
-                "kind": "Lab",
-                "note": "A free game that teaches prompt injection."
-              },
-              {
                 "name": "PortSwigger: Web LLM attacks",
                 "url": "https://portswigger.net/web-security/llm-attacks",
                 "kind": "Lab",
-                "note": "Free labs on attacking LLM apps."
+                "note": "Free labs on attacking apps that use language models."
               },
               {
-                "name": "MITRE ATLAS",
-                "url": "https://atlas.mitre.org/",
+                "name": "OWASP AI Exchange",
+                "url": "https://owaspai.org/",
                 "kind": "Docs",
-                "note": "An ATT&CK-style map of attacks on AI."
-              },
-              {
-                "name": "NIST AI Risk Management Framework",
-                "url": "https://www.nist.gov/itl/ai-risk-management-framework",
-                "kind": "Docs",
-                "note": "The standard risk guide for AI."
-              },
-              {
-                "name": "Google Secure AI Framework",
-                "url": "https://saif.google/",
-                "kind": "Docs",
-                "note": "A short guide to securing AI systems."
+                "note": "Free, practical controls for securing AI systems."
               }
             ],
             "books": [],
@@ -3203,13 +3461,12 @@ export const PHASES: Phase[] = [
               "Add input and output logging and review it"
             ],
             "milestones": [
-              "You can explain prompt injection",
+              "You can explain how an agent's tool access can be abused",
               "You tested a real app and wrote findings",
               "Your app logs what the model sees and does"
             ],
             "tools": [
               "OWASP LLM Top 10",
-              "MITRE ATLAS",
               "Python"
             ]
           }
