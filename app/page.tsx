@@ -56,6 +56,9 @@ export default function Home() {
             <Link className="signin how" href="/guide">
               About
             </Link>
+            <Link className="signin how wide" href="/roadmap">
+              Roadmap
+            </Link>
             <Link className="signin" href="/login">
               Sign in
             </Link>
@@ -174,7 +177,7 @@ export default function Home() {
         <div className="wrap">
           <p>Fictional company. Nothing here is real. Visits are counted anonymously, with no name or email.</p>
           <p>
-            <Link href="/guide">About</Link> · <Link href="/privacy">Privacy</Link> ·{" "}
+            <Link href="/guide">About</Link> · <Link href="/roadmap">SOC roadmap</Link> · <Link href="/privacy">Privacy</Link> ·{" "}
             <FeedbackLink className="foot-link" />{" "}
             · ShiftLab
           </p>
