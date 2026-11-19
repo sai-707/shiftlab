@@ -113,6 +113,27 @@ export default function RoadmapExplorer() {
   const prev = rows[at - 1];
   const next = rows[at + 1];
 
+  const bar = (cls: string) => (
+    <div className={`rm-bar ${cls}`}>
+      <button type="button" className={done[t.slug] ? "rm-done on" : "rm-done"} aria-pressed={!!done[t.slug]} onClick={() => setDone((d) => { const x = { ...d }; if (x[t.slug]) delete x[t.slug]; else x[t.slug] = true; return x; })}>
+        {done[t.slug] ? "✓ Done" : "Mark as done"}
+      </button>
+      <span className="sp" />
+      {prev && (
+        <button type="button" className="rm-nav" onClick={() => go(prev.topic.slug, prev.pi)}>
+          <span aria-hidden="true">← </span>
+          {prev.topic.name}
+        </button>
+      )}
+      {next && (
+        <button type="button" className="rm-nav fwd" onClick={() => go(next.topic.slug, next.pi)}>
+          Next: {next.topic.name}
+          <span aria-hidden="true"> →</span>
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div className="rm-app">
       <aside className="rm-side" aria-label="Roadmap topics">
@@ -213,24 +234,7 @@ export default function RoadmapExplorer() {
       </aside>
 
       <article className="rm-detail" ref={detail} style={tint(cur.pi)} aria-label={`Topic: ${t.name}`}>
-        <div className="rm-bar">
-          <button type="button" className={done[t.slug] ? "rm-done on" : "rm-done"} aria-pressed={!!done[t.slug]} onClick={() => setDone((d) => { const x = { ...d }; if (x[t.slug]) delete x[t.slug]; else x[t.slug] = true; return x; })}>
-            {done[t.slug] ? "✓ Done" : "Mark as done"}
-          </button>
-          <span className="sp" />
-          {prev && (
-            <button type="button" className="rm-nav" onClick={() => go(prev.topic.slug, prev.pi)}>
-              <span aria-hidden="true">← </span>
-              {prev.topic.name}
-            </button>
-          )}
-          {next && (
-            <button type="button" className="rm-nav fwd" onClick={() => go(next.topic.slug, next.pi)}>
-              Next: {next.topic.name}
-              <span aria-hidden="true"> →</span>
-            </button>
-          )}
-        </div>
+        {bar("")}
 
         <div className="rm-chips">
           <span className="rm-prio" data-p={prio(t, track)}>
@@ -375,6 +379,8 @@ export default function RoadmapExplorer() {
             ))}
           </ul>
         </section>
+
+        {bar("end")}
 
         <p className="rm-credit">Links last checked {CHECKED}. Found a broken one? Tell us with Send feedback below.</p>
       </article>

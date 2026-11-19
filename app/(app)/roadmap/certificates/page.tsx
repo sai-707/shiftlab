@@ -13,13 +13,11 @@ export default function CertificatesPage() {
   return (
     <RoadmapFrame
       active="/roadmap/certificates"
-      label="Certificates"
-      title="Free certificates, in the order to do them."
-      lead={`Each one was checked on the issuer's own page on ${CHECKED}. Rules change, so confirm the cost on the page before you start.`}
+      title="Free certificates"
+      description={`Each one was checked on the issuer's own page on ${CHECKED}. Rules change, so confirm the cost on the page before you start.`}
     >
-      <section className="g-sec">
-        <div className="wrap rm-wide">
-          <p className="label">Step by step · all free to start</p>
+      <section className="rm-sec">
+          <p className="rm-label">Step by step · all free to start</p>
           <ol className="rm-ladder">
             {CERTS.free.map((c, i) => (
               <li key={c.n}>
@@ -36,19 +34,17 @@ export default function CertificatesPage() {
                   <span className="when">{c.when}</span>
                   <WhoTag who={c.who} />
                 </div>
-                <ExtLink className="btn primary" href={c.u}>
+                <ExtLink className="rm-btn primary" href={c.u}>
                   Open page
                 </ExtLink>
               </li>
             ))}
           </ol>
-        </div>
-      </section>
+        </section>
 
-      <section className="g-sec">
-        <div className="wrap rm-wide">
-          <p className="label">Free to learn, paid to certify</p>
-          <h2>Use the free training. Pay for the exam only when you are ready.</h2>
+      <section className="rm-sec">
+          <p className="rm-label">Free to learn, paid to certify</p>
+          <h2 className="rm-h2">Use the free training. Pay for the exam only when you are ready.</h2>
           <ul className="rm-plain">
             {CERTS.learnFree.map((c) => (
               <li key={c.n}>
@@ -58,31 +54,27 @@ export default function CertificatesPage() {
                   <p>{c.get}</p>
                 </div>
                 <WhoTag who={c.who} />
-                <ExtLink className="btn" href={c.u}>
+                <ExtLink className="rm-btn" href={c.u}>
                   Open page
                 </ExtLink>
               </li>
             ))}
           </ul>
-        </div>
-      </section>
+        </section>
 
-      <section className="g-sec">
-        <div className="wrap rm-wide">
+      <section className="rm-sec">
           <div className="rm-note bad">
-            <p className="label">Not free any more</p>
+            <p className="rm-label">Not free any more</p>
             <h3>{CERTS.notFree.n}</h3>
             <p>{CERTS.notFree.get}</p>
             <p>
               <ExtLink href={CERTS.notFree.u}>ISC2 announcement</ExtLink>
             </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="g-sec">
-        <div className="wrap rm-wide">
-          <p className="label">Worth saving for · my picks, paid</p>
+      <section className="rm-sec">
+          <p className="rm-label">Worth saving for · my picks, paid</p>
           <ul className="rm-plain">
             {CERTS.paid.map((c) => (
               <li key={c.n}>
@@ -90,18 +82,17 @@ export default function CertificatesPage() {
                   <h3>{c.n}</h3>
                   <p>{c.why}</p>
                 </div>
-                <ExtLink className="btn" href={c.u}>
+                <ExtLink className="rm-btn" href={c.u}>
                   Open page
                 </ExtLink>
               </li>
             ))}
           </ul>
           <div className="rm-note rm-gap">
-            <p className="label">An honest note</p>
+            <p className="rm-label">An honest note</p>
             <p>{CERTS.honest}</p>
           </div>
-        </div>
-      </section>
+        </section>
     </RoadmapFrame>
   );
 }

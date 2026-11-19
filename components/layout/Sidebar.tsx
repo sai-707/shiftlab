@@ -98,11 +98,10 @@ export const GROUPS = [
       { href: "/profile", label: "Profile", icon: "profile" },
     ],
   },
-  // These are public pages outside the app, so a click leaves the sidebar.
   {
     label: "Roadmap",
     items: [
-      { href: "/roadmap", label: "SOC roadmap", icon: "roadmap" },
+      { href: "/roadmap", label: "Learning path", icon: "roadmap" },
       { href: "/roadmap/market", label: "Job market", icon: "market" },
       { href: "/roadmap/certificates", label: "Free certificates", icon: "certs" },
       { href: "/roadmap/tools", label: "Tools to learn", icon: "tools" },
@@ -112,7 +111,8 @@ export const GROUPS = [
 ];
 
 const isActive = (pathname: string, href: string) =>
-  pathname.startsWith(href) ||
+  // /roadmap is the parent of its sibling links, so it only matches itself.
+  (href === "/roadmap" ? pathname === href : pathname.startsWith(href)) ||
   (href === "/queue" && pathname.startsWith("/alerts")) ||
   (href === "/practice" && HUB_PATHS.some((h) => pathname.startsWith(h)));
 

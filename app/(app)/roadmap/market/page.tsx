@@ -15,13 +15,11 @@ export default function MarketPage() {
   return (
     <RoadmapFrame
       active="/roadmap/market"
-      label="Job market · 2026"
-      title="Why this roadmap has two tracks."
-      lead="Job-posting data from 2026 shows engineer roles outnumber SOC analyst roles, and junior postings are scarce. So you start where ShiftLab trains you, and add engineering skills early."
+      title="Job market"
+      description="Why this roadmap has two tracks. Job-posting data from 2026 shows engineer roles outnumber SOC analyst roles, and junior postings are scarce. So you start where ShiftLab trains you, and add engineering skills early."
     >
-      <section className="g-sec">
-        <div className="wrap rm-wide">
-          <p className="label">Four numbers to know</p>
+      <section className="rm-sec">
+          <p className="rm-label">Four numbers to know</p>
           <ul className="rm-stat-grid">
             {MARKET.stats.map((s) => (
               <li key={s.big}>
@@ -31,13 +29,11 @@ export default function MarketPage() {
               </li>
             ))}
           </ul>
-        </div>
-      </section>
+        </section>
 
-      <section className="g-sec">
-        <div className="wrap rm-wide">
-          <p className="label">What I would do with that</p>
-          <h2>Four steps, in this order.</h2>
+      <section className="rm-sec">
+          <p className="rm-label">What I would do with that</p>
+          <h2 className="rm-h2">Four steps, in this order.</h2>
           <ol className="rm-steps2">
             {MARKET.steps.map((s, i) => (
               <li key={s.t}>
@@ -51,13 +47,11 @@ export default function MarketPage() {
               </li>
             ))}
           </ol>
-        </div>
-      </section>
+        </section>
 
-      <section className="g-sec">
-        <div className="wrap rm-wide">
-          <p className="label">Pick your track</p>
-          <h2>You can switch later.</h2>
+      <section className="rm-sec">
+          <p className="rm-label">Pick your track</p>
+          <h2 className="rm-h2">You can switch later.</h2>
           <div className="rm-two">
             {MARKET.tracks.map((k, i) => (
               <article key={k.n} data-who={TRACK_KEY[i]}>
@@ -77,20 +71,18 @@ export default function MarketPage() {
               </article>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="g-sec">
-        <div className="wrap rm-wide">
+      <section className="rm-sec">
           <div className="rm-note">
-            <p className="label">How to read these numbers</p>
+            <p className="rm-label">How to read these numbers</p>
             <ul>
               {MARKET.caveats.map((c) => (
                 <li key={c}>{c}</li>
               ))}
             </ul>
           </div>
-          <p className="label rm-gap">Sources</p>
+          <p className="rm-label rm-gap">Sources</p>
           <ul className="rm-src">
             {MARKET.sources.map((s) => (
               <li key={s.u}>
@@ -99,8 +91,7 @@ export default function MarketPage() {
             ))}
           </ul>
           <p className="rm-credit">Figures read on {CHECKED}. The opinions marked as mine are judgment, not data.</p>
-        </div>
-      </section>
+        </section>
     </RoadmapFrame>
   );
 }
