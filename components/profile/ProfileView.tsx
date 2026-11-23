@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition, type CSSProperties } from "react";
 import { saveProfile } from "@/app/profile-actions";
+import CertificatesPanel from "@/components/certificates/CertificatesPanel";
+import "@/components/profile/profile.css";
 import { AI_DRILLS } from "@/content/aicheck";
 import { ALERTS, TOPICS } from "@/content/alerts";
 import { COMMS } from "@/content/comms";
@@ -13,7 +15,13 @@ import { SHIFTS } from "@/content/shifts";
 import { levelStates } from "@/lib/levels";
 import { logProgress } from "@/lib/logProgress";
 import { profileStore, resizeAvatar } from "@/lib/profile";
+import ProfileActivity from "@/components/profile/ProfileActivity";
 import ProfileDetails from "@/components/profile/ProfileDetails";
+import ProfileStats from "@/components/profile/ProfileStats";
+import RankRing from "@/components/profile/RankRing";
+import SectionHead from "@/components/profile/SectionHead";
+import SkillRadar from "@/components/profile/SkillRadar";
+import { KIND_META } from "@/lib/certificates";
 import { GITHUB_RE, initialsOf, validAvatar } from "@/lib/profileRules";
 import { aiCheckProgress, commsProgress, mailProgress, shiftProgress, sprintProgress } from "@/lib/practiceProgress";
 import { useProgress } from "@/lib/progress";
@@ -27,17 +35,7 @@ const icon = "h-4 w-4 shrink-0 text-muted";
 function Bar({ pct, color = "var(--color-accent)" }: { pct: number; color?: string }) {
   return (
     <div className="h-1.5 overflow-hidden rounded-full bg-raised">
-      <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, pct))}%`, background: color }} />
-    </div>
-  );
-}
-
-function Stat({ label, value, hint }: { label: string; value: string; hint: string }) {
-  return (
-    <div className="bg-panel p-5">
-      <p className="text-xs uppercase tracking-wide text-muted">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
-      <p className="mt-1 text-xs text-muted">{hint}</p>
+      <div className="pf-fill h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, pct))}%`, background: color, "--pf-c": color } as CSSProperties} />
     </div>
   );
 }
@@ -138,16 +136,16 @@ export default function ProfileView({ account }: { account: Mine | null }) {
 
   return (
     <>
-      <section className="relative">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-linear-to-br from-accent/12 via-transparent to-transparent" />
-        <div className="relative grid gap-6 p-5 md:p-6 lg:grid-cols-[1fr_17rem] lg:gap-8">
+      <section className="pf-hero">
+        <div className="relative grid gap-6 p-5 md:p-6 lg:grid-cols-[1fr_20rem] lg:gap-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
             <div className="flex shrink-0 flex-col items-start gap-2 sm:items-center">
-              <div className="relative">
+              <div className="relative h-28 w-28">
+                <span aria-hidden="true" className="pf-sweep" />
                 <div
                   role="img"
                   aria-label={photo ? "Your profile photo" : "Your initials"}
-                  className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-accent bg-raised bg-cover bg-center text-3xl font-semibold text-accent shadow-[0_0_24px_-6px_rgb(34_211_238/0.7)]"
+                  className="absolute inset-[7px] flex items-center justify-center rounded-full bg-raised bg-cover bg-center font-display text-3xl font-semibold"
                   style={photo ? { backgroundImage: `url(${photo})` } : undefined}
                 >
                   {photo ? "" : initialsOf(name)}
@@ -184,9 +182,7 @@ export default function ProfileView({ account }: { account: Mine | null }) {
             </div>
 
             <div className="min-w-0 flex-1">
-              <span className="inline-block rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
-                {rank(stats.closed, stats.average)}
-              </span>
+              <span className="pf-rank">{rank(stats.closed, stats.average)}</span>
               <label className="mt-2 block">
                 <span className="sr-only">Display name</span>
                 <input
@@ -196,7 +192,7 @@ export default function ProfileView({ account }: { account: Mine | null }) {
                   onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
                   placeholder="Add your name"
                   maxLength={30}
-                  className="w-full max-w-sm rounded-lg border border-transparent bg-transparent px-0 text-2xl font-semibold tracking-tight outline-none placeholder:text-muted hover:border-line focus:border-accent focus:px-2"
+                  className="w-full max-w-md rounded-lg border border-transparent bg-transparent px-0 font-display text-3xl font-bold tracking-tight outline-none placeholder:text-muted hover:border-line focus:border-accent focus:px-2 sm:text-4xl"
                 />
               </label>
               {mine && (
@@ -236,17 +232,15 @@ export default function ProfileView({ account }: { account: Mine | null }) {
                   )}
                 </ul>
               )}
-              <p className="mt-3 text-sm text-muted">
-                {since ? `Practising since ${since}` : "No cases closed yet"}
-                {" · "}
-                {earned} of {badges.length} badges
+              <p className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                <span className="pf-chip">{since ? `Practising since ${since}` : "No cases closed yet"}</span>
+                <span className="pf-chip">
+                  {earned} of {badges.length} badges
+                </span>
                 {progress.activeAlertId && (
-                  <>
-                    {" · "}
-                    <Link href={`/alerts/${progress.activeAlertId}`} className="text-accent hover:underline">
-                      Continue {progress.activeAlertId}
-                    </Link>
-                  </>
+                  <Link href={`/alerts/${progress.activeAlertId}`} className="pf-chip pf-chip-link">
+                    Continue {progress.activeAlertId} →
+                  </Link>
                 )}
               </p>
               {photoError && (
@@ -258,13 +252,13 @@ export default function ProfileView({ account }: { account: Mine | null }) {
           </div>
 
           {goal && (
-            <div className="flex flex-col justify-center border-t border-line pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
-              <p className="text-xs uppercase tracking-wide text-muted">Next rank</p>
-              <p className="mt-1 font-semibold">{goal.name}</p>
-              <div className="mt-3">
-                <Bar pct={goal.pct} />
+            <div className="flex items-center gap-5 border-t border-line pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+              <RankRing pct={goal.pct} />
+              <div className="min-w-0">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">Next rank</p>
+                <p className="mt-1 font-display text-lg font-semibold tracking-tight">{goal.name}</p>
+                <p className="mt-1 text-xs text-muted">{goal.hint}</p>
               </div>
-              <p className="mt-2 text-xs text-muted">{goal.hint}</p>
             </div>
           )}
         </div>
@@ -277,17 +271,15 @@ export default function ProfileView({ account }: { account: Mine | null }) {
 
       {mine && <ProfileDetails email={mine.email} username={mine.username} github={mine.github} onSave={saveField} />}
 
-      <div className="grid grid-cols-2 gap-px border-t border-line bg-line lg:grid-cols-4">
-        <Stat label="Cases closed" value={`${stats.closed}/${ALERTS.length}`} hint="Alerts you have written up" />
-        <Stat label="Average score" value={stats.average === null ? "-" : `${stats.average}/100`} hint={stats.best === null ? "Close a case to see this" : `Best case: ${stats.best}`} />
-        <Stat label="Verdict accuracy" value={stats.verdictPct === null ? "-" : `${stats.verdictPct}%`} hint="True or false positive called right" />
-        <Stat label="Escalation accuracy" value={stats.escalationPct === null ? "-" : `${stats.escalationPct}%`} hint="Escalated when you should, and not when you should not" />
-      </div>
+      <ProfileStats cases={progress.cases} stats={stats} />
+
+      <CertificatesPanel embedded />
 
       <div className="grid grid-cols-1 border-t border-line lg:grid-cols-2 lg:divide-x lg:divide-line">
         <section className="p-5 md:p-6">
-          <h2 className="font-semibold">Skills by topic</h2>
+          <SectionHead eyebrow="Strengths" title="Skills by topic" />
           <p className="mt-1 text-sm text-muted">Average score on the alerts you have closed in each topic.</p>
+          <SkillRadar topics={topics.map((t) => ({ topic: t.topic, avg: t.avg }))} />
           <ul className="mt-4 space-y-3">
             {topics.map((t) => (
               <li key={t.topic}>
@@ -320,7 +312,7 @@ export default function ProfileView({ account }: { account: Mine | null }) {
 
         <div className="divide-y divide-line border-t border-line lg:border-t-0">
           <section className="p-5 md:p-6">
-            <h2 className="font-semibold">Levels</h2>
+            <SectionHead eyebrow="Progress" title="Levels" />
             <ul className="mt-4 space-y-3">
               {levels.map((l) => (
                 <li key={l.level}>
@@ -331,7 +323,7 @@ export default function ProfileView({ account }: { account: Mine | null }) {
                     </span>
                   </div>
                   <div className="mt-1.5">
-                    <Bar pct={l.total ? (100 * l.done) / l.total : 0} color="var(--color-correct)" />
+                    <Bar pct={l.total ? (100 * l.done) / l.total : 0} color={KIND_META[l.level].color} />
                   </div>
                 </li>
               ))}
@@ -339,7 +331,7 @@ export default function ProfileView({ account }: { account: Mine | null }) {
           </section>
 
           <section className="p-5 md:p-6">
-            <h2 className="font-semibold">Practice</h2>
+            <SectionHead eyebrow="Beyond alerts" title="Practice" />
             <dl className="mt-3 grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-sm">
               <dt className="text-muted">Phishing mailbox</dt>
               <dd>{mailDone}/{MAILS.length} emails</dd>
@@ -361,13 +353,15 @@ export default function ProfileView({ account }: { account: Mine | null }) {
         </div>
       </div>
 
+      <ProfileActivity cases={progress.cases} />
+
       <section className={part}>
-        <h2 className="font-semibold">Badges</h2>
+        <SectionHead eyebrow="Achievements" title="Badges" />
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {badges.map((b) => (
             <li
               key={b.name}
-              className={`rounded-xl border p-3 text-sm ${b.earned ? "border-accent/50 bg-accent/10" : "border-line opacity-60"}`}
+              className={`pf-badge rounded-xl border p-3 text-sm ${b.earned ? "pf-badge-on border-accent/50 bg-accent/10" : "border-line opacity-60"}`}
             >
               <p className={`font-medium ${b.earned ? "text-accent" : ""}`}>{b.earned ? "✓ " : ""}{b.name}</p>
               <p className="mt-1 text-xs text-muted">{b.text}</p>
@@ -377,7 +371,7 @@ export default function ProfileView({ account }: { account: Mine | null }) {
       </section>
 
       <section className={part}>
-        <h2 className="font-semibold">Recent cases</h2>
+        <SectionHead eyebrow="History" title="Recent cases" />
         {recent.length === 0 ? (
           <p className="mt-2 text-sm text-muted">Nothing yet. Your closed cases will show here.</p>
         ) : (

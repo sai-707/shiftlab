@@ -1,16 +1,13 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import ActivityHeatmap from "@/components/ui/activity-heatmap";
-import Segmented from "@/components/ui/Segmented";
 import { useProgress } from "@/lib/progress";
 import { lastDays, localIso, reportsPerDay, streaks } from "@/lib/streak";
 
-type Range = "weeks" | "year";
-const RANGES: Record<Range, { span: number; period: string; label: string }> = {
-  weeks: { span: 84, period: "the last 12 weeks", label: "12 weeks" },
-  year: { span: 365, period: "the last year", label: "Year" },
-};
+// One year of days. A shorter view was tried and dropped: the year is the better picture of a habit.
+const SPAN = 365;
+const PERIOD = "the last year";
 const UNIT = { one: "report", other: "reports" };
 
 const noop = () => () => {};
@@ -23,10 +20,9 @@ function useToday(): string | null {
 export default function StreakCard() {
   const progress = useProgress();
   const today = useToday();
-  const [range, setRange] = useState<Range>("weeks");
 
   const perDay = useMemo(() => reportsPerDay(progress.cases), [progress.cases]);
-  const days = useMemo(() => (today ? lastDays(perDay, today, RANGES[range].span) : []), [perDay, today, range]);
+  const days = useMemo(() => (today ? lastDays(perDay, today, SPAN) : []), [perDay, today]);
   const { current, longest } = useMemo(() => (today ? streaks(perDay, today) : { current: 0, longest: 0 }), [perDay, today]);
 
   return (
@@ -56,23 +52,11 @@ export default function StreakCard() {
         {today && (
           <ActivityHeatmap
             days={days}
-            label={`Reports submitted in ${RANGES[range].period}`}
-            period={RANGES[range].period}
+            label={`Reports submitted in ${PERIOD}`}
+            period={PERIOD}
             unit={UNIT}
             thresholds={[1, 3, 5]}
             weekStartsOn={1}
-            actions={
-              <Segmented<Range>
-                label="Streak range"
-                small
-                value={range}
-                onChange={setRange}
-                options={[
-                  { value: "weeks", label: RANGES.weeks.label },
-                  { value: "year", label: RANGES.year.label },
-                ]}
-              />
-            }
           />
         )}
       </div>

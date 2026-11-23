@@ -1,0 +1,181 @@
+/* Effects for the profile page. Plain CSS with a pf- prefix: never a CSS module, because next.config.ts runs every .css file through
+   the Tailwind loader and that breaks module scoping (see CLAUDE.md). Colours come from the tokens in app/globals.css.
+   Everything that moves is switched off at the bottom for people who ask for less motion. */
+
+/* ---- hero: a faint grid and two soft glows behind the name ---- */
+.pf-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.pf-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgb(34 211 238 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(34 211 238 / 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(70% 90% at 25% 0%, #000, transparent);
+  mask-image: radial-gradient(70% 90% at 25% 0%, #000, transparent);
+}
+.pf-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(26rem 18rem at -4% -30%, rgb(34 211 238 / 0.2), transparent 70%),
+    radial-gradient(22rem 16rem at 104% -28%, rgb(167 139 250 / 0.17), transparent 70%);
+}
+
+/* ---- avatar: a ring that turns slowly ---- */
+.pf-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, #22d3ee, #a78bfa, #34d399, #22d3ee);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  filter: drop-shadow(0 0 8px rgb(34 211 238 / 0.55));
+  animation: pf-spin 6s linear infinite;
+}
+@keyframes pf-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- rank badge: a light passes over it now and then ---- */
+.pf-rank {
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 3px 11px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #06222a;
+  background: linear-gradient(110deg, #22d3ee 20%, #a5f3fc 45%, #22d3ee 70%) 100% 0 / 200% 100%;
+  animation: pf-shine 3.6s ease-in-out infinite;
+}
+@keyframes pf-shine {
+  50% {
+    background-position: 0 0;
+  }
+}
+
+/* ---- chips under the name ---- */
+.pf-chip {
+  display: inline-block;
+  border: 0.5px solid var(--color-line);
+  border-radius: 9999px;
+  padding: 3px 11px;
+  color: var(--color-muted);
+  background: rgb(255 255 255 / 0.03);
+}
+.pf-chip-link {
+  color: var(--color-accent);
+  border-color: rgb(34 211 238 / 0.4);
+  transition: background-color 0.2s;
+}
+.pf-chip-link:hover {
+  background: rgb(34 211 238 / 0.12);
+}
+
+/* ---- next-rank ring: fills in on load. 289 is the circle's length (2 x pi x 46). ---- */
+.pf-ring {
+  stroke-dasharray: 289;
+  stroke-dashoffset: var(--pf-off, 289);
+  filter: drop-shadow(0 0 6px rgb(34 211 238 / 0.7));
+  animation: pf-fill 1.5s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+@keyframes pf-fill {
+  from {
+    stroke-dashoffset: 289;
+  }
+}
+
+/* ---- stat tiles ---- */
+.pf-tile {
+  transition: background-color 0.25s;
+}
+.pf-tile:hover {
+  background: color-mix(in srgb, var(--color-raised) 55%, var(--color-panel));
+}
+
+/* ---- bars glow in their own colour (the colour is set on the bar as --pf-c) ---- */
+.pf-fill {
+  box-shadow: 0 0 10px -1px var(--pf-c, var(--color-accent));
+}
+
+/* ---- certificates: earned ones glow in their level colour and catch the light ---- */
+.pf-cert {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+.pf-cert:hover {
+  transform: translateY(-3px);
+}
+.pf-cert-on {
+  background: linear-gradient(155deg, color-mix(in srgb, var(--c) 22%, var(--color-canvas)), var(--color-canvas) 65%);
+  box-shadow: 0 0 0 0.5px var(--c), 0 10px 30px -14px var(--c);
+}
+.pf-cert-on::before {
+  content: "";
+  position: absolute;
+  inset: -40% -60%;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.15) 50%, transparent 60%);
+  transform: translateX(-60%);
+  animation: pf-sheen 5s ease-in-out infinite;
+}
+@keyframes pf-sheen {
+  0%,
+  55% {
+    transform: translateX(-60%);
+  }
+  100% {
+    transform: translateX(60%);
+  }
+}
+
+/* ---- skills radar: the shape grows from the middle ---- */
+.pf-radar {
+  filter: drop-shadow(0 0 8px rgb(34 211 238 / 0.45));
+  animation: pf-grow 1.1s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+@keyframes pf-grow {
+  from {
+    transform: scale(0.15);
+    opacity: 0;
+  }
+}
+
+/* ---- badges ---- */
+.pf-badge {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.pf-badge:hover {
+  transform: translateY(-2px);
+}
+.pf-badge-on {
+  box-shadow: 0 0 22px -10px var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-sweep,
+  .pf-rank,
+  .pf-ring,
+  .pf-radar,
+  .pf-cert-on::before {
+    animation: none;
+  }
+  .pf-cert:hover,
+  .pf-badge:hover {
+    transform: none;
+  }
+}
