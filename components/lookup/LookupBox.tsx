@@ -119,7 +119,7 @@ function Report({ result, report }: { result: IntelResult; report: IntelReport }
       ) : null}
 
       <p className="rise mt-4 text-xs text-muted" style={rise(4)}>
-        ShiftLab Intel is made-up training data. It is not connected to any real reputation service.
+        ShiftLab Intel is practice data written for the scenarios. It is not connected to any real reputation service.
       </p>
     </div>
   );

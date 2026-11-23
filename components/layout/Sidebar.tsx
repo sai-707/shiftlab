@@ -251,7 +251,7 @@ export default function Sidebar() {
       <div className={`hidden items-center gap-2 px-3 py-3 md:flex ${collapsed ? "justify-center" : "justify-between"}`}>
         {!collapsed && (
           <div className="px-2 text-xs text-muted">
-            <p>Every alert in ShiftLab is fictional.</p>
+            <p>Real-world scenarios, no real data.</p>
             <FeedbackLink className="mt-1 inline-block text-accent hover:underline" />
           </div>
         )}

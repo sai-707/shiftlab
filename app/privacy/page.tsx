@@ -19,7 +19,7 @@ export default function PrivacyPage() {
           ShiftLab
         </Link>
         <h1 style={{ fontSize: 34, margin: "28px 0 4px", letterSpacing: "-.02em" }}>Privacy</h1>
-        <p style={P}>ShiftLab is a free practice site. Every alert and company in it is fictional. This is what it keeps about you.</p>
+        <p style={P}>ShiftLab is a free practice site built on real-world scenarios. It uses no real company or personal data in them. This is what it keeps about you.</p>
 
         <h2 style={H}>Without an account</h2>
         <p style={P}>Your progress stays in your own browser. Clearing the browser&apos;s site data removes it.</p>

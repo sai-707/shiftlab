@@ -239,7 +239,7 @@ export default function GuidePage() {
 
       <footer className="foot">
         <div className="wrap">
-          <p>Fictional company. Nothing here is real. {g.footnote}</p>
+          <p>{g.footnote}</p>
           <p>
             <Link href="/">Home</Link> · <Link href="/privacy">Privacy</Link> · ShiftLab
           </p>

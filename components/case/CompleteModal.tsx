@@ -14,20 +14,41 @@ const seed = (i: number) => {
   return x - Math.floor(x);
 };
 const css = (v: Record<string, string>) => v as CSSProperties;
+const primaryBtn = "min-h-12 flex-1 rounded-xl bg-accent px-6 text-[15px] font-semibold text-canvas hover:opacity-90";
+const ghostBtn = "inline-flex min-h-12 items-center justify-center rounded-xl border border-line px-6 text-[15px] font-medium hover:border-accent hover:text-accent";
 const reduced = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** Which try this was, so the window can say how it compares and whether any tries are left. */
+export type AttemptInfo = {
+  no: number;
+  /** The best score before this try, or null on the first try. */
+  prevBest: number | null;
+  /** The best score now. */
+  best: number;
+  left: number;
+};
 
 /** Shown once, right after a case is submitted: the score, what was right and wrong, and a way into the full report. */
 export default function CompleteModal({
   alert,
   record,
+  attempt,
+  onRetry,
   onClose,
 }: {
   alert: Pick<Alert, "id" | "title" | "topic" | "severity" | "difficulty">;
+  /** This try's own result (not the best one). */
   record: CaseRecord;
+  attempt?: AttemptInfo;
+  /** Start another try. Only offered while tries are left. */
+  onRetry?: () => void;
   /** viewReport is true when the student chose "View report". */
   onClose: (viewReport: boolean) => void;
 }) {
   const { feedback, submission } = record;
+  const canRetry = Boolean(attempt && attempt.left > 0 && onRetry);
+  // Below the pass line the next step is another try; otherwise the report is.
+  const retryFirst = canRetry && feedback.score < 70;
   const t = tone(feedback.score);
   const fixes = decisionFixes(feedback.items);
   const [n, setN] = useState(() => (reduced() ? feedback.score : 0));
@@ -102,7 +123,7 @@ export default function CompleteModal({
                 <span>{alert.topic.toUpperCase()}</span>
                 <SeverityBadge severity={alert.severity} />
               </span>
-              <span>CASE FILE</span>
+              <span>{attempt && attempt.no > 1 ? `CASE FILE · TRY ${attempt.no} OF 3` : "CASE FILE"}</span>
             </div>
             <h2 id="cc-title" className="mt-3 max-w-md text-xl font-semibold leading-snug tracking-tight">
               {alert.title}
@@ -125,6 +146,17 @@ export default function CompleteModal({
                 <p className="mt-1.5 text-base font-semibold" style={{ color: t.color }} aria-hidden="true">
                   {t.head}
                 </p>
+                {attempt && attempt.prevBest !== null && (
+                  <p className="mt-1 text-sm text-muted">
+                    {feedback.score > attempt.prevBest ? (
+                      <>
+                        <span className="font-semibold text-correct">+{feedback.score - attempt.prevBest}</span> on your previous best of {attempt.prevBest}
+                      </>
+                    ) : (
+                      <>Your best stays at {attempt.best}</>
+                    )}
+                  </p>
+                )}
               </div>
 
               <div className="relative h-[110px] w-[230px] sm:h-[120px] sm:w-[260px]" aria-hidden="true">
@@ -185,22 +217,35 @@ export default function CompleteModal({
             </div>
 
             <div className="mt-5 flex flex-wrap gap-3">
+              {canRetry && retryFirst && (
+                <button ref={viewRef} type="button" onClick={onRetry} className={primaryBtn}>
+                  Try again ({attempt!.left} left)
+                </button>
+              )}
               <button
-                ref={viewRef}
+                ref={retryFirst ? undefined : viewRef}
                 type="button"
                 onClick={() => onClose(true)}
-                className="min-h-12 flex-1 rounded-xl bg-accent px-6 text-[15px] font-semibold text-canvas hover:opacity-90"
+                className={retryFirst ? ghostBtn : primaryBtn}
               >
                 View report
               </button>
-              <Link
-                href="/queue"
-                onClick={() => onClose(false)}
-                className="inline-flex min-h-12 items-center rounded-xl border border-line px-6 text-[15px] font-medium hover:border-accent hover:text-accent"
-              >
+              {canRetry && !retryFirst && (
+                <button type="button" onClick={onRetry} className={ghostBtn}>
+                  Try again ({attempt!.left} left)
+                </button>
+              )}
+              <Link href="/queue" onClick={() => onClose(false)} className={`${ghostBtn} no-underline`}>
                 Next alert
               </Link>
             </div>
+            {attempt && (
+              <p className="mt-3 text-xs text-muted">
+                {attempt.left > 0
+                  ? `Your best score counts toward your level average. ${attempt.left} ${attempt.left === 1 ? "try" : "tries"} left on this alert.`
+                  : `That was your last try on this alert. Your best score, ${attempt.best}, stays on your record.`}
+              </p>
+            )}
           </div>
         </div>
       </div>

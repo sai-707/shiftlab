@@ -75,11 +75,17 @@ export type SubmitResult =
   | { ok: true; feedback: Feedback }
   | { ok: false; error: string };
 
+/** One try at an alert: its score and when it was submitted. */
+export type Attempt = { score: number; at: number };
+
 export type CaseRecord = {
   alertId: string;
+  /** The best try. Pages read submission, feedback and closedAt as "the case", so they always show the best try. */
   submission: Submission;
   feedback: Feedback;
   closedAt: number;
+  /** Every try, oldest first (at most 3). Missing on cases closed before retries existed: that is one try. */
+  attempts?: Attempt[];
 };
 
 export type AnswerKey = {

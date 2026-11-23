@@ -5,9 +5,9 @@
 export const GUIDE = {
   eyebrow: "About ShiftLab",
   title: "A free place to practise being a security analyst.",
-  lead: "ShiftLab lets you work a made-up security shift. Alerts come in, you investigate, decide what is going on and write the report. It is built for people who want a cyber security career and have never done the job.",
+  lead: "ShiftLab lets you work a real-world security shift, hands-on. Alerts come in, you investigate, decide what is going on and write the report. It is built for people who want a cyber security career and have never done the job.",
   glance: [
-    { k: "What it is", v: "A practice site where you work fictional security alerts." },
+    { k: "What it is", v: "A hands-on practice site where you work real-world security alert scenarios." },
     { k: "Who it is for", v: "Students, career switchers and new Level 1 analysts." },
     { k: "Cost", v: "Free. Try it as a guest, no signup." },
     { k: "You need", v: "No experience and nothing to install." },
@@ -61,7 +61,7 @@ export const GUIDE = {
   example: {
     eyebrow: "An example",
     title: "One alert, start to finish",
-    intro: "This is what a single, simple alert looks like. It is a made-up example for this guide and is not one of the alerts on the site.",
+    intro: "This is what a single, simple alert looks like. It is an example written for this guide and is not one of the alerts on the site.",
     alert: "Employee opened a link from a text message claiming to be a parcel company",
     rows: [
       { k: "1 · The alert", text: "The web filter noticed an employee's computer visiting a site that looks like a delivery company's page.", call: "" },
@@ -76,7 +76,7 @@ export const GUIDE = {
     title: "What you get out of it",
     items: [
       { title: "Practise the real routine", text: "Triage, investigate, decide, report. The same cycle you would repeat all day in the job." },
-      { title: "Make mistakes safely", text: "Everything is fictional. A wrong call costs you a lower score, not a company's data." },
+      { title: "Make mistakes safely", text: "Nothing here touches a real system. A wrong call costs you a lower score, not a company's data." },
       { title: "Learn from feedback", text: "After each report you see what you missed and what really happened, then try a similar alert." },
       { title: "Get faster under pressure", text: "Timed drills such as a six-alert shift and a triage sprint train you to pick what matters first." },
       { title: "Prepare for the AI era", text: "Practise checking an AI assistant's summary and finding where it went wrong." },
@@ -112,7 +112,7 @@ export const GUIDE = {
     paragraphs: [
       "I am a third-year computer science student, and I want to work as a SOC Level 1 analyst. I studied from videos and hands-on labs, and they taught me the words.",
       "What I could not find was a free place to practise the job itself: alert after alert, messy evidence, and a decision I had to make and explain. So I started building one.",
-      "Every alert, person and company in ShiftLab is made up and written from scratch. I built it first to practise myself, then to make the same practice easier to find for the next student. I am still adding alerts and fixing things, and I want your honest feedback.",
+      "Every alert in ShiftLab is written from scratch and modelled on how real incidents unfold, and no real company or personal data is used. I built it first to practise myself, then to make the same practice easier to find for the next student. I am still adding alerts and fixing things, and I want your honest feedback.",
     ],
     author: "Sai Daswadkar",
   },
@@ -130,7 +130,7 @@ export const GUIDE = {
   faq: [
     { q: "Do I need to know anything first?", a: "No. Every word is explained in the glossary, and each alert has hints you can open when you are stuck." },
     { q: "Is it free? Do I need an account?", a: "It is free. You can try it as a guest. A free account saves your progress and your case reports." },
-    { q: "Is any of this real company data?", a: "No. Harbor & Pine Logistics is made up, and so are its people and computers. The alerts are inspired by real incidents." },
+    { q: "Is any of this real company data?", a: "No real company data is used. The scenarios are modelled on real incidents, and the practice company, Harbor & Pine Logistics, with its people and computers, is invented to keep real people out of it." },
     { q: "Will this get me a job?", a: "It will not on its own, and it is not a certificate. It gives you practice at the daily routine, which helps in interviews and in the first weeks of a job." },
   ],
 
@@ -146,5 +146,5 @@ export const GUIDE = {
       url: "https://www.securityinfowatch.com/cybersecurity/press-release/21271326/isc2-is-an-international-nonprofit-membership-association-isc2-research-finds-employer-hiring-practices-must-evolve-to-overcome-the-cybersecurity-workforce-gap",
     },
   ],
-  footnote: "Harbor & Pine Logistics and everyone in it are made up.",
+  footnote: "Alerts are modelled on real incidents. Harbor & Pine Logistics, its people and its systems are invented, and no real company data is used.",
 } as const;

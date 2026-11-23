@@ -11,6 +11,8 @@ import { rank, scoreColor } from "@/lib/stats";
 import { TOPIC_COLOR } from "@/lib/topics";
 import CountUp from "@/components/ui/CountUp";
 import SeverityBadge from "@/components/ui/SeverityBadge";
+import CertificatesPanel from "@/components/certificates/CertificatesPanel";
+import StreakCard from "./StreakCard";
 import type { Severity } from "@/lib/types";
 
 const panel = "spot rounded-2xl border border-line bg-panel p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.03)]";
@@ -260,6 +262,9 @@ export default function DashboardView({ outline }: { outline: Outline }) {
       </div>
 
       <RoadmapCard outline={outline} />
+
+      <CertificatesPanel />
+      <StreakCard />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <section className={`${panel} rise`} style={{ animationDelay: "300ms" }}>

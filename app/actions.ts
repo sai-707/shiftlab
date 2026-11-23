@@ -9,6 +9,7 @@ import { matchesAny } from "@/lib/answer";
 import { VISITOR } from "@/lib/feedbackRules";
 import { describeUnknown } from "@/lib/indicator";
 import { buildReport } from "@/lib/intelReport";
+import { MAX_ATTEMPTS, addAttempt, attemptsUsed } from "@/lib/attempts";
 import { gradeSubmission } from "@/lib/grade";
 import { reportProblems } from "@/lib/reportRules";
 import { createClient } from "@/lib/supabase/server";
@@ -24,7 +25,8 @@ function text(value: unknown): string {
 
 /** Scores a case on the server so the answer keys never reach the browser. */
 // `visitor` is the random browser id, so the admin Guests page can count how many alerts each guest solved. It is checked here, not trusted.
-export async function submitCase(input: Submission, visitor?: string): Promise<SubmitResult> {
+// `attempt` is this try's number (1, 2 or 3). A signed-in student's saved case decides it; a guest's number comes from the browser and only decides whether the try is counted in the admin numbers.
+export async function submitCase(input: Submission, visitor?: string, attempt?: number): Promise<SubmitResult> {
   const alertId = text(input?.alertId);
   if (!ALERTS.some((a) => a.id === alertId)) return { ok: false, error: "Unknown alert." };
   if (input.verdict !== "tp" && input.verdict !== "fp") {
@@ -59,37 +61,66 @@ export async function submitCase(input: Submission, visitor?: string): Promise<S
   const problems = reportProblems(submission.sections, alert.difficulty);
   if (problems.length) return { ok: false, error: problems[0] };
 
+  // A signed-in student's saved case says whether this is a retry and whether any tries are left.
+  let supabase: Awaited<ReturnType<typeof createClient>> | null = null;
+  let userId: string | null = null;
+  let prev: CaseRecord | null = null;
+  try {
+    supabase = await createClient();
+    const { data: claims } = await supabase.auth.getClaims();
+    userId = claims?.claims?.sub ?? null;
+    if (userId) {
+      const { data: row } = await supabase.from("cases").select("status, record").eq("alert_id", alertId).maybeSingle();
+      if (row?.status === "closed" && row.record) prev = row.record as CaseRecord;
+    }
+  } catch (err) {
+    console.error("[submitCase] read:", err);
+  }
+  if (prev && attemptsUsed(prev) >= MAX_ATTEMPTS) return { ok: false, error: `You have used all ${MAX_ATTEMPTS} attempts on this alert.` };
+  const isRetry = prev !== null || (typeof attempt === "number" && attempt > 1);
+
   const feedback = gradeSubmission(ANSWER_KEYS[alertId], submission, gated);
   // Counted here, not in the browser, because only the server knows the real score. Only numbers and yes/no flags, never the report text.
-  await track("case_closed", {
-    path: `/alerts/${alertId}`,
-    visitor: typeof visitor === "string" && VISITOR.test(visitor) ? visitor : undefined,
-    props: {
-      alert: alertId,
-      score: feedback.score,
-      verdict_ok: submission.verdict === feedback.correctVerdict,
-      escalate_ok: submission.escalate === feedback.correctEscalate,
-    },
-  });
+  // Only the first try is counted, so the admin pages keep meaning "alerts solved".
+  if (!isRetry) {
+    await track("case_closed", {
+      path: `/alerts/${alertId}`,
+      visitor: typeof visitor === "string" && VISITOR.test(visitor) ? visitor : undefined,
+      props: {
+        alert: alertId,
+        score: feedback.score,
+        verdict_ok: submission.verdict === feedback.correctVerdict,
+        escalate_ok: submission.escalate === feedback.correctEscalate,
+      },
+    });
+  }
 
-  // Save the closed case for signed-in students. The RLS update policy only matches active rows,
-  // so a closed case can never be re-scored. If the student is a guest this silently does nothing.
+  // Save the case for signed-in students. A retry updates the closed row: the database keeps the best score, allows one new try at a time and at most 3 (migration 0013).
+  // If the student is a guest this silently does nothing.
   const record: CaseRecord = { alertId, submission, feedback, closedAt: Date.now() };
   try {
-    const supabase = await createClient();
-    const { data: claims } = await supabase.auth.getClaims();
-    if (claims?.claims?.sub) {
-      // Try closing the active row first; if no active row, insert a closed row (ignoreDuplicates skips if it already exists).
-      const { data: updated } = await supabase
-        .from("cases")
-        .update({ status: "closed", score: feedback.score, record, closed_at: new Date().toISOString() })
-        .eq("alert_id", alertId)
-        .select("alert_id");
-      if (!updated?.length) {
-        await supabase.from("cases").upsert(
-          { user_id: claims.claims.sub, alert_id: alertId, status: "closed", score: feedback.score, record, closed_at: new Date().toISOString() },
-          { ignoreDuplicates: true },
-        );
+    if (supabase && userId) {
+      if (prev) {
+        const merged = addAttempt(prev, record);
+        await supabase
+          .from("cases")
+          .update({ score: merged.feedback.score, record: merged, closed_at: new Date(merged.closedAt).toISOString() })
+          .eq("alert_id", alertId)
+          .eq("status", "closed");
+      } else {
+        // Try closing the active row first; if no active row, insert a closed row (ignoreDuplicates skips if it already exists).
+        const first = { ...record, attempts: [{ score: feedback.score, at: record.closedAt }] };
+        const { data: updated } = await supabase
+          .from("cases")
+          .update({ status: "closed", score: feedback.score, record: first, closed_at: new Date().toISOString() })
+          .eq("alert_id", alertId)
+          .select("alert_id");
+        if (!updated?.length) {
+          await supabase.from("cases").upsert(
+            { user_id: userId, alert_id: alertId, status: "closed", score: feedback.score, record: first, closed_at: new Date().toISOString() },
+            { ignoreDuplicates: true },
+          );
+        }
       }
     }
   } catch (err) {

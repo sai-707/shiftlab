@@ -1,6 +1,8 @@
 import { BrandMark } from "@/components/ui/BrandMark";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { ALERTS } from "@/content/alerts";
+import Certificate from "@/components/certificates/Certificate";
 import AlertDemo from "@/components/site/AlertDemo";
 import DottedWordmark from "@/components/site/DottedWordmark";
 import SiteShell from "@/components/site/SiteShell";
@@ -29,6 +31,13 @@ const LEVELS = [
   { name: "Intermediate", color: "var(--color-medium)", desc: "Evidence is hidden. Open at least 3 sources before you report." },
   { name: "Hard", color: "var(--color-high)", desc: "Evidence is hidden. Open at least 4 sources before you report." },
   { name: "AI era", color: "var(--color-critical)", desc: "Same rules as Hard, with alerts about AI tools and AI summaries you have to check." },
+];
+
+// The sample prints the real alert counts, so it never goes stale as alerts are added.
+const SAMPLE_BASE = { holder: "Your Name", avg: 86, firstAvg: 78, issuedAt: "2026-12-01T00:00:00Z" };
+const SAMPLES = [
+  { ...SAMPLE_BASE, id: "SL-BGN-XXXXXXXXXX", kind: "Beginner" as const, alerts: ALERTS.filter((a) => a.difficulty === "Beginner").length, levels: null },
+  { ...SAMPLE_BASE, id: "SL-MST-XXXXXXXXXX", kind: "Master" as const, alerts: ALERTS.length, levels: { Beginner: 88, Intermediate: 84, Hard: 85, "AI Era": 87 } },
 ];
 
 const TOOLS = ["Intel check", "Log search", "Phishing mailbox", "Shift mode", "AI review"];
@@ -143,6 +152,25 @@ export default function Home() {
                     {l.name}
                   </h3>
                   <p>{l.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="s">
+          <div className="wrap">
+            <div className="rv">
+              <p className="label">Certificates</p>
+              <h2>Finish a level. Keep the proof.</h2>
+              <p className="mt-3 max-w-2xl text-[15px] leading-relaxed" style={{ color: "var(--color-muted)" }}>
+                Close every alert in a level with an average of 70 or more and claim a certificate with your name on it. Each one has a link anyone can open to check it, and adds to LinkedIn in one click. Finish all four levels for the Master certificate.
+              </p>
+            </div>
+            <div className="mt-8 grid gap-5 lg:grid-cols-2">
+              {SAMPLES.map((c, i) => (
+                <div key={c.kind} className="rv overflow-hidden rounded-xl border border-white/10" style={delay(i * 0.1)}>
+                  <Certificate cert={c} sample className="block h-auto w-full" />
                 </div>
               ))}
             </div>

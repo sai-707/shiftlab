@@ -3,15 +3,18 @@
 import { useSyncExternalStore } from "react";
 import { ALERTS } from "@/content/alerts";
 import { isUnlocked } from "./levels";
+import { addAttempt, attemptsLeft } from "./attempts";
 import type { CaseRecord } from "./types";
 
 export type Progress = {
   activeAlertId: string | null;
   cases: Record<string, CaseRecord>;
+  /** A closed alert the student is trying again. Only one alert is worked on at a time, so this and activeAlertId are never both set. */
+  retrying?: string | null;
 };
 
 const KEY = "shiftlab.progress.v1";
-const EMPTY: Progress = { activeAlertId: null, cases: {} };
+const EMPTY: Progress = { activeAlertId: null, cases: {}, retrying: null };
 
 // shortcut: progress lives in this browser's localStorage, replaced by the database in phase 3
 let cache: Progress | null = null;
@@ -26,6 +29,7 @@ function load(): Progress {
         return {
           activeAlertId: typeof parsed.activeAlertId === "string" ? parsed.activeAlertId : null,
           cases: parsed.cases,
+          retrying: typeof parsed.retrying === "string" ? parsed.retrying : null,
         };
       }
     }
@@ -90,18 +94,37 @@ export function useGuestLimit(): boolean {
 export function assignAlert(alertId: string) {
   const p = getSnapshot();
   const alert = ALERTS.find((a) => a.id === alertId);
-  if (!alert || p.activeAlertId !== null || p.cases[alertId] || !isUnlocked(alert.difficulty, p.cases) || guestLimitReached()) return;
+  if (!alert || p.activeAlertId !== null || p.retrying || p.cases[alertId] || !isUnlocked(alert.difficulty, p.cases) || guestLimitReached()) return;
   save({ ...p, activeAlertId: alertId });
   // Fire-and-forget: the server action is best-effort; local progress is already set.
   import("./sync").then((m) => m.syncAssign(alertId)).catch(() => {});
 }
 
-export function closeCase(record: CaseRecord) {
+/** Saves a submitted try. For an alert that was already closed this is a retry: the case keeps every try and counts the best. Returns the case as saved. */
+export function closeCase(record: CaseRecord): CaseRecord {
   const p = getSnapshot();
+  const saved = addAttempt(p.cases[record.alertId], record);
   save({
+    ...p,
     activeAlertId: p.activeAlertId === record.alertId ? null : p.activeAlertId,
-    cases: { ...p.cases, [record.alertId]: record },
+    retrying: p.retrying === record.alertId ? null : (p.retrying ?? null),
+    cases: { ...p.cases, [record.alertId]: saved },
   });
+  return saved;
+}
+
+/** Start trying a closed alert again. Refused while another alert is assigned or when all tries are used. */
+export function startRetry(alertId: string): boolean {
+  const p = getSnapshot();
+  const rec = p.cases[alertId];
+  if (!rec || p.activeAlertId !== null || attemptsLeft(rec) === 0) return false;
+  save({ ...p, retrying: alertId });
+  return true;
+}
+
+export function cancelRetry() {
+  const p = getSnapshot();
+  if (p.retrying) save({ ...p, retrying: null });
 }
 
 export function resetProgress() {

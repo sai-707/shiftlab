@@ -31,7 +31,7 @@ export default function ExportSummary() {
   const lines: string[] = [
     "# ShiftLab progress summary",
     "",
-    "All scenarios in ShiftLab are fictional practice data.",
+    "ShiftLab scenarios are real-world practice cases and use no real company or personal data.",
     "",
     "## Alert cases",
     `- Cases closed: ${records.length} of ${ALERTS.length}`,

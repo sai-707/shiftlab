@@ -5,6 +5,7 @@ import { handoverNotes } from "./handover";
 import { registerOnWrite } from "./localStore";
 import { logProgress } from "./logProgress";
 import { afterProgress, aiCheckProgress, commsProgress, mailProgress, shiftProgress, sprintProgress } from "./practiceProgress";
+import { mergeCases } from "./attempts";
 import { resetProgress, setProgressFromSync, type Progress } from "./progress";
 import { roadmapProgress } from "./roadmapProgress";
 import { sourcesStore } from "./sources";
@@ -131,19 +132,18 @@ async function mergeRemote(userId: string) {
       await importCases(localCases);
     }
 
-    // Merge remote cases into local: remote wins for anything not already local
+    // Merge remote cases into local: remote wins for anything not already local. A case on both sides keeps every try and the best score.
     const mergedCases: Record<string, CaseRecord> = { ...localProg.cases };
     for (const rc of remote.cases) {
-      if (!mergedCases[rc.alertId]) {
-        mergedCases[rc.alertId] = rc;
-      }
+      const mine = mergedCases[rc.alertId];
+      mergedCases[rc.alertId] = mine ? mergeCases(mine, rc) : rc;
     }
 
     // If the server has an active alert, use it
     const activeAlertId = remote.activeAlertId ?? localProg.activeAlertId;
 
     // Apply merged progress to local store
-    setProgressFromSync({ activeAlertId, cases: mergedCases });
+    setProgressFromSync({ activeAlertId, cases: mergedCases, retrying: activeAlertId ? null : (localProg.retrying ?? null) });
   }
 
   // Load remote state and merge into each store
@@ -174,7 +174,7 @@ function getCurrentProgress(): Progress {
     const raw = localStorage.getItem("shiftlab.progress.v1");
     if (raw) {
       const p = JSON.parse(raw);
-      if (p?.cases) return { activeAlertId: p.activeAlertId ?? null, cases: p.cases };
+      if (p?.cases) return { activeAlertId: p.activeAlertId ?? null, cases: p.cases, retrying: typeof p.retrying === "string" ? p.retrying : null };
     }
   } catch { /* empty */ }
   return { activeAlertId: null, cases: {} };

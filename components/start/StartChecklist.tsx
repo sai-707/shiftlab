@@ -45,6 +45,13 @@ export default function StartChecklist() {
           </li>
         ))}
       </ul>
+      <p className="mt-3 text-sm text-muted">
+        Finish every alert of a level with an average of 70 or more to earn a certificate you can add to LinkedIn. You will find them on your{" "}
+        <Link href="/dashboard" className="text-accent hover:underline">
+          dashboard
+        </Link>
+        .
+      </p>
     </div>
   );
 }

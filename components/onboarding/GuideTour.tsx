@@ -221,7 +221,7 @@ export default function GuideTour({ alertId, assigned }: { alertId: string; assi
             }}
             className="btn-shine press min-h-11 rounded-xl bg-accent px-5 text-sm font-semibold text-canvas hover:shadow-[0_0_22px_-4px_rgb(34_211_238/0.7)]"
           >
-            Open my first alert →
+            Start investigating →
           </button>
         </div>
       </Dialog>

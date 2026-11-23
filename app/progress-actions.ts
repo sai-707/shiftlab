@@ -1,6 +1,7 @@
 "use server";
 
 import { ALERTS } from "@/content/alerts";
+import { cleanAttempts } from "@/lib/attempts";
 import { isUnlocked } from "@/lib/levels";
 import { createClient } from "@/lib/supabase/server";
 import type { CaseRecord } from "@/lib/types";
@@ -100,14 +101,18 @@ export async function importCases(records: CaseRecord[]): Promise<{ imported: nu
   if (valid.length === 0) return { imported: 0 };
 
   const supabase = await createClient();
-  const rows = valid.map((r) => ({
-    user_id: id,
-    alert_id: r.alertId,
-    status: "closed" as const,
-    score: r.feedback.score,
-    record: { alertId: r.alertId, submission: r.submission, feedback: r.feedback, closedAt: r.closedAt },
-    closed_at: new Date(r.closedAt).toISOString(),
-  }));
+  const rows = valid.map((r) => {
+    // Tries made as a guest come along. A list that does not look right is dropped and the case counts as one try.
+    const attempts = cleanAttempts(r.attempts);
+    return {
+      user_id: id,
+      alert_id: r.alertId,
+      status: "closed" as const,
+      score: r.feedback.score,
+      record: { alertId: r.alertId, submission: r.submission, feedback: r.feedback, closedAt: r.closedAt, ...(attempts ? { attempts } : {}) },
+      closed_at: new Date(r.closedAt).toISOString(),
+    };
+  });
 
   // ignoreDuplicates = ON CONFLICT DO NOTHING: a case the server already holds is skipped, so one repeat never fails the whole batch.
   // It does not need UPDATE privilege on the PK columns. Only rows that were really inserted come back from .select().

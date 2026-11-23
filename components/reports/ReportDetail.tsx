@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Fragment, useEffect, useState, type ReactNode } from "react";
 import { reviewCase, type ReviewResult } from "@/app/review-actions";
 import AfterAction from "@/components/case/AfterAction";
+import AttackTags from "@/components/case/AttackTags";
 import RealWorld from "@/components/case/RealWorld";
 import { ALERTS } from "@/content/alerts";
 import { fixHeading, tone } from "@/lib/complete";
@@ -130,6 +131,7 @@ function Report({ record, title, topic, level }: { record: CaseRecord; title: st
             <span className="rounded-full border border-line px-2.5 py-0.5 text-muted">{topic}</span>
           </div>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight">{title}</h1>
+          <AttackTags alertId={record.alertId} />
         </div>
         <div className="text-right">
           <p className="text-4xl font-semibold tracking-tight">

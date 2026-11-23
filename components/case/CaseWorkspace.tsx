@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { submitCase } from "@/app/actions";
-import { GUEST_LIMIT, assignAlert, closeCase, useGuestLimit, useProgress } from "@/lib/progress";
+import { GUEST_LIMIT, assignAlert, cancelRetry, closeCase, startRetry, useGuestLimit, useProgress } from "@/lib/progress";
+import { MAX_ATTEMPTS, attemptsLeft, attemptsUsed } from "@/lib/attempts";
 import { isUnlocked } from "@/lib/levels";
 import { isEasy, reportProblems } from "@/lib/reportRules";
 import { parseReport, retitle, template, templateProblem, toSections } from "@/lib/reportTemplate";
@@ -12,12 +13,14 @@ import { blockReason, reportEvent } from "@/lib/reportEvents";
 import { INTEL_SOURCE, LOG_SOURCE, MIN_SOURCES, isGated, openedCount, sourceBlocks } from "@/lib/sourceRules";
 import { markOpened, useOpened } from "@/lib/sources";
 import { toast } from "@/lib/toast";
+import { CERT_EVENT, certSeen, levelStatuses } from "@/lib/certificates";
 import { FEEDBACK_EVENT } from "@/lib/feedbackRules";
 import { readAsk, shouldAsk } from "@/lib/feedbackAsk";
 import { trackingVisitorId } from "@/lib/visitor";
 import LookupBox from "@/components/lookup/LookupBox";
 import SeverityBadge from "@/components/ui/SeverityBadge";
-import CompleteModal from "./CompleteModal";
+import AttackTags from "./AttackTags";
+import CompleteModal, { type AttemptInfo } from "./CompleteModal";
 import FeedbackPanel from "./FeedbackPanel";
 import HintSection from "./HintSection";
 import LogLinks from "./LogLinks";
@@ -163,7 +166,11 @@ function Section({ n, title, children }: { n: number; title: string; children: R
 const choice =
   "flex flex-1 cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:text-accent";
 
-function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: string[]; onClosed: (r: CaseRecord) => void }) {
+/** What the pop-up needs after a submit: this try's own result, and how it sits among the tries. */
+type Done = { attempt: CaseRecord; info: AttemptInfo };
+
+/** `previous` is the saved case when this is a retry (the form then starts empty, as a new try). */
+function DecisionForm({ alert, opened, previous, onClosed }: { alert: Alert; opened: string[]; previous?: CaseRecord; onClosed: (d: Done) => void }) {
   const need = MIN_SOURCES[alert.difficulty];
   const have = openedCount(opened);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -199,16 +206,18 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
     }
     setError("");
     const submission: Submission = { alertId: alert.id, verdict, escalate, sections, ...(need ? { opened } : {}) };
+    const no = previous ? attemptsUsed(previous) + 1 : 1;
     startTransition(async () => {
-      const result = await submitCase(submission, trackingVisitorId());
+      const result = await submitCase(submission, trackingVisitorId(), no);
       if (!result.ok) {
         setError(result.error);
         return;
       }
-      const record: CaseRecord = { alertId: alert.id, submission, feedback: result.feedback, closedAt: Date.now() };
-      closeCase(record);
+      const attempt: CaseRecord = { alertId: alert.id, submission, feedback: result.feedback, closedAt: Date.now() };
+      // For a retry, closeCase keeps every try and counts the best one; it hands back the case as saved.
+      const saved = closeCase(attempt);
       // This form unmounts once the case closes, so the parent shows the pop-up (CompleteModal).
-      onClosed(record);
+      onClosed({ attempt, info: { no, prevBest: previous ? previous.feedback.score : null, best: saved.feedback.score, left: attemptsLeft(saved) } });
     });
   }
 
@@ -343,7 +352,7 @@ function DecisionForm({ alert, opened, onClosed }: { alert: Alert; opened: strin
             <span className="spinner" aria-hidden="true" /> Scoring…
           </>
         ) : (
-          "Submit and close alert"
+          previous ? `Submit try ${attemptsUsed(previous) + 1} of ${MAX_ATTEMPTS}` : "Submit and close alert"
         )}
       </button>
       </div>
@@ -412,21 +421,40 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
   const progress = useProgress();
   const guestLimit = useGuestLimit();
   // The pop-up shows once, straight after a submit. Opening a closed case later goes straight to the report.
-  const [done, setDone] = useState<CaseRecord | null>(null);
+  const [done, setDone] = useState<Done | null>(null);
   const askAfter = useRef(false);
   const router = useRouter();
+  // The latest closed cases, read when the pop-up closes to see whether this alert finished a level.
+  const casesRef = useRef(progress.cases);
+  useEffect(() => {
+    casesRef.current = progress.cases;
+  }, [progress.cases]);
   const closeDone = useCallback((viewReport: boolean) => {
     setDone(null);
     // "View report" opens this case in Case reports, where the score, the review and the model answer sit together.
     if (viewReport) router.push(`/reports/${alert.id}`);
+    // The last alert of a level, with a high enough average: the certificate window comes first, and the feedback window waits for another time.
+    const level = levelStatuses(casesRef.current).find((l) => l.level === alert.difficulty);
+    if (level?.ready && !certSeen(level.level)) {
+      askAfter.current = false;
+      window.setTimeout(() => window.dispatchEvent(new CustomEvent(CERT_EVENT, { detail: { kind: level.level } })), 450);
+      return;
+    }
     // Let the score be seen first, then offer the feedback window. It has a Skip button and stops asking after a few skips (lib/feedbackAsk.ts).
     if (askAfter.current) {
       askAfter.current = false;
       window.setTimeout(() => window.dispatchEvent(new CustomEvent(FEEDBACK_EVENT, { detail: { auto: true } })), 1200);
     }
-  }, [router, alert.id]);
+  }, [router, alert.id, alert.difficulty]);
   const record = progress.cases[alert.id];
   const isActive = progress.activeAlertId === alert.id;
+  // Trying a closed alert again: the evidence and tools are open as before, the report starts empty.
+  const isRetrying = progress.retrying === alert.id;
+  const retryBlocked =
+    progress.activeAlertId !== null ? "Finish your assigned alert first, then you can try this one again." : progress.retrying && !isRetrying ? "You are already trying another alert again." : null;
+  const again = () => {
+    if (record && startRetry(alert.id)) toast(`Try ${attemptsUsed(record) + 1} of ${MAX_ATTEMPTS} started. Your report starts empty.`);
+  };
   const otherActive = progress.activeAlertId !== null && !isActive;
   const locked = !record && !isActive && !isUnlocked(alert.difficulty, progress.cases);
   const gated = isGated(alert);
@@ -456,6 +484,7 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
           </span>
         </div>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{alert.title}</h1>
+        {record && !isRetrying && <AttackTags alertId={alert.id} />}
         {(alert.difficulty === "Beginner" || !alert.description) && <p className="mt-2 max-w-3xl text-sm text-muted">{alert.summary}</p>}
         {alert.task && (
           <p className="mt-3 max-w-3xl rounded-lg border border-accent/40 bg-accent/10 px-4 py-2.5 text-sm">
@@ -520,7 +549,26 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
       )}
 
 
-      {record && <FeedbackPanel record={record} />}
+      {record && !isRetrying && <FeedbackPanel record={record} onRetry={again} retryBlocked={retryBlocked} />}
+
+      {record && isRetrying && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm">
+          <p>
+            <span className="font-mono text-xs font-semibold tracking-widest text-accent">
+              TRY {attemptsUsed(record) + 1} OF {MAX_ATTEMPTS}
+            </span>
+            <span className="mx-2 text-muted">·</span>
+            Best so far <b>{record.feedback.score}/100</b>. Your report starts empty. The review of your last try is in{" "}
+            <Link href={`/reports/${alert.id}`} className="text-accent hover:underline">
+              Case reports
+            </Link>
+            .
+          </p>
+          <button type="button" onClick={cancelRetry} className="rounded-lg border border-line px-3 py-1.5 text-sm font-medium hover:border-accent hover:text-accent">
+            Cancel
+          </button>
+        </div>
+      )}
 
       {(record || isActive) && (
         <>
@@ -549,19 +597,20 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
             </HintSection>
           ) : (
             <Section n={2} title="Look at the evidence">
-              <EvidenceTabs alert={alert} opened={opened} isActive={isActive} hideEvidence={hideEvidence} alertBlock={alertBlock} />
+              <EvidenceTabs alert={alert} opened={opened} isActive={isActive || isRetrying} hideEvidence={hideEvidence} alertBlock={alertBlock} />
             </Section>
           )}
 
 
-          {isActive && (
-            <Section n={3} title="Your report">
+          {(isActive || isRetrying) && (
+            <Section n={3} title={isRetrying && record ? `Your report, try ${attemptsUsed(record) + 1}` : "Your report"}>
               <DecisionForm
                 alert={alert}
                 opened={opened}
-                onClosed={(r) => {
+                previous={isRetrying ? record : undefined}
+                onClosed={(d) => {
                   askAfter.current = shouldAsk(readAsk());
-                  setDone(r);
+                  setDone(d);
                 }}
               />
             </Section>
@@ -571,7 +620,19 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
         </>
       )}
 
-      {done && <CompleteModal alert={alert} record={done} onClose={closeDone} />}
+      {done && (
+        <CompleteModal
+          alert={alert}
+          record={done.attempt}
+          attempt={done.info}
+          onRetry={() => {
+            closeDone(false);
+            startRetry(alert.id);
+            toast(`Try ${done.info.no + 1} of ${MAX_ATTEMPTS} started. Your report starts empty.`);
+          }}
+          onClose={closeDone}
+        />
+      )}
     </div>
   );
 }

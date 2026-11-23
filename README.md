@@ -7,7 +7,7 @@
 ![30+ cases to solve](https://img.shields.io/badge/cases-30%2B%20to%20solve-ef4444)
 ![runs in your browser](https://img.shields.io/badge/runs-in%20your%20browser-22d3ee)
 ![no account needed](https://img.shields.io/badge/account-optional-22d3ee)
-![fictional data](https://img.shields.io/badge/all%20data-fictional-6366f1)
+![no real data](https://img.shields.io/badge/real%20data-none%20used-6366f1)
 ![graded on the server](https://img.shields.io/badge/scoring-graded%20on%20the%20server-16a34a)
 ![hints free](https://img.shields.io/badge/hints-free%2C%20never%20cost%20points-f59e0b)
 
@@ -29,7 +29,7 @@
 
 Most beginner security training either shows you the answer or uses real data. ShiftLab makes you decide first, then explains. It is built for people learning the SOC L1 job: triage, reading evidence, writing a clear report, and knowing when to escalate.
 
-Everything in it is fictional. The company is "Harbor & Pine Logistics", and every domain and address is a reserved test value (`.test` names and documentation IP ranges).
+The scenarios are modelled on real incidents, and no real company or personal data is used. The practice company is "Harbor & Pine Logistics", and every domain and address is a reserved test value (`.test` names and documentation IP ranges).
 
 ## How a shift works
 

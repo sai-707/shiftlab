@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { ThreatMap } from "@/components/backgrounds/Background";
+import CertEarnedHost from "@/components/certificates/CertEarnedHost";
 import FeedbackLink from "@/components/feedback/FeedbackLink";
 import MessagesBell from "@/components/messages/MessagesBell";
 import Interactions from "@/components/layout/Interactions";
@@ -25,6 +26,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <div className="relative min-h-screen">
       <ThreatMap />
       <Interactions />
+      <CertEarnedHost />
       <Suspense fallback={null}>
         <SetupGate />
       </Suspense>

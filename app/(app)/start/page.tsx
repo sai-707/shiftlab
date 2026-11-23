@@ -35,7 +35,7 @@ export default function StartPage() {
     <>
       <PageHeader
         title="Start here"
-        description="ShiftLab lets you practise being a SOC Level 1 analyst on realistic alerts. Everything is fictional, so you cannot break anything."
+        description="ShiftLab lets you practise being a SOC Level 1 analyst on alerts modelled on real incidents. Nothing here touches a real system, so you cannot break anything."
       />
 
       <div className="space-y-6">
