@@ -26,7 +26,11 @@ import {
 } from "motion/react";
 import type { Variants } from "motion/react";
 import { motionTokens } from "@/components/ui/activity-heatmap-utils/motion-tokens";
-import styles from "@/components/ui/activity-heatmap-utils/activity-heatmap.module.css";
+import "@/components/ui/activity-heatmap-utils/activity-heatmap.css";
+
+// Plain global stylesheet with an hm- prefix on every class. It was a CSS module first, but this project's turbopack rule runs every
+// .css file through the Tailwind loader, which drops the module scoping: names like .grid and .rise then leaked into the whole app.
+const styles = new Proxy({} as Record<string, string>, { get: (_target, name) => `hm-${String(name)}` });
 
 export interface ActivityDay {
   /** Calendar day as YYYY-MM-DD. */
