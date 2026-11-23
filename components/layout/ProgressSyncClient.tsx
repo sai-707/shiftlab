@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { markSyncReady } from "@/lib/onboarding";
 import { setGuestMode } from "@/lib/progress";
 import { hydrate } from "@/lib/sync";
 
@@ -9,6 +10,7 @@ export function ProgressSyncClient({ userId }: { userId: string | null }) {
   useEffect(() => {
     setGuestMode(userId === null);
     if (userId) hydrate(userId);
+    else markSyncReady(); // a guest has nothing to merge
   }, [userId]);
   return null;
 }

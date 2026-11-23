@@ -22,7 +22,7 @@ export default function HintSection({ alertId, n, title, children }: { alertId: 
   const panelId = `hint-panel-${alertId}`;
 
   return (
-    <section className="rounded-2xl border border-line bg-panel shadow-[inset_0_1px_0_0_rgb(255_255_255/0.03)]">
+    <section data-tour="s2" className="rounded-2xl border border-line bg-panel shadow-[inset_0_1px_0_0_rgb(255_255_255/0.03)]">
       <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-2">
         <h2 className="text-[15px] font-semibold">
           <span className="mr-2 font-mono text-accent">{n}</span>

@@ -10,6 +10,7 @@ import { roadmapProgress } from "./roadmapProgress";
 import { sourcesStore } from "./sources";
 import { stepsProgress } from "./stepsProgress";
 import { hintsUsed } from "./hintsUsed";
+import { markSyncReady, onboarding, tour } from "./onboarding";
 import type { CaseRecord } from "./types";
 
 // Sync layer: merges local (localStorage) and remote (Supabase) progress for signed-in students.
@@ -98,7 +99,15 @@ let hydrated = false;
 export async function hydrate(userId: string) {
   if (hydrated) return;
   hydrated = true;
+  try {
+    await mergeRemote(userId);
+  } finally {
+    // Even if the server is unreachable, the welcome window must not wait forever.
+    markSyncReady();
+  }
+}
 
+async function mergeRemote(userId: string) {
   const meta = readMeta();
   // First sign-in on this browser: whatever a guest did here has never been uploaded, so treat every key as dirty.
   const firstSignIn = !meta.owner;
@@ -106,7 +115,7 @@ export async function hydrate(userId: string) {
   // Owner mismatch: another account was using this browser. Wipe local data.
   if (meta.owner && meta.owner !== userId) {
     resetProgress();
-    for (const store of [...Object.values(STORES), stepsProgress, hintsUsed]) store.reset();
+    for (const store of [...Object.values(STORES), stepsProgress, hintsUsed, onboarding, tour]) store.reset();
     writeMeta({ owner: userId, dirty: {} });
   } else if (!meta.owner) {
     writeMeta({ ...meta, owner: userId });
@@ -224,7 +233,7 @@ export async function syncAssign(alertId: string): Promise<boolean> {
 /** Reset both local and remote progress. */
 export async function syncReset(): Promise<void> {
   resetProgress();
-  for (const store of [...Object.values(STORES), stepsProgress, hintsUsed]) store.reset();
+  for (const store of [...Object.values(STORES), stepsProgress, hintsUsed, onboarding, tour]) store.reset();
   const meta = readMeta();
   if (meta.owner) {
     writeMeta({ ...meta, dirty: {} });
@@ -235,7 +244,7 @@ export async function syncReset(): Promise<void> {
 /** Wipe local data on sign-out so the next student does not see someone else's progress. */
 export function wipeOnSignOut() {
   resetProgress();
-  for (const store of [...Object.values(STORES), stepsProgress, hintsUsed]) store.reset();
+  for (const store of [...Object.values(STORES), stepsProgress, hintsUsed, onboarding, tour]) store.reset();
   try { localStorage.removeItem(SYNC_META_KEY); } catch { /* blocked */ }
 }
 
