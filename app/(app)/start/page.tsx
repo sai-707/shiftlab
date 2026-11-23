@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
+import HowItWorks from "@/components/onboarding/HowItWorks";
 import StartChecklist from "@/components/start/StartChecklist";
 
 export const metadata = { title: "Start here" };
@@ -39,6 +40,8 @@ export default function StartPage() {
       />
 
       <div className="space-y-6">
+        <HowItWorks />
+
         <section className={panel}>
           <h2 className="font-semibold">What does a SOC Level 1 analyst do?</h2>
           <p className="mt-2 max-w-3xl text-sm text-muted">

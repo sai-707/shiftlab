@@ -18,6 +18,7 @@ import { FEEDBACK_EVENT } from "@/lib/feedbackRules";
 import { readAsk, shouldAsk } from "@/lib/feedbackAsk";
 import { trackingVisitorId } from "@/lib/visitor";
 import LookupBox from "@/components/lookup/LookupBox";
+import GuideTour from "@/components/onboarding/GuideTour";
 import SeverityBadge from "@/components/ui/SeverityBadge";
 import AttackTags from "./AttackTags";
 import CompleteModal, { type AttemptInfo } from "./CompleteModal";
@@ -25,6 +26,7 @@ import FeedbackPanel from "./FeedbackPanel";
 import HintSection from "./HintSection";
 import LogLinks from "./LogLinks";
 import RelatedAlerts from "./RelatedAlerts";
+import SampleReport from "./SampleReport";
 import { LOG_LINKS } from "@/content/logLinks";
 import { topicSlug } from "@/content/playbooks";
 import { TOPIC_COLOR } from "@/lib/topics";
@@ -117,7 +119,7 @@ const ASSET_STYLE: Record<BriefingData["assets"][number]["kind"], string> = {
 };
 
 /** Plain-English context for the alert card: who raised it, what the rule looks for, who is involved, what to ask first. */
-function BriefingBits({ b, topic, showLooksFor, openQuestions }: { b: BriefingData; topic: Alert["topic"]; showLooksFor: boolean; openQuestions: boolean }) {
+function BriefingBits({ b, showLooksFor, openQuestions }: { b: BriefingData; showLooksFor: boolean; openQuestions: boolean }) {
   return (
     <div className="space-y-4 border-t border-line/60 pt-4 text-sm">
       {showLooksFor && (
@@ -143,21 +145,21 @@ function BriefingBits({ b, topic, showLooksFor, openQuestions }: { b: BriefingDa
           ))}
         </ul>
       </details>
-      <Link href={`/playbooks/${topicSlug(topic)}`} className="inline-block text-accent hover:underline">
-        Read the {topic} playbook →
-      </Link>
     </div>
   );
 }
 
 /** A numbered card on the one-page workspace. */
-function Section({ n, title, children }: { n: number; title: string; children: ReactNode }) {
+function Section({ n, title, action, tour, children }: { n: number; title: string; action?: ReactNode; tour?: string; children: ReactNode }) {
   return (
-    <section className={`${panel} !p-0`}>
-      <h2 className="border-b border-line px-5 py-3.5 text-[15px] font-semibold">
-        <span className="mr-2 font-mono text-accent">{n}</span>
-        {title}
-      </h2>
+    <section data-tour={tour} className={`${panel} !p-0`}>
+      <div className={`flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-line px-5 ${action ? "py-2" : "py-3.5"}`}>
+        <h2 className="text-[15px] font-semibold">
+          <span className="mr-2 font-mono text-accent">{n}</span>
+          {title}
+        </h2>
+        {action}
+      </div>
       <div className="p-5">{children}</div>
     </section>
   );
@@ -271,6 +273,8 @@ function DecisionForm({ alert, opened, previous, onClosed }: { alert: Alert; ope
           </label>
         </div>
       </fieldset>
+
+      <SampleReport />
 
       <div className="grid gap-3 md:grid-cols-[13rem_1fr] md:gap-4">
         <div>
@@ -495,7 +499,7 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
       </div>
 
       {!record && !isActive && (
-        <div className={`${panel} flex flex-wrap items-center justify-between gap-3`}>
+        <div data-tour="assign" className={`${panel} flex flex-wrap items-center justify-between gap-3`}>
           {locked ? (
             <>
               <p className="text-sm">
@@ -572,7 +576,23 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
 
       {(record || isActive) && (
         <>
-          <Section n={1} title="The alert">
+          <Section
+            n={1}
+            title="The alert"
+            tour="s1"
+            action={
+              <Link
+                href={`/playbooks/${topicSlug(alert.topic)}`}
+                className="press inline-flex min-h-11 items-center gap-2 rounded-xl border border-accent/60 px-3.5 text-sm font-semibold text-accent hover:bg-accent/10"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" />
+                  <path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5" />
+                </svg>
+                Stuck? Read the {alert.topic} playbook →
+              </Link>
+            }
+          >
             <div className="space-y-4">
               <dl className="divide-y divide-line/60 text-sm">
                 {alert.description && (
@@ -587,7 +607,7 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
                   <EvidenceBody block={alertBlock} />
                 </div>
               )}
-              <BriefingBits b={alert.briefing} topic={alert.topic} showLooksFor={!alert.description} openQuestions={alert.difficulty === "Beginner"} />
+              <BriefingBits b={alert.briefing} showLooksFor={!alert.description} openQuestions={alert.difficulty === "Beginner"} />
             </div>
           </Section>
 
