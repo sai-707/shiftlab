@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState, type CSSProperties } from "react";
-import { KIND_META, MIN_AVG, levelStatuses, masterReady, overall, type Cert, type CertKind } from "@/lib/certificates";
+import SectionHead from "@/components/profile/SectionHead";
+import { KIND_META, MIN_AVG, levelStatuses, linkedInUrl, masterReady, overall, type Cert, type CertKind } from "@/lib/certificates";
 import { useProgress } from "@/lib/progress";
 import { addCertificate, useCertificates } from "@/lib/useCertificates";
 import CertDialog from "./CertDialog";
@@ -18,8 +19,11 @@ function Shield({ color, on }: { color: string; on: boolean }) {
   );
 }
 
-/** Dashboard panel: how close each certificate is, and Claim or View once it is within reach. */
-export default function CertificatesPanel() {
+/**
+ * How close each certificate is, and Claim or View once it is within reach. On the dashboard it is its own card; `embedded` is the profile page's
+ * version: a section of the profile card, with glowing earned tiles and an "Add to LinkedIn" link (its pf- styles come from profile.css, which ProfileView imports).
+ */
+export default function CertificatesPanel({ embedded = false }: { embedded?: boolean }) {
   const progress = useProgress();
   const mine = useCertificates();
   const [open, setOpen] = useState<CertKind | null>(null);
@@ -64,14 +68,23 @@ export default function CertificatesPanel() {
   const certOf = (k: CertKind): Cert | null => mine?.certs.find((c) => c.kind === k) ?? null;
   const active = open ? tiles.find((t) => t.kind === open) : null;
 
+  const rule = <p className="text-xs text-muted">Close every alert of a level with an average of {MIN_AVG} or more. Your best try on each alert counts.</p>;
+
   return (
-    <section className="spot rounded-2xl border border-line bg-panel p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.03)]" aria-labelledby="certs-h">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 id="certs-h" className="font-semibold">
-          Your certificates
-        </h2>
-        <p className="text-xs text-muted">Close every alert of a level with an average of {MIN_AVG} or more. Your best try on each alert counts.</p>
-      </div>
+    <section
+      className={embedded ? "border-t border-line p-5 md:p-6" : "spot rounded-2xl border border-line bg-panel p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.03)]"}
+      aria-labelledby="certs-h"
+    >
+      {embedded ? (
+        <SectionHead eyebrow="Proof of work" title="Certificates" id="certs-h" aside={rule} />
+      ) : (
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h2 id="certs-h" className="font-semibold">
+            Your certificates
+          </h2>
+          {rule}
+        </div>
+      )}
 
       {mine === null && (
         <p className="mt-3 rounded-lg border border-line bg-canvas/50 px-4 py-3 text-sm">
@@ -83,14 +96,14 @@ export default function CertificatesPanel() {
         </p>
       )}
 
-      <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <ul className={`mt-4 grid gap-3 ${embedded ? "grid-cols-2" : "sm:grid-cols-2"} lg:grid-cols-5`}>
         {tiles.map((t) => {
           const c = certOf(t.kind);
           const color = KIND_META[t.kind].color;
           const pct = t.total ? Math.round((t.done / t.total) * 100) : 0;
           const canAct = Boolean(mine) && (c || t.ready);
           return (
-            <li key={t.kind} className="flex flex-col rounded-xl border border-line bg-canvas/50 p-3.5 transition-colors" style={{ "--c": color, borderColor: c ? `${color}66` : undefined } as CSSProperties}>
+            <li key={t.kind} className={`flex flex-col rounded-xl border border-line bg-canvas/50 p-3.5 transition-colors${embedded ? ` pf-cert${c ? " pf-cert-on" : ""}` : ""}`} style={{ "--c": color, borderColor: c ? `${color}66` : undefined } as CSSProperties}>
               <div className="flex items-center gap-2.5">
                 <Shield color={color} on={Boolean(c)} />
                 <div className="min-w-0">
@@ -99,9 +112,23 @@ export default function CertificatesPanel() {
                 </div>
               </div>
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={`${t.label} progress`}>
-                <div className="h-full rounded-full transition-[width] duration-700 ease-out motion-reduce:transition-none" style={{ width: `${pct}%`, background: color }} />
+                <div className={`h-full rounded-full transition-[width] duration-700 ease-out motion-reduce:transition-none${embedded ? " pf-fill" : ""}`} style={{ width: `${pct}%`, background: color, "--pf-c": color } as CSSProperties} />
               </div>
-              <p className="mt-2 min-h-8 text-xs leading-snug text-muted">{c ? "Issued" : t.hint}</p>
+              <p className="mt-2 min-h-8 text-xs leading-snug text-muted">{c ? (
+                  embedded ? (
+                    <>
+                      Issued ·{" "}
+                      <a href={linkedInUrl(c)} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">
+                        Add to LinkedIn
+                      </a>
+                    </>
+                  ) : (
+                    "Issued"
+                  )
+                ) : (
+                  t.hint
+                )}
+              </p>
               {canAct ? (
                 <button
                   type="button"

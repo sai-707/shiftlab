@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Suspense } from "react";
 import { SITE_URL } from "@/lib/site";
 import Tracker from "@/components/analytics/Tracker";
@@ -16,6 +16,12 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+// Headline numbers and names on the profile page.
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: "ShiftLab", template: "%s · ShiftLab" },
@@ -29,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         {children}
