@@ -623,7 +623,7 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
 
 
           {(isActive || isRetrying) && (
-            <Section n={3} title={isRetrying && record ? `Your report, try ${attemptsUsed(record) + 1}` : "Your report"}>
+            <Section n={3} title={isRetrying && record ? `Your report, try ${attemptsUsed(record) + 1}` : "Your report"} tour="s3">
               <DecisionForm
                 alert={alert}
                 opened={opened}
@@ -639,6 +639,8 @@ export default function CaseWorkspace({ alert }: { alert: Alert }) {
           <RelatedAlerts alert={alert} closed={Boolean(record)} />
         </>
       )}
+
+      <GuideTour alertId={alert.id} assigned={isActive || Boolean(record)} />
 
       {done && (
         <CompleteModal
