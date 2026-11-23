@@ -95,7 +95,7 @@ export default function Home() {
             <li>No account needed</li>
             <li>About ten minutes</li>
             <li>Scored and coached</li>
-            <li>51 fictional alerts</li>
+            <li>Real-world scenarios</li>
           </ul>
         </section>
 
@@ -203,7 +203,7 @@ export default function Home() {
 
       <footer className="foot">
         <div className="wrap">
-          <p>Fictional company. Nothing here is real. Visits are counted anonymously, with no name or email.</p>
+          <p>Built on real-world incident patterns. No real company or personal data is used. Visits are counted anonymously, with no name or email.</p>
           <p>
             <Link href="/guide">About</Link> · <Link href="/roadmap">SOC roadmap</Link> · <Link href="/privacy">Privacy</Link> ·{" "}
             <FeedbackLink className="foot-link" />{" "}
