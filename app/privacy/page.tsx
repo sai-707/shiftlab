@@ -34,9 +34,19 @@ export default function PrivacyPage() {
         <h2 style={H}>Visit counts</h2>
         <p style={P}>
           Each page view is counted with a random number kept in your browser. It holds no name or email. Nothing is counted if your browser sends &quot;Do Not Track&quot;.
+          Without an account, that number is all the count is tied to. If you are signed in, the count is tied to your account as well.
+          If your account is deleted, the counts stay but no longer point to any account.
+          Your network address is only held in memory for a minute to stop flooding of this counter. It is not saved.
           When a case is closed we also count the alert, the score and whether the verdict was right, never your written report.
           We also count when you start writing a report and when Submit is stopped by a check, with the alert and a short reason, never what you typed.
           If the link you came from carries a label such as <code>?ref=linkedin</code>, that label is counted too, so the owner can see which post brought visitors.
+        </p>
+
+        <h2 style={H}>What the owner can see</h2>
+        <p style={P}>
+          The owner has an admin area. For each account it shows the display name, a partly hidden email (for example a***@example.com), when the account was created and last active,
+          each case with its score and how long it took, and the latest things that account&apos;s browser did, including what that same browser did as a guest before you signed up.
+          The admin area does not show the reports you write.
         </p>
 
         <h2 style={H}>Feedback</h2>
@@ -49,7 +59,9 @@ export default function PrivacyPage() {
         <p style={P}>No ads, no selling data, no third-party trackers.</p>
 
         <h2 style={H}>Questions or deleting your account</h2>
-        <p style={P}>Email saidaswadkar14@gmail.com and your account and its data will be removed.</p>
+        <p style={P}>
+          Sign in, use <strong>Send feedback</strong>, tick &quot;You may reply to me about this&quot; and ask for your account to be removed. Your account and its data will be deleted, and the reply will appear under Messages.
+        </p>
       </main>
     </SiteShell>
   );

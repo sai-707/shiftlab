@@ -203,7 +203,7 @@ export default function Home() {
 
       <footer className="foot">
         <div className="wrap">
-          <p>Built on real-world incident patterns. No real company or personal data is used. Visits are counted anonymously, with no name or email.</p>
+          <p>Built on real-world incident patterns. No real company or personal data is used. Visits are counted with a random number kept in your browser, never your name or email. If you sign in, your counts are linked to your account.</p>
           <p>
             <Link href="/guide">About</Link> · <Link href="/roadmap">SOC roadmap</Link> · <Link href="/privacy">Privacy</Link> ·{" "}
             <FeedbackLink className="foot-link" />{" "}
