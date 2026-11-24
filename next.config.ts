@@ -17,9 +17,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
-  // Lets you open the dev server from this computer's network address, not only localhost.
-  // shortcut: hard-coded to one address, update it if your IP changes (only affects `npm run dev`)
-  allowedDevOrigins: ["192.168.1.6"],
+  // Lets you open the dev server from this computer's network address, not only localhost. Only affects `npm run dev`.
+  // Set DEV_ORIGINS (comma-separated, for example "192.168.1.9") when your address changes; no code edit needed.
+  allowedDevOrigins: process.env.DEV_ORIGINS ? process.env.DEV_ORIGINS.split(",").map((s) => s.trim()) : ["192.168.1.6"],
   // Safe-by-default browser rules, plus a Content-Security-Policy in REPORT-ONLY mode: the browser lists anything it would block in the
   // console (look for "Content-Security-Policy-Report-Only") but blocks nothing. After a clean browse of the whole site, change the header name below
   // to "Content-Security-Policy" to enforce it. 'unsafe-inline' stays for scripts and styles because Next.js writes inline ones; a nonce would remove it.

@@ -123,7 +123,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your publishable (anon) key
 
 Use only the publishable key. Never put a secret or service-role key in this project.
 
-In the Supabase SQL editor, run the files in `supabase/migrations/` in order (`0001` to `0008`). Then:
+In the Supabase SQL editor, run the files in `supabase/migrations/` in order (`0001` to `0014`). Then:
 
 ```bash
 npm run dev      # http://localhost:3000

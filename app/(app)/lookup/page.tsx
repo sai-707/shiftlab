@@ -8,7 +8,7 @@ export default function LookupPage() {
     <>
       <PageHeader
         title="Intel check"
-        description="Paste an IP address, domain, link or file hash. We check it against 24 security vendors and tell you in plain words what it means."
+        description="Paste an IP address, domain, link or file hash. We look it up in ShiftLab's practice threat feed (24 simulated vendors) and tell you in plain words what it means."
       />
       <div className="max-w-3xl rounded-xl border border-line bg-panel p-5">
         <LookupBox />
