@@ -1,8 +1,11 @@
+import { createLimiter } from "@/lib/rateLimit";
 import { cleanRef } from "@/lib/ref";
 import { track } from "@/lib/track";
 
 // Receives the page-view beacon from components/analytics/Tracker.tsx and the report beacons from lib/reportEvents.ts. Everything in the body is checked again here.
-// shortcut: no rate limit. Anyone can post fake views; fine while the numbers are only for the owner. Add a limit before they matter.
+// Each address may send 60 events a minute here, counted in memory only (never saved). It is best-effort: the database has its own caps (migration 0008).
+// A source over the limit is dropped quietly with the same 204, so a real visitor never sees an error.
+const allow = createLimiter(60, 60_000);
 const PATH = /^\/[A-Za-z0-9_\-/]{0,100}$/;
 const VISITOR = /^[A-Za-z0-9-]{8,40}$/;
 const ALERT = /^SL-\d{4}$/;
@@ -18,6 +21,9 @@ export async function POST(req: Request) {
       return new Response(null, { status: 403 });
     }
   }
+
+  const ip = req.headers.get("cf-connecting-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (ip && !allow(ip)) return new Response(null, { status: 204 });
 
   const raw = await req.text();
   if (raw.length > 400) return new Response(null, { status: 413 });

@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { FIRST_ALERT_HREF } from "@/components/site/links";
+import { GUEST_HREF } from "@/components/site/links";
 import { cleanDetails } from "@/lib/profileRules";
 import { createClient } from "@/lib/supabase/server";
 
@@ -41,5 +41,5 @@ export async function completeProfile(input: { name: string; username: string; g
 
   const saved = await write(cleaned.patch);
   if ("error" in saved) return saved;
-  redirect(FIRST_ALERT_HREF); // outside any try/catch on purpose: redirect works by throwing
+  redirect(GUEST_HREF); // outside any try/catch on purpose: redirect works by throwing
 }
