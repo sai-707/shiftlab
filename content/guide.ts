@@ -130,7 +130,7 @@ export const GUIDE = {
   faq: [
     { q: "Do I need to know anything first?", a: "No. Every word is explained in the glossary, and each alert has hints you can open when you are stuck." },
     { q: "Is it free? Do I need an account?", a: "It is free. You can try it as a guest. A free account saves your progress and your case reports." },
-    { q: "Is any of this real company data?", a: "No real company data is used. The scenarios are modelled on real incidents, and the practice company, Harbor & Pine Logistics, with its people and computers, is invented to keep real people out of it." },
+    { q: "Is any of this real company data?", a: "No real company data is used. The scenarios are modelled on real incidents, and the practice company, Harbor & Pine Logistics, with its people and computers, is a practice setting that keeps real people out of it." },
     { q: "Will this get me a job?", a: "It will not on its own, and it is not a certificate. It gives you practice at the daily routine, which helps in interviews and in the first weeks of a job." },
   ],
 
@@ -146,5 +146,5 @@ export const GUIDE = {
       url: "https://www.securityinfowatch.com/cybersecurity/press-release/21271326/isc2-is-an-international-nonprofit-membership-association-isc2-research-finds-employer-hiring-practices-must-evolve-to-overcome-the-cybersecurity-workforce-gap",
     },
   ],
-  footnote: "Alerts are modelled on real incidents. Harbor & Pine Logistics, its people and its systems are invented, and no real company data is used.",
+  footnote: "Alerts are modelled on real incidents. Harbor & Pine Logistics, its people and its systems are a practice setting, and no real company data is used.",
 } as const;

@@ -37,7 +37,7 @@ app/            pages, server actions (*-actions.ts), route handlers (auth callb
 components/     the screens; case/ is the heart (CaseWorkspace); site/ is the public landing and auth pages
 content/        alerts, hints, playbooks, intel and log data; answer keys end in -keys.ts or are listed in the test
 lib/            grading, progress stores, sync to Supabase, small shared rules
-supabase/       numbered SQL migrations, run in order (0001 ... 0008); demo/ has made-up data for the admin pages
+supabase/       numbered SQL migrations, run in order (0001 ... 0014); demo/ has sample data for the admin pages
 tests/          content and safety checks (no extra packages needed)
 ```
 
@@ -46,7 +46,8 @@ tests/          content and safety checks (no extra packages needed)
 - **Guests** need nothing: progress lives in the browser (`localStorage`, keys `shiftlab.*.v1`) and is imported into the account at first sign-in. A guest can close 3 alerts before being asked to sign up (a nudge counted in the browser, not a security control).
 - **Signed-in students**: `profiles` (name, photo, username, GitHub, role), `cases` (closed cases, one active case per user, enforced by a unique index) and `saved_state` (practice progress). Row-level security limits every table to the owner's own rows. A student can update only `display_name`, `avatar`, `username` and `github` on their profile; the `role` column changes only by SQL.
 - **Admin** is a role on `profiles`. `/admin` answers 404 to everyone else, and every admin number comes from a `security definer` database function that checks the role again.
-- **Analytics** (`events`): insert-only for the public and unreadable from the website. It stores a random browser id, a path and, for a closed case, the alert id and score, never report text, names or emails. Inserts are rate-limited in the database (migration 0008).
+- **Analytics** (`events`): insert-only for the public and unreadable from the website. It stores a random browser id, the account id when the visitor is signed in, a path and, for a closed case, the alert id and score, never report text, names or emails. Inserts are rate-limited in the database (migration 0008) and, best-effort, per address in `app/api/e/route.ts`.
+- **Browser headers** (`next.config.ts`): no-sniff, frame denial, referrer and permissions rules, HSTS, and a Content-Security-Policy in report-only mode (violations show in the browser console; rename the header to enforce it).
 
 ### Make yourself an admin
 

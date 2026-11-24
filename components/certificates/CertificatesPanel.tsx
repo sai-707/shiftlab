@@ -68,7 +68,7 @@ export default function CertificatesPanel({ embedded = false }: { embedded?: boo
   const certOf = (k: CertKind): Cert | null => mine?.certs.find((c) => c.kind === k) ?? null;
   const active = open ? tiles.find((t) => t.kind === open) : null;
 
-  const rule = <p className="text-xs text-muted">Close every alert of a level with an average of {MIN_AVG} or more. Your best try on each alert counts.</p>;
+  const rule = <p className="text-xs text-muted">Close every alert of a level with an average of {MIN_AVG} or more. Your best try on each alert counts, and a certificate also shows your first-try average.</p>;
 
   return (
     <section
@@ -108,7 +108,7 @@ export default function CertificatesPanel({ embedded = false }: { embedded?: boo
                 <Shield color={color} on={Boolean(c)} />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{t.label}</p>
-                  <p className="text-xs text-muted">{c ? `Average ${c.avg}` : `${t.done} of ${t.total}`}</p>
+                  <p className="text-xs text-muted">{c ? `Average ${c.avg}, first try ${c.firstAvg}` : `${t.done} of ${t.total}`}</p>
                 </div>
               </div>
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={`${t.label} progress`}>

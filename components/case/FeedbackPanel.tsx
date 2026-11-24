@@ -52,7 +52,7 @@ export default function FeedbackPanel({ record, onRetry, retryBlocked }: { recor
       </div>
       {(tries.length > 1 || left > 0) && (
         <p className="basis-full border-t border-line/60 pt-3 text-xs text-muted">
-          {tries.length > 1 && <>Tries: {tries.map((t) => t.score).join(", then ")}. Your best counts toward your level average. </>}
+          {tries.length > 1 && <>Tries: {tries.map((t) => t.score).join(", then ")}. Your best counts toward your level average, and a certificate also shows your first-try average. </>}
           {left === 0 ? "All 3 tries used." : retryBlocked ?? `You can try this alert again, ${left} ${left === 1 ? "try" : "tries"} left. Your best score counts.`}
         </p>
       )}

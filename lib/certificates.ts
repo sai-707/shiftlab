@@ -2,7 +2,7 @@
 // the browser uses these only to show progress and to decide when to offer "Claim".
 import { ALERTS } from "@/content/alerts";
 import { firstScore } from "./attempts";
-import { KIND_META, MIN_AVG, type Cert, type CertKind } from "./certificateRules";
+import { MIN_AVG, type Cert, type CertKind } from "./certificateRules";
 import { LEVELS } from "./levels";
 import { SITE_URL } from "./site";
 import type { CaseRecord, Difficulty } from "./types";

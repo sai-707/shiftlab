@@ -46,13 +46,13 @@ Writes the note the next shift needs. It fills in what you closed, what you esca
 
 ![Intel check](screens/intel.png)
 
-Paste an IP address, domain, link or file hash and get a plain-words answer, the way an analyst would check a threat feed. The data is made up and fixed, so every answer can be marked.
+Paste an IP address, domain, link or file hash and get a plain-words answer, the way an analyst would check a threat feed. The answers come from a fixed practice feed (24 simulated vendors), so every answer can be marked.
 
 ### Log search
 
 ![Log search](screens/logs.png)
 
-A small log search over made-up auth, proxy, firewall, WAF, VPN, identity, endpoint, mail and AI-tool logs. Type a word, or use field searches like `src:` and `event:`, and filter by source. Example searches are one click away.
+A small log search over practice auth, proxy, firewall, WAF, VPN, identity, endpoint, mail and AI-tool logs. Type a word, or use field searches like `src:` and `event:`, and filter by source. Example searches are one click away.
 
 ### Phishing mailbox
 
