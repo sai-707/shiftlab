@@ -164,7 +164,7 @@ export default function Home() {
               <p className="label">Certificates</p>
               <h2>Finish a level. Keep the proof.</h2>
               <p className="mt-3 max-w-2xl text-[15px] leading-relaxed" style={{ color: "var(--color-muted)" }}>
-                Close every alert in a level with an average of 70 or more and claim a certificate with your name on it. Each one has a link anyone can open to check it, and adds to LinkedIn in one click. Finish all four levels for the Master certificate.
+                Close every alert in a level with an average of 70 or more and claim a certificate with your name on it. Each one has a link anyone can open to check it, showing your average and your first-try average, and adds to LinkedIn in one click. Finish all four levels for the Master certificate.
               </p>
             </div>
             <div className="mt-8 grid gap-5 lg:grid-cols-2">
